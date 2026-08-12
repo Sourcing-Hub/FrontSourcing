@@ -42,3 +42,6 @@ npm run build
 ```sh
 npm run lint
 ```
+
+
+<!-- Guide de style mis a jour -->
