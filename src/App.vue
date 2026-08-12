@@ -9,3 +9,5 @@ import { RouterView } from 'vue-router'
 <style>
 /* Les styles de base Tailwind sont dans main.css */
 </style>
+
+<!-- App optimized -->
