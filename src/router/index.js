@@ -65,6 +65,30 @@ const router = createRouter({
       component: () => import('../views/ProfilView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/postuler',
+      name: 'postuler-campagnes',
+      component: () => import('../views/PublicCampagnesView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/postuler/:campagneId',
+      name: 'postuler-formulaire',
+      component: () => import('../views/PostulerView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/candidatures',
+      name: 'candidatures-liste',
+      component: () => import('../views/CandidaturesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/candidatures/:id',
+      name: 'candidature-detail',
+      component: () => import('../views/CandidatureDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

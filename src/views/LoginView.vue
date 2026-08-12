@@ -165,6 +165,15 @@ const handleLogin = async () => {
               {{ authStore.loading ? 'Connexion en cours...' : 'Se connecter' }}
             </button>
           </div>
+
+          <div class="text-center pt-2">
+            <router-link
+              to="/postuler"
+              class="font-semibold text-primary-400 hover:text-primary-300 transition-colors text-sm"
+            >
+              Vous souhaitez postuler ? Découvrir nos campagnes
+            </router-link>
+          </div>
         </form>
       </div>
     </div>

@@ -11,6 +11,8 @@ import {
   ClipboardList
 } from 'lucide-vue-next'
 
+import { computed } from 'vue'
+
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
@@ -20,21 +22,28 @@ const handleLogout = () => {
   router.push('/login')
 }
 
-const navigation = [
-  { name: 'Vue globale', href: '/', icon: LineChart },
-  { name: 'Campagnes', href: '/campagnes', icon: Calendar },
-  { name: 'Formulaires', href: '/formulaires', icon: ClipboardList },
-  { name: 'Candidats', href: '/candidats', icon: Users },
-  { name: 'Gestion des tests', href: '/tests', icon: Users },
-  { name: 'Formations', href: '/formations', icon: BookOpen },
-  { name: 'Entretiens', href: '/entretiens', icon: BookOpen },
-  { name: 'Candidatures', href: '/candidatures', icon: BookOpen },
-  { name: 'Rapports', href: '/rapports', icon: FileText },
-  { name: 'Questionnaires', href: '/questionnaires', icon: FileText },
-  { name: 'Plannification', href: '/plannification', icon: FileText },
-  { name: 'Convocations', href: '/convocations', icon: FileText },
-  { name: 'Evaluateurs', href: '/evaluateurs', icon: FileText },
-]
+const navigation = computed(() => {
+  if (authStore.user?.role === 'Candidat') {
+    return [
+      { name: 'Mes Candidatures', href: '/candidatures', icon: ClipboardList }
+    ]
+  }
+  return [
+    { name: 'Vue globale', href: '/', icon: LineChart },
+    { name: 'Campagnes', href: '/campagnes', icon: Calendar },
+    { name: 'Formulaires', href: '/formulaires', icon: ClipboardList },
+    { name: 'Candidats', href: '/candidats', icon: Users },
+    { name: 'Gestion des tests', href: '/tests', icon: Users },
+    { name: 'Formations', href: '/formations', icon: BookOpen },
+    { name: 'Entretiens', href: '/entretiens', icon: BookOpen },
+    { name: 'Candidatures', href: '/candidatures', icon: BookOpen },
+    { name: 'Rapports', href: '/rapports', icon: FileText },
+    { name: 'Questionnaires', href: '/questionnaires', icon: FileText },
+    { name: 'Plannification', href: '/plannification', icon: FileText },
+    { name: 'Convocations', href: '/convocations', icon: FileText },
+    { name: 'Evaluateurs', href: '/evaluateurs', icon: FileText },
+  ]
+})
 </script>
 
 <template>
