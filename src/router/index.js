@@ -89,3 +89,5 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
+
+// Gardes de navigation mis a jour
