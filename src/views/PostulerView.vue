@@ -32,8 +32,8 @@ const submissionResult = ref(null)
 
 onMounted(async () => {
   try {
-    // 1. Fetch campagne details
-    const campRes = await api.get(`campagnes/${campagneId}/`)
+    // 1. Fetch campagne details publicly
+    const campRes = await api.get(`campagnes/publiques/${campagneId}/`)
     campaignDetails.value = campRes.data
 
     // 2. Fetch associated form
