@@ -1,0 +1,56 @@
+import { defineStore } from 'pinia'
+import api from '../services/api'
+
+export const useUtilisateursStore = defineStore('utilisateurs', {
+  state: () => ({
+    utilisateurs: [],
+    loading: false,
+    error: null,
+  }),
+
+  getters: {
+    adminUsers: (state) => state.utilisateurs.filter((u) => u.role_nom === 'Administrateur'),
+    pedagogieUsers: (state) => state.utilisateurs.filter((u) => u.role_nom === 'Équipe Pédagogique'),
+    gestionUsers: (state) => state.utilisateurs.filter((u) => u.role_nom === 'Équipe Gestion de Projet'),
+  },
+
+  actions: {
+    async fetchUtilisateurs() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.get('utilisateurs/')
+        this.utilisateurs = response.data
+      } catch (err) {
+        this.error = err.response?.data?.detail || 'Erreur lors de la récupération des utilisateurs'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async createPersonnel(data) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.post('utilisateurs/creer-personnel/', data)
+        // Re-fetch users to get the full object including IDs and dates
+        await this.fetchUtilisateurs()
+        return response.data
+      } catch (err) {
+        if (err.response?.data) {
+          // Flatten error object for simple display
+          const messages = []
+          for (const key in err.response.data) {
+            messages.push(`${key}: ${err.response.data[key]}`)
+          }
+          this.error = messages.join(' | ')
+        } else {
+          this.error = 'Erreur lors de la création'
+        }
+        return null
+      } finally {
+        this.loading = false
+      }
+    }
+  }
+})
