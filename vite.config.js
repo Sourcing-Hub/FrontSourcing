@@ -16,3 +16,6 @@ export default defineConfig({
     },
   },
 })
+
+
+// Fin de configuration
