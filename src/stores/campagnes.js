@@ -163,13 +163,28 @@ export const useCampagnesStore = defineStore('campagnes', {
 
     async updateCampagneStatus(id, action) {
       try {
-        // action peut être 'ouvrir', 'fermer', 'archiver'
+        // action peut être 'ouvrir', 'fermer'
         await api.post(`campagnes/${id}/${action}/`)
         await this.fetchCampagnes() // Rafraîchir la liste complète
         return true
       } catch (err) {
         this.error = err.response?.data?.detail || `Erreur lors de l'action ${action}`
         return false
+      }
+    },
+
+    async deleteCampagne(id) {
+      this.loading = true
+      this.error = null
+      try {
+        await api.delete(`campagnes/${id}/`)
+        this.campagnes = this.campagnes.filter((c) => c.id !== id)
+        return true
+      } catch (err) {
+        this.error = err.response?.data?.detail || 'Erreur lors de la suppression de la campagne'
+        return false
+      } finally {
+        this.loading = false
       }
     },
   },
