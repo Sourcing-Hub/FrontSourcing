@@ -1,0 +1,41 @@
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:8000/api/',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Intercepteur pour injecter le token JWT
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('sourcing_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
+
+// Intercepteur pour gérer les erreurs 401 (Expiration du token)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Optionnel: Gérer le refresh token ici si implémenté,
+      // ou rediriger vers le login
+      if (window.location.pathname !== '/login') {
+        localStorage.removeItem('sourcing_token')
+        localStorage.removeItem('sourcing_user')
+        window.location.href = '/login'
+      }
+    }
+    return Promise.reject(error)
+  },
+)
+
+export default api
