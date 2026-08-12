@@ -55,3 +55,6 @@ La page `FormulaireBuilderView.vue` propose un constructeur de formulaire sans c
 - Il utilise `vue-draggable-next` pour permettre la réorganisation à la souris (Drag and Drop) des champs.
 - Le panneau de paramétrage (à droite) est réactif : ses champs d'édition s'adaptent instantanément au type du composant cliqué (ex: affichage du gestionnaire d'extensions si le type est "Fichier").
 - Les actions (ajout, modification, suppression, réorganisation) sont toutes synchronisées avec le backend en temps réel via des appels isolés pour une excellente performance (pas de rechargement complet de la page).
+
+
+<!-- Finalisation de la documentation -->
