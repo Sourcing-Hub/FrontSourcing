@@ -42,3 +42,6 @@ export default {
   },
   plugins: [],
 }
+
+
+// Fin de tailwind
