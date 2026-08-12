@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useCampagnesStore } from '../stores/campagnes'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
-import { Plus, Play, Square, Archive, Loader2 } from 'lucide-vue-next'
+import { Plus, Play, Square, Trash2, Loader2 } from 'lucide-vue-next'
 
 const store = useCampagnesStore()
 const showModal = ref(false)
@@ -29,8 +29,6 @@ const getStatusColor = (statut) => {
       return 'bg-green-100 text-green-800'
     case 'FERMEE':
       return 'bg-red-100 text-red-800'
-    case 'ARCHIVEE':
-      return 'bg-yellow-100 text-yellow-800'
     default:
       return 'bg-gray-100 text-gray-800'
   }
@@ -61,6 +59,12 @@ const handleCreate = async () => {
 
 const handleAction = async (id, action) => {
   await store.updateCampagneStatus(id, action)
+}
+
+const handleDelete = async (id) => {
+  if (confirm("Voulez-vous vraiment supprimer cette campagne définitivement ?")) {
+    await store.deleteCampagne(id)
+  }
 }
 </script>
 
@@ -172,12 +176,11 @@ const handleAction = async (id, action) => {
                   <Square class="w-4 h-4" />
                 </button>
                 <button
-                  v-if="campagne.statut !== 'ARCHIVEE'"
-                  @click="handleAction(campagne.id, 'archiver')"
-                  class="text-yellow-600 hover:text-yellow-900 bg-yellow-50 p-2 rounded-lg"
-                  title="Archiver"
+                  @click="handleDelete(campagne.id)"
+                  class="text-red-600 hover:text-red-900 bg-red-50 p-2 rounded-lg"
+                  title="Supprimer"
                 >
-                  <Archive class="w-4 h-4" />
+                  <Trash2 class="w-4 h-4" />
                 </button>
               </td>
             </tr>
