@@ -38,6 +38,7 @@ onMounted(async () => {
 })
 
 const openCreateModal = () => {
+  store.error = null
   isEditing.value = false
   currentFormation.value = {
     id: null,
@@ -50,6 +51,7 @@ const openCreateModal = () => {
 }
 
 const openEditModal = (formation) => {
+  store.error = null
   isEditing.value = true
   currentFormation.value = { ...formation }
   showModal.value = true
@@ -61,12 +63,14 @@ const confirmDelete = (id) => {
 }
 
 const openCohortesModal = async (formation) => {
+  store.error = null
   selectedFormation.value = formation
   await store.fetchCohortes(formation.id)
   showCohortesModal.value = true
 }
 
 const prepareCreateCohorte = () => {
+  store.error = null
   isEditingCohorte.value = false
   currentCohorte.value = {
     id: null,
@@ -78,6 +82,7 @@ const prepareCreateCohorte = () => {
 }
 
 const openEditCohorte = (cohorte) => {
+  store.error = null
   isEditingCohorte.value = true
   currentCohorte.value = { ...cohorte }
 }
@@ -88,10 +93,16 @@ const confirmDeleteCohorte = (id) => {
 }
 
 const handleCohorteSubmit = async () => {
+  store.error = null
   const payload = { ...currentCohorte.value }
   payload.formation = selectedFormation.value.id
   if (!payload.dateDebut) payload.dateDebut = null
   if (!payload.dateFin) payload.dateFin = null
+
+  if (payload.dateDebut && payload.dateFin && new Date(payload.dateDebut) >= new Date(payload.dateFin)) {
+    store.error = "La date de fin de la cohorte doit être postérieure à la date de début."
+    return
+  }
 
   let result
   if (isEditingCohorte.value) {
@@ -123,9 +134,15 @@ const formatDate = (dateStr) => {
 }
 
 const handleSubmit = async () => {
+  store.error = null
   const payload = { ...currentFormation.value }
   if (!payload.dateDebut) payload.dateDebut = null
   if (!payload.dateFin) payload.dateFin = null
+
+  if (payload.dateDebut && payload.dateFin && new Date(payload.dateDebut) >= new Date(payload.dateFin)) {
+    store.error = "La date de fin de la formation doit être postérieure à la date de début."
+    return
+  }
 
   let result
   if (isEditing.value) {
@@ -272,6 +289,11 @@ const handleDelete = async () => {
               <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
                 {{ isEditing ? 'Modifier la formation' : 'Créer une formation' }}
               </h3>
+              
+              <div v-if="store.error" class="mt-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md text-xs text-red-700">
+                {{ store.error }}
+              </div>
+
               <div class="mt-4 space-y-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Nom de la formation</label>
@@ -376,6 +398,10 @@ const handleDelete = async () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+            </div>
+
+            <div v-if="store.error" class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md text-xs text-red-700">
+              {{ store.error }}
             </div>
 
             <!-- Formulaire de création / édition de cohorte -->
