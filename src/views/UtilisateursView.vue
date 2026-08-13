@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue d'administration de la gestion du personnel (Équipe Pédagogique et Gestion de Projet).
+ */
 import { ref, onMounted, computed } from 'vue'
 import { useUtilisateursStore } from '../stores/utilisateurs'
 import { useAuthStore } from '../stores/auth'
