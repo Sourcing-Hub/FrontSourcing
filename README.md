@@ -1,4 +1,4 @@
-# 🚀 SourcingHub — Frontend Application (Vue 3 + Vite)
+# SourcingHub — Frontend Application (Vue 3 + Vite)
 
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=flat-square&logo=vue.js)](https://vuejs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite)](https://vite.dev/)
@@ -9,35 +9,35 @@
 
 ---
 
-## 📑 Table des Matières
+## Table des Matières
 
-1. [Fonctionnalités Principales](#-fonctionnalités-principales)
-2. [Stack Technique](#-stack-technique)
-3. [Architecture des Rôles et Permissions](#-architecture-des-rôles-et-permissions)
-4. [Structure du Projet](#-structure-du-projet)
-5. [Prérequis et Installation](#-prérequis-et-installation)
-6. [Commandes de Développement](#-commandes-de-développement)
-7. [Gestion des Formulaires Dynamiques](#-gestion-des-formulaires-dynamiques)
-8. [Sécurité et Navigation Guards](#-sécurité-et-navigation-guards)
-9. [Documentation de l'Architecture](#-documentation-de-larchitecture)
+1. [Fonctionnalités Principales](#fonctionnalités-principales)
+2. [Stack Technique](#stack-technique)
+3. [Architecture des Rôles et Permissions](#architecture-des-rôles-et-permissions)
+4. [Structure du Projet](#structure-du-projet)
+5. [Prérequis et Installation](#prérequis-et-installation)
+6. [Commandes de Développement](#commandes-de-développement)
+7. [Gestion des Formulaires Dynamiques](#gestion-des-formulaires-dynamiques)
+8. [Sécurité et Navigation Guards](#sécurité-et-navigation-guards)
+9. [Documentation de l'Architecture](#documentation-de-larchitecture)
 
 ---
 
-## 🌟 Fonctionnalités Principales
+## Fonctionnalités Principales
 
-- 🔐 **Authentification & Gestion des Accès** : Connexion JWT, activation sécurisée par lien unique, réinitialisation de mot de passe, déconnexion de sécurité.
-- 📋 **Formulaires Dynamiques** : Éditeur Drag & Drop (FormBuilder), personnalisation des champs (texte, email, téléphone, date, liste, fichier avec limites MIME/taille), prévisualisation en temps réel.
-- 🚀 **Gestion des Campagnes** : Création, ouverture/fermeture/archivage de campagnes, association dynamique aux formations et cohortes.
-- 👨‍🎓 **Espace Candidat** : Candidature sans compte requis (création automatique), suivi de l'état d'avancement des candidatures.
-- 👨‍💼 **Espace Personnel (Admin / Pédagogie / Gestion de Projet)** :
+- **Authentification & Gestion des Accès** : Connexion JWT, activation sécurisée par lien unique, réinitialisation de mot de passe, déconnexion de sécurité.
+- **Formulaires Dynamiques** : Éditeur Drag & Drop (FormBuilder), personnalisation des champs (texte, email, téléphone, date, liste, fichier avec limites MIME/taille), prévisualisation en temps réel.
+- **Gestion des Campagnes** : Création, ouverture/fermeture/archivage de campagnes, association dynamique aux formations et cohortes.
+- **Espace Candidat** : Candidature sans compte requis (création automatique), suivi de l'état d'avancement des candidatures.
+- **Espace Personnel (Admin / Pédagogie / Gestion de Projet)** :
   - **Administrateur** : Gestion globale, création et invitation du personnel (Équipe Pédagogique, Gestion de Projet), blocage/déblocage/suppression de comptes.
   - **Équipe Pédagogique** : Pilotage du parcours de sélection, gestion des évaluateurs, notation et suivi des étapes de recrutement.
   - **Équipe Gestion de Projet** : Suivi des campagnes, cohortes, formations et consultation des candidatures.
-- 📱 **Émargement par QR Code** : Scan et contrôle d'accès en direct pour les sessions d'évaluation.
+- **Émargement par QR Code** : Scan et contrôle d'accès en direct pour les sessions d'évaluation.
 
 ---
 
-## 🛠 Stack Technique
+## Stack Technique
 
 - **Framework JavaScript** : [Vue 3](https://vuejs.org/) (SFC, `<script setup>`, Composition API)
 - **Tooling & Bundler** : [Vite](https://vite.dev/)
@@ -49,7 +49,7 @@
 
 ---
 
-## 👥 Architecture des Rôles et Permissions
+## Architecture des Rôles et Permissions
 
 L'interface adapte dynamiquement le menu latéral (Sidebar), les boutons d'action et les routes selon le rôle de l'utilisateur connecté :
 
@@ -62,7 +62,7 @@ L'interface adapte dynamiquement le menu latéral (Sidebar), les boutons d'actio
 
 ---
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```text
 FrontSourcing/
@@ -100,7 +100,7 @@ FrontSourcing/
 
 ---
 
-## ⚙️ Prérequis et Installation
+## Prérequis et Installation
 
 ### Prérequis
 - **Node.js** v18+ ou v20+
@@ -121,7 +121,7 @@ FrontSourcing/
 
 ---
 
-## 💻 Commandes de Développement
+## Commandes de Développement
 
 ### Lancer le serveur de développement
 ```bash
@@ -147,7 +147,7 @@ npm run lint
 
 ---
 
-## 🔐 Sécurité et Navigation Guards
+## Sécurité et Navigation Guards
 
 Le routeur (`src/router/index.js`) intègre une protection stricte des accès via `router.beforeEach` :
 
@@ -157,7 +157,7 @@ Le routeur (`src/router/index.js`) intègre une protection stricte des accès vi
 
 ---
 
-## 📚 Documentation de l'Architecture
+## Documentation de l'Architecture
 
 Pour une description détaillée du flux de données, des stores Pinia, du système de formulaires dynamiques et des intercepteurs Axios, consultez le document complet :
-👉 **[ARCHITECTURE.md](file:///C:/Users/dell/Documents/SourcingHub/FrontSourcing/ARCHITECTURE.md)**
+[ARCHITECTURE.md](file:///C:/Users/dell/Documents/SourcingHub/FrontSourcing/ARCHITECTURE.md)

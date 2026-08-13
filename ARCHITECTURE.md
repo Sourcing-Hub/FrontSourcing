@@ -1,10 +1,10 @@
-# 🏛️ Architecture Technique Frontend — SourcingHub
+# Architecture Technique Frontend — SourcingHub
 
 Ce document décrit l'architecture logicielle, les choix de conception, le flux de données et l'organisation des composants du projet frontend **SourcingHub** (`FrontSourcing`).
 
 ---
 
-## 📐 1. Vue d'Ensemble de l'Architecture
+## 1. Vue d'Ensemble de l'Architecture
 
 Le frontend SourcingHub est une application monopage (Single Page Application — SPA) construite avec **Vue 3**, **Vite**, **Pinia** et **Tailwind CSS**. Elle communique de manière asynchrone avec le backend Django REST Framework via un client HTTP Axios centralisé.
 
@@ -35,7 +35,7 @@ Le frontend SourcingHub est une application monopage (Single Page Application �
 
 ---
 
-## 🗂️ 2. Gestion de l'État Global (Pinia Stores)
+## 2. Gestion de l'État Global (Pinia Stores)
 
 L'état global de l'application est découpé de manière modulaire en 6 stores Pinia distincts situés dans `src/stores/` :
 
@@ -76,7 +76,7 @@ L'état global de l'application est découpé de manière modulaire en 6 stores 
 
 ---
 
-## 🚦 3. Système de Routage & Sécurité (`src/router/index.js`)
+## 3. Système de Routage & Sécurité (`src/router/index.js`)
 
 Le routeur gère les accès selon des méta-données de sécurité (`meta: { requiresAuth: true }`) et une garde globale (`beforeEach`) :
 
@@ -102,7 +102,7 @@ router.beforeEach((to, from, next) => {
 
 ---
 
-## 🌐 4. Service HTTP & Intercepteurs Axios (`src/services/api.js`)
+## 4. Service HTTP & Intercepteurs Axios (`src/services/api.js`)
 
 Toutes les requêtes vers l'API backend passent par l'instance Axios centralisée dans `src/services/api.js` :
 
@@ -121,7 +121,7 @@ Toutes les requêtes vers l'API backend passent par l'instance Axios centralisé
 
 ---
 
-## 🧩 5. Modèle de Formulaires Dynamiques
+## 5. Modèle de Formulaires Dynamiques
 
 L'application intègre un moteur complet d'édition et de rendu de formulaires dynamiques :
 
@@ -156,7 +156,7 @@ L'application intègre un moteur complet d'édition et de rendu de formulaires d
 
 ---
 
-## 🎨 6. Charte Graphique & UI Design System
+## 6. Charte Graphique & UI Design System
 
 L'interface utilisateur suit les standards de design moderne :
 - **Palette de couleurs principale** :
@@ -168,7 +168,7 @@ L'interface utilisateur suit les standards de design moderne :
 
 ---
 
-## ⚙️ 7. Bonnes Pratiques de Développement
+## 7. Bonnes Pratiques de Développement
 
 1. **Composition API** : Tous les composants Vue doivent utiliser la syntaxe `<script setup>`.
 2. **Gestion d'erreur unifiée** : Utiliser `parseBackendError(err)` depuis `src/utils/errorHandler.js` pour traiter les retours d'API.
