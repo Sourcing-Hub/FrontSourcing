@@ -5,7 +5,7 @@ import { useCandidaturesStore } from '../stores/candidatures'
 import { useCampagnesStore } from '../stores/campagnes'
 import api from '../services/api'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
-import { ClipboardList, Search, Loader2, Eye, User, QrCode, Download } from 'lucide-vue-next'
+import { ClipboardList, Search, Loader2, Eye, User, QrCode, Download, ShieldCheck, ShieldAlert } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -15,12 +15,17 @@ const campagnesStore = useCampagnesStore()
 const search = ref('')
 const filterCampagne = ref('')
 const filterStatut = ref('')
+const filterAnnee = ref('')
+const filterFormation = ref('')
+const filterPromotion = ref('')
 const qrCodeDataUrl = ref('')
 
 onMounted(async () => {
-  // Load campaigns for filters (staff only)
+  // Load campaigns, formations, and cohortes for filters (staff only)
   if (!authStore.user?.role || authStore.user.role !== 'Candidat') {
     await campagnesStore.fetchCampagnes()
+    await campagnesStore.fetchFormations()
+    await campagnesStore.fetchCohortes()
   }
   await fetchCandidaturesList()
   await fetchQrCode()
@@ -47,17 +52,46 @@ const downloadQrCode = () => {
   link.click()
 }
 
+// Compute available years (from current year down to 2024)
+const availableYears = computed(() => {
+  const currentYear = new Date().getFullYear()
+  const years = []
+  for (let y = currentYear; y >= 2024; y--) {
+    years.push(y)
+  }
+  return years
+})
+
+// Filter promotions based on selected formation
+const filteredCohortesList = computed(() => {
+  if (!filterFormation.value) {
+    return campagnesStore.cohortes
+  }
+  return campagnesStore.cohortes.filter(
+    (c) => c.formation === filterFormation.value
+  )
+})
+
+// Reset promotion filter when formation filter changes
+const handleFormationChange = () => {
+  filterPromotion.value = ''
+  fetchCandidaturesList()
+}
+
 const fetchCandidaturesList = async () => {
   const params = {}
   if (search.value) params.search = search.value
   if (filterCampagne.value) params.campagne = filterCampagne.value
   if (filterStatut.value) params.statut = filterStatut.value
+  if (filterAnnee.value) params.annee = filterAnnee.value
+  if (filterFormation.value) params.formation = filterFormation.value
+  if (filterPromotion.value) params.promotion = filterPromotion.value
 
   await store.fetchCandidatures(params)
 }
 
 // Watch filters
-watch([filterCampagne, filterStatut], () => {
+watch([filterCampagne, filterStatut, filterAnnee, filterPromotion], () => {
   fetchCandidaturesList()
 })
 
@@ -76,57 +110,104 @@ const handleSearch = () => {
 
     <div class="space-y-6">
       <!-- Section de filtres pour l'administration (Staff) -->
-      <div v-if="authStore.user?.role !== 'Candidat'" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row gap-4 items-end">
-        <!-- Recherche -->
-        <div class="flex-1 w-full">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
-          <div class="relative">
-            <input
-              type="text"
-              v-model="search"
-              @keyup.enter="handleSearch"
-              placeholder="Numéro, nom, prénom ou e-mail..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
-            />
-            <Search class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
+      <div v-if="authStore.user?.role !== 'Candidat'" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <!-- Ligne 1 : Recherche -->
+        <div class="flex flex-col md:flex-row gap-4 items-end">
+          <div class="flex-1 w-full">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+            <div class="relative">
+              <input
+                type="text"
+                v-model="search"
+                @keyup.enter="handleSearch"
+                placeholder="Numéro, nom, prénom ou e-mail..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+              />
+              <Search class="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
+            </div>
+          </div>
+
+          <button
+            @click="handleSearch"
+            class="w-full md:w-auto px-6 py-2 bg-[#CE0033] text-white rounded-lg hover:bg-[#a8002a] text-sm font-semibold transition-colors shadow-sm h-[38px] flex items-center justify-center"
+          >
+            Rechercher
+          </button>
+        </div>
+
+        <!-- Ligne 2 : Filtres avancés -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- Filtre Année -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Année</label>
+            <select
+              v-model="filterAnnee"
+              class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+            >
+              <option value="">Toutes les années</option>
+              <option v-for="y in availableYears" :key="y" :value="y">
+                {{ y }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Filtre Formation -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Formation</label>
+            <select
+              v-model="filterFormation"
+              @change="handleFormationChange"
+              class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+            >
+              <option value="">Toutes les formations</option>
+              <option v-for="f in campagnesStore.formations" :key="f.id" :value="f.id">
+                {{ f.nom }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Filtre Promotion (Cohorte) -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Promotion</label>
+            <select
+              v-model="filterPromotion"
+              class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+            >
+              <option value="">Toutes les promotions</option>
+              <option v-for="c in filteredCohortesList" :key="c.id" :value="c.id">
+                {{ c.nom }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Filtre Campagne -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Campagne</label>
+            <select
+              v-model="filterCampagne"
+              class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+            >
+              <option value="">Toutes les campagnes</option>
+              <option v-for="camp in campagnesStore.campagnes" :key="camp.id" :value="camp.id">
+                {{ camp.nom }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Filtre Statut -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Statut général</label>
+            <select
+              v-model="filterStatut"
+              class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+            >
+              <option value="">Tous les statuts</option>
+              <option value="EN_ATTENTE">En attente</option>
+              <option value="EN_COURS">En cours</option>
+              <option value="TERMINEE">Terminée</option>
+            </select>
           </div>
         </div>
-
-        <!-- Filtre Campagne -->
-        <div class="w-full md:w-64">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Filtrer par Campagne</label>
-          <select
-            v-model="filterCampagne"
-            class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
-          >
-            <option value="">Toutes les campagnes</option>
-            <option v-for="camp in campagnesStore.campagnes" :key="camp.id" :value="camp.id">
-              {{ camp.nom }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Filtre Statut -->
-        <div class="w-full md:w-48">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Filtrer par Statut</label>
-          <select
-            v-model="filterStatut"
-            class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
-          >
-            <option value="">Tous les statuts</option>
-            <option value="EN_ATTENTE">En attente</option>
-            <option value="EN_COURS">En cours</option>
-            <option value="TERMINEE">Terminée</option>
-          </select>
-        </div>
-
-        <!-- Bouton de recherche -->
-        <button
-          @click="handleSearch"
-          class="w-full md:w-auto px-6 py-2 bg-[#CE0033] text-white rounded-lg hover:bg-[#a8002a] text-sm font-semibold transition-colors shadow-sm"
-        >
-          Rechercher
-        </button>
       </div>
 
       <!-- Erreur -->
@@ -222,9 +303,10 @@ const handleSearch = () => {
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Candidature</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidat</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campagne</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formation</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formation / Promotion</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étape Actuelle</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut Général</th>
                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -235,12 +317,23 @@ const handleSearch = () => {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 mr-3">
+                    <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 mr-3 flex-shrink-0">
                       <User class="w-4 h-4" />
                     </div>
                     <div>
                       <div class="text-sm font-medium text-gray-900">{{ cand.candidat_nom }}</div>
-                      <div class="text-xs text-gray-500">{{ cand.candidat_email }}</div>
+                      <div class="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
+                        {{ cand.candidat_email }}
+                      </div>
+                      
+                      <!-- Badge activation du compte -->
+                      <span 
+                        class="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border"
+                        :class="cand.candidat_compte_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'"
+                      >
+                        <span class="w-1 h-1 rounded-full" :class="cand.candidat_compte_active ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+                        {{ cand.candidat_compte_active ? 'Compte Activé' : 'Compte Inactif' }}
+                      </span>
                     </div>
                   </div>
                 </td>
@@ -248,18 +341,35 @@ const handleSearch = () => {
                   {{ cand.campagne_nom }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ cand.formation_nom }}
+                  <div>{{ cand.formation_nom }}</div>
+                  <div class="text-xs text-gray-400 font-medium">{{ cand.cohorte_nom || 'N/A' }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {{ new Date(cand.dateSoumission).toLocaleDateString('fr-FR') }}
                 </td>
+                
+                <!-- Colonne Étape Actuelle -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span 
+                    class="px-2.5 py-1 inline-flex text-xs font-semibold rounded-full border"
+                    :class="{
+                      'bg-red-50 text-red-700 border-red-200': ['ECHOUEE', 'ABSENT', 'ANNULEE'].includes(cand.etape_actuelle?.statut),
+                      'bg-blue-50 text-blue-700 border-blue-200': cand.etape_actuelle?.statut === 'EN_COURS',
+                      'bg-amber-50 text-amber-700 border-amber-200': cand.etape_actuelle?.statut === 'EN_ATTENTE',
+                      'bg-emerald-50 text-emerald-700 border-emerald-200': cand.etape_actuelle?.statut === 'REUSSIE'
+                    }"
+                  >
+                    {{ cand.etape_actuelle?.label || 'Dossier soumis' }}
+                  </span>
+                </td>
+
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
-                    class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                    class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border"
                     :class="{
-                      'bg-amber-100 text-amber-800': cand.statut === 'EN_ATTENTE',
-                      'bg-blue-100 text-blue-800': cand.statut === 'EN_COURS',
-                      'bg-emerald-100 text-emerald-800': cand.statut === 'TERMINEE'
+                      'bg-amber-100 text-amber-800 border-amber-200': cand.statut === 'EN_ATTENTE',
+                      'bg-blue-100 text-blue-800 border-blue-200': cand.statut === 'EN_COURS',
+                      'bg-emerald-100 text-emerald-800 border-emerald-200': cand.statut === 'TERMINEE'
                     }"
                   >
                     {{ cand.statut === 'EN_ATTENTE' ? 'En attente' : cand.statut === 'EN_COURS' ? 'En cours' : 'Terminée' }}
