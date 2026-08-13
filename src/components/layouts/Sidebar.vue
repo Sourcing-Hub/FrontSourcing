@@ -25,6 +25,10 @@ const handleLogout = () => {
   router.push('/login')
 }
 
+/**
+ * Navigation dynamique construite en fonction du rôle de l'utilisateur connecté.
+ * Rôles gérés : Candidat, Administrateur, Équipe Pédagogique, Équipe Gestion de Projet.
+ */
 const navigation = computed(() => {
   const role = authStore.user?.role
 
