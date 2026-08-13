@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useCampagnesStore } from '../stores/campagnes'
 import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
@@ -8,6 +8,15 @@ import { Plus, Play, Square, Trash2, Loader2 } from 'lucide-vue-next'
 const store = useCampagnesStore()
 const modalStore = useModalStore()
 const showModal = ref(false)
+
+// Formation sélectionnée dans le modal (filtre les cohortes)
+const selectedFormation = ref('')
+
+// Cohortes filtrées selon la formation choisie
+const filteredCohortes = computed(() => {
+  if (!selectedFormation.value) return []
+  return store.cohortes.filter(c => c.formation === selectedFormation.value || c.formation_id === selectedFormation.value)
+})
 
 const newCampagne = ref({
   nom: '',
@@ -45,17 +54,28 @@ const formatDate = (dateStr) => {
   }).format(new Date(dateStr))
 }
 
+const openModal = () => {
+  selectedFormation.value = ''
+  newCampagne.value = {
+    nom: '',
+    description: '',
+    dateOuverture: '',
+    dateCloture: '',
+    cohorte: '',
+  }
+  store.error = null
+  showModal.value = true
+}
+
+const onFormationChange = () => {
+  // Réinitialiser la cohorte si on change de formation
+  newCampagne.value.cohorte = ''
+}
+
 const handleCreate = async () => {
   const result = await store.createCampagne(newCampagne.value)
   if (result) {
     showModal.value = false
-    newCampagne.value = {
-      nom: '',
-      description: '',
-      dateOuverture: '',
-      dateCloture: '',
-      cohorte: '',
-    }
     await modalStore.showAlert("La campagne a été créée avec succès.", "Succès", "success")
   }
 }
@@ -84,7 +104,7 @@ const handleDelete = async (id) => {
     <template #header>
       <div class="flex items-center justify-between w-full">
         <h2 class="text-xl font-semibold text-gray-900">Gestion des Campagnes</h2>
-        <button @click="showModal = true" class="btn-primary">
+        <button @click="openModal" class="btn-primary">
           <Plus class="w-4 h-4 mr-2" /> Nouvelle Campagne
         </button>
       </div>
@@ -239,14 +259,29 @@ const handleDelete = async (id) => {
                   <input type="text" v-model="newCampagne.nom" required class="input-field mt-1" />
                 </div>
 
+                <!-- Sélection Formation d'abord -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Cohorte</label>
-                  <select v-model="newCampagne.cohorte" required class="input-field mt-1">
-                    <option value="" disabled>Sélectionnez une cohorte</option>
-                    <option v-for="cohorte in store.cohortes" :key="cohorte.id" :value="cohorte.id">
-                      {{ cohorte.nom }} ({{ cohorte.formation_nom }})
+                  <label class="block text-sm font-medium text-gray-700">Formation</label>
+                  <select v-model="selectedFormation" @change="onFormationChange" required class="input-field mt-1">
+                    <option value="" disabled>Sélectionnez une formation</option>
+                    <option v-for="formation in store.formations" :key="formation.id" :value="formation.id">
+                      {{ formation.nom }}
                     </option>
                   </select>
+                </div>
+
+                <!-- Cohortes filtrées selon la formation -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Cohorte</label>
+                  <select v-model="newCampagne.cohorte" required class="input-field mt-1" :disabled="!selectedFormation">
+                    <option value="" disabled>{{ selectedFormation ? 'Sélectionnez une cohorte' : 'Choisissez d\'abord une formation' }}</option>
+                    <option v-for="cohorte in filteredCohortes" :key="cohorte.id" :value="cohorte.id">
+                      {{ cohorte.nom }}
+                    </option>
+                  </select>
+                  <p v-if="selectedFormation && filteredCohortes.length === 0" class="text-xs text-amber-600 mt-1">
+                    Aucune cohorte pour cette formation. Créez-en une dans la page Formations.
+                  </p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
