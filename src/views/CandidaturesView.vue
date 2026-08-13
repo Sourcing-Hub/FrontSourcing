@@ -1,11 +1,11 @@
-<script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useCandidaturesStore } from '../stores/candidatures'
 import { useCampagnesStore } from '../stores/campagnes'
+import api from '../services/api'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
-import { ClipboardList, Search, Loader2, Eye, User } from 'lucide-vue-next'
+import { ClipboardList, Search, Loader2, Eye, User, QrCode, Download } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -15,6 +15,7 @@ const campagnesStore = useCampagnesStore()
 const search = ref('')
 const filterCampagne = ref('')
 const filterStatut = ref('')
+const qrCodeDataUrl = ref('')
 
 onMounted(async () => {
   // Load campaigns for filters (staff only)
@@ -22,7 +23,29 @@ onMounted(async () => {
     await campagnesStore.fetchCampagnes()
   }
   await fetchCandidaturesList()
+  await fetchQrCode()
 })
+
+const fetchQrCode = async () => {
+  if (authStore.user?.role === 'Candidat') {
+    try {
+      const response = await api.get(`utilisateurs/${authStore.user.id}/qr-code/`, {
+        responseType: 'blob'
+      })
+      qrCodeDataUrl.value = URL.createObjectURL(response.data)
+    } catch (err) {
+      console.error('Erreur lors du chargement du QR Code', err)
+    }
+  }
+}
+
+const downloadQrCode = () => {
+  if (!qrCodeDataUrl.value) return
+  const link = document.createElement('a')
+  link.href = qrCodeDataUrl.value
+  link.download = `qrcode_${authStore.user?.nom || 'badge'}.png`
+  link.click()
+}
 
 const fetchCandidaturesList = async () => {
   const params = {}
@@ -125,15 +148,44 @@ const handleSearch = () => {
           <p class="text-gray-500 mt-1">Aucune candidature ne correspond à vos critères pour le moment.</p>
         </div>
 
-        <!-- Mode Candidat : Vue en cartes simple -->
-        <div v-else-if="authStore.user?.role === 'Candidat'" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div
-            v-for="cand in store.candidatures"
-            :key="cand.id"
-            class="border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow relative"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-gray-900">{{ cand.numero }}</span>
+        <!-- Mode Candidat : Vue en grille avec le badge QR d'identification -->
+        <div v-else-if="authStore.user?.role === 'Candidat'" class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Carte QR Code d'identification -->
+          <div class="border border-gray-150 rounded-2xl p-6 bg-gradient-to-br from-white to-gray-50 flex flex-col items-center justify-between text-center shadow-sm h-full">
+            <div>
+              <div class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3 text-[#CE0033]">
+                <QrCode class="w-5 h-5" />
+              </div>
+              <h4 class="font-bold text-gray-900 mb-1">Badge d'identification</h4>
+              <p class="text-xs text-gray-500 max-w-xs mx-auto mb-6">Présentez ce code QR lors des épreuves de sélection pour enregistrer votre présence.</p>
+            </div>
+            
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center my-4">
+              <div v-if="!qrCodeDataUrl" class="w-32 h-32 flex items-center justify-center">
+                <Loader2 class="w-6 h-6 animate-spin text-gray-300" />
+              </div>
+              <img v-else :src="qrCodeDataUrl" alt="QR Code d'émargement" class="w-36 h-36" />
+            </div>
+
+            <button
+              @click="downloadQrCode"
+              :disabled="!qrCodeDataUrl"
+              class="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 text-sm font-semibold rounded-xl shadow-sm transition-all"
+            >
+              <Download class="w-4 h-4" />
+              Télécharger mon QR Code
+            </button>
+          </div>
+
+          <!-- Liste des candidatures -->
+          <div class="lg:col-span-2 space-y-6">
+            <div
+              v-for="cand in store.candidatures"
+              :key="cand.id"
+              class="border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow relative bg-white"
+            >
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold text-gray-900">{{ cand.numero }}</span>
               <span
                 class="px-2.5 py-1 text-xs font-semibold rounded-full"
                 :class="{
