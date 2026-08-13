@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Layout principal englobant le Sidebar et la zone de contenu principale des dashboards.
+ */
 import Sidebar from './Sidebar.vue'
 </script>
 
