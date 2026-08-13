@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
+import { parseBackendError } from '../utils/errorHandler'
 
 export const useFormulairesStore = defineStore('formulaires', {
   state: () => ({
@@ -17,7 +18,7 @@ export const useFormulairesStore = defineStore('formulaires', {
         const response = await api.get('formulaires/')
         this.formulaires = response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors du chargement des formulaires'
+        this.error = parseBackendError(err)
       } finally {
         this.loading = false
       }
@@ -31,7 +32,7 @@ export const useFormulairesStore = defineStore('formulaires', {
         this.currentFormulaire = response.data
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors du chargement du formulaire'
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -45,7 +46,7 @@ export const useFormulairesStore = defineStore('formulaires', {
         this.formulaires.unshift(response.data)
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la création'
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false

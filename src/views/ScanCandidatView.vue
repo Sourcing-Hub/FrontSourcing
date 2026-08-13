@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
 import { useModalStore } from '../stores/modal'
+import { parseBackendError } from '../utils/errorHandler'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { 
   ArrowLeft, 
@@ -76,7 +77,7 @@ const updateStatus = async (participationId, newStatus) => {
   } catch (err) {
     console.error(err)
     await modalStore.showAlert(
-      err.response?.data?.detail || "Erreur lors du changement de statut.",
+      parseBackendError(err),
       'Erreur',
       'danger'
     )
@@ -108,7 +109,7 @@ const saveMotif = async (participationId) => {
   } catch (err) {
     console.error(err)
     await modalStore.showAlert(
-      err.response?.data?.detail || "Erreur lors de l'enregistrement de la remarque.",
+      parseBackendError(err),
       "Erreur",
       "danger"
     )

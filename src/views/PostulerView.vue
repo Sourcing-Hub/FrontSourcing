@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useCandidaturesStore } from '../stores/candidatures'
 import { useModalStore } from '../stores/modal'
+import { parseBackendError } from '../utils/errorHandler'
 import api from '../services/api'
 import { ArrowLeft, Loader2, CheckCircle, ShieldAlert } from 'lucide-vue-next'
 
@@ -73,7 +74,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('Erreur lors du chargement des données de candidature', error)
     await modalStore.showAlert(
-      error.response?.data?.detail || "Impossible d'accéder à cette candidature.",
+      parseBackendError(error),
       "Erreur de chargement",
       "danger"
     )

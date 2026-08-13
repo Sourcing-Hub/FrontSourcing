@@ -1,10 +1,12 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useCampagnesStore } from '../stores/campagnes'
+import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { Plus, Edit2, Trash2, Loader2, AlertTriangle, Users } from 'lucide-vue-next'
 
 const store = useCampagnesStore()
+const modalStore = useModalStore()
 const showModal = ref(false)
 const showDeleteModal = ref(false)
 const isEditing = ref(false)
@@ -113,14 +115,22 @@ const handleCohorteSubmit = async () => {
 
   if (result) {
     prepareCreateCohorte() // Reset form
+    await modalStore.showAlert(
+      isEditingCohorte.value ? "La cohorte a été modifiée avec succès." : "La cohorte a été créée avec succès.",
+      "Succès",
+      "success"
+    )
   }
 }
 
 const handleDeleteCohorte = async () => {
   if (itemToDeleteCohorte.value) {
-    await store.deleteCohorte(itemToDeleteCohorte.value)
+    const success = await store.deleteCohorte(itemToDeleteCohorte.value)
     showDeleteCohorteModal.value = false
     itemToDeleteCohorte.value = null
+    if (success) {
+      await modalStore.showAlert("La cohorte a été supprimée avec succès.", "Succès", "success")
+    }
   }
 }
 
@@ -153,14 +163,22 @@ const handleSubmit = async () => {
 
   if (result) {
     showModal.value = false
+    await modalStore.showAlert(
+      isEditing.value ? "La formation a été modifiée avec succès." : "La formation a été créée avec succès.",
+      "Succès",
+      "success"
+    )
   }
 }
 
 const handleDelete = async () => {
   if (itemToDelete.value) {
-    await store.deleteFormation(itemToDelete.value)
+    const success = await store.deleteFormation(itemToDelete.value)
     showDeleteModal.value = false
     itemToDelete.value = null
+    if (success) {
+      await modalStore.showAlert("La formation a été supprimée avec succès.", "Succès", "success")
+    }
   }
 }
 </script>

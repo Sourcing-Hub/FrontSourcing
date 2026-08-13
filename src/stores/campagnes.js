@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
+import { parseBackendError } from '../utils/errorHandler'
 
 export const useCampagnesStore = defineStore('campagnes', {
   state: () => ({
@@ -46,17 +47,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.formations.unshift(response.data)
         return response.data
       } catch (err) {
-        if (err.response?.data?.detail) {
-          this.error = err.response.data.detail
-        } else if (err.response?.data) {
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = 'Erreur lors de la création de la formation'
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -74,17 +65,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         }
         return response.data
       } catch (err) {
-        if (err.response?.data?.detail) {
-          this.error = err.response.data.detail
-        } else if (err.response?.data) {
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = 'Erreur lors de la modification de la formation'
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -99,7 +80,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.formations = this.formations.filter((f) => f.id !== id)
         return true
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la suppression de la formation'
+        this.error = parseBackendError(err)
         return false
       } finally {
         this.loading = false
@@ -126,17 +107,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.cohortes.unshift(response.data)
         return response.data
       } catch (err) {
-        if (err.response?.data?.detail) {
-          this.error = err.response.data.detail
-        } else if (err.response?.data) {
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = 'Erreur lors de la création de la cohorte'
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -154,17 +125,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         }
         return response.data
       } catch (err) {
-        if (err.response?.data?.detail) {
-          this.error = err.response.data.detail
-        } else if (err.response?.data) {
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = 'Erreur lors de la modification de la cohorte'
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -179,7 +140,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.cohortes = this.cohortes.filter((c) => c.id !== id)
         return true
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la suppression de la cohorte'
+        this.error = parseBackendError(err)
         return false
       } finally {
         this.loading = false
@@ -194,7 +155,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.campagnes.unshift(response.data)
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la création de la campagne'
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -208,7 +169,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         await this.fetchCampagnes() // Rafraîchir la liste complète
         return true
       } catch (err) {
-        this.error = err.response?.data?.detail || `Erreur lors de l'action ${action}`
+        this.error = parseBackendError(err)
         return false
       }
     },
@@ -221,7 +182,7 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.campagnes = this.campagnes.filter((c) => c.id !== id)
         return true
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la suppression de la campagne'
+        this.error = parseBackendError(err)
         return false
       } finally {
         this.loading = false
