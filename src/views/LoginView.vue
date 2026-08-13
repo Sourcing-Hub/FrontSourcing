@@ -94,7 +94,7 @@ const handleResetPassword = async () => {
         <!-- En-tête / Logo -->
         <div class="flex flex-col items-center text-center">
           <img
-            src="/images/logo.png"
+            src="/images/logo1.png"
             alt="Sourcing Connect Logo"
             class="h-14 w-auto mb-3"
             onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';"
