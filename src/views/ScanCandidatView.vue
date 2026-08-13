@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
+import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { 
   ArrowLeft, 
@@ -20,6 +21,7 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+const modalStore = useModalStore()
 
 const candidateId = route.params.candidateId
 const loading = ref(true)
@@ -73,7 +75,11 @@ const updateStatus = async (participationId, newStatus) => {
     }
   } catch (err) {
     console.error(err)
-    alert(err.response?.data?.detail || "Erreur lors du changement de statut.")
+    await modalStore.showAlert(
+      err.response?.data?.detail || "Erreur lors du changement de statut.",
+      'Erreur',
+      'danger'
+    )
   } finally {
     updatingId.value = null
   }
@@ -94,10 +100,18 @@ const saveMotif = async (participationId) => {
     if (index !== -1) {
       participations.value[index] = response.data
     }
-    alert("Remarque enregistrée avec succès.")
+    await modalStore.showAlert(
+      "Remarque enregistrée avec succès.",
+      "Enregistrement réussi",
+      "success"
+    )
   } catch (err) {
     console.error(err)
-    alert(err.response?.data?.detail || "Erreur lors de l'enregistrement de la remarque.")
+    await modalStore.showAlert(
+      err.response?.data?.detail || "Erreur lors de l'enregistrement de la remarque.",
+      "Erreur",
+      "danger"
+    )
   } finally {
     updatingId.value = null
   }

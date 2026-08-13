@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useUtilisateursStore } from '../stores/utilisateurs'
 import { useAuthStore } from '../stores/auth'
+import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { 
   Plus, 
@@ -19,6 +20,7 @@ import {
 
 const store = useUtilisateursStore()
 const authStore = useAuthStore()
+const modalStore = useModalStore()
 
 const currentTab = ref('TOUS') // TOUS, PEDAGOGIE, GESTION
 const showInviteModal = ref(false)
@@ -53,7 +55,11 @@ const submitInvite = async () => {
   const result = await store.createPersonnel(inviteForm.value)
   if (result) {
     showInviteModal.value = false
-    alert(result.detail || `Invitation envoyée avec succès à ${result.email}`)
+    await modalStore.showAlert(
+      result.detail || `Invitation envoyée avec succès à ${result.email}`,
+      'Invitation envoyée',
+      'success'
+    )
   }
 }
 
@@ -62,14 +68,25 @@ const handleBlockToggle = async (user) => {
   const confirmMsg = user.is_active 
     ? `Voulez-vous vraiment bloquer le compte de ${user.prenom} ${user.nom} ? L'utilisateur ne pourra plus se connecter.` 
     : `Voulez-vous réactiver le compte de ${user.prenom} ${user.nom} ?`
-  if (confirm(confirmMsg)) {
+  
+  const confirmed = await modalStore.showConfirm(
+    confirmMsg,
+    user.is_active ? 'Bloquer un utilisateur' : 'Débloquer un utilisateur',
+    { variant: user.is_active ? 'warning' : 'success' }
+  )
+  if (confirmed) {
     await store.toggleBlockUser(user.id, blockAction)
   }
 }
 
 const handleDeleteUser = async (user) => {
   const confirmMsg = `Voulez-vous vraiment supprimer définitivement le compte de ${user.prenom} ${user.nom} ? Cette action est irréversible et effacera toutes ses données.`
-  if (confirm(confirmMsg)) {
+  const confirmed = await modalStore.showConfirm(
+    confirmMsg,
+    'Supprimer un utilisateur',
+    { confirmText: 'Supprimer', variant: 'danger' }
+  )
+  if (confirmed) {
     await store.deleteUser(user.id)
   }
 }

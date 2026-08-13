@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useCandidaturesStore } from '../stores/candidatures'
+import { useModalStore } from '../stores/modal'
 import api from '../services/api'
 import { ArrowLeft, Loader2, CheckCircle, ShieldAlert } from 'lucide-vue-next'
 
@@ -10,6 +11,7 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const store = useCandidaturesStore()
+const modalStore = useModalStore()
 
 const campagneId = route.params.campagneId
 const campaignDetails = ref(null)
@@ -70,7 +72,11 @@ onMounted(async () => {
     })
   } catch (error) {
     console.error('Erreur lors du chargement des données de candidature', error)
-    alert(error.response?.data?.detail || "Impossible d'accéder à cette candidature.")
+    await modalStore.showAlert(
+      error.response?.data?.detail || "Impossible d'accéder à cette candidature.",
+      "Erreur de chargement",
+      "danger"
+    )
     router.push('/postuler')
   } finally {
     loading.value = false
