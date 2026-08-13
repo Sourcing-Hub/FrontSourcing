@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { parseBackendError } from '../utils/errorHandler'
 
+/**
+ * Store Pinia gérant le statut d'authentification, le profil utilisateur et les jetons JWT.
+ */
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('sourcing_token') || null,
