@@ -15,7 +15,7 @@ import Sidebar from './Sidebar.vue'
       <header
         class="bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-xs h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20"
       >
-        <div class="flex items-center gap-4 min-w-0">
+        <div class="flex items-center justify-between w-full min-w-0">
           <slot name="header">
             <h2 class="text-lg font-semibold text-gray-900 truncate">Bienvenue</h2>
           </slot>
