@@ -44,9 +44,9 @@ const handleLogin = async () => {
       </div>
     </div>
 
-    <!-- Section Formulaire (Droite) -->
+<!-- Section Formulaire (Droite) -->
     <div
-      class="flex-1 flex items-center justify-center bg-[#00313C] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      class="flex-1 flex items-center justify-center bg-[#00313C] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
       <!-- Décoration d'arrière-plan -->
       <div
