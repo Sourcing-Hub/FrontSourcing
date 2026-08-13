@@ -46,7 +46,17 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.formations.unshift(response.data)
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la création de la formation'
+        if (err.response?.data?.detail) {
+          this.error = err.response.data.detail
+        } else if (err.response?.data) {
+          const messages = []
+          for (const key in err.response.data) {
+            messages.push(`${key}: ${err.response.data[key]}`)
+          }
+          this.error = messages.join(' | ')
+        } else {
+          this.error = 'Erreur lors de la création de la formation'
+        }
         return null
       } finally {
         this.loading = false
@@ -64,7 +74,17 @@ export const useCampagnesStore = defineStore('campagnes', {
         }
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la modification de la formation'
+        if (err.response?.data?.detail) {
+          this.error = err.response.data.detail
+        } else if (err.response?.data) {
+          const messages = []
+          for (const key in err.response.data) {
+            messages.push(`${key}: ${err.response.data[key]}`)
+          }
+          this.error = messages.join(' | ')
+        } else {
+          this.error = 'Erreur lors de la modification de la formation'
+        }
         return null
       } finally {
         this.loading = false
@@ -106,7 +126,17 @@ export const useCampagnesStore = defineStore('campagnes', {
         this.cohortes.unshift(response.data)
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la création de la cohorte'
+        if (err.response?.data?.detail) {
+          this.error = err.response.data.detail
+        } else if (err.response?.data) {
+          const messages = []
+          for (const key in err.response.data) {
+            messages.push(`${key}: ${err.response.data[key]}`)
+          }
+          this.error = messages.join(' | ')
+        } else {
+          this.error = 'Erreur lors de la création de la cohorte'
+        }
         return null
       } finally {
         this.loading = false
@@ -124,7 +154,17 @@ export const useCampagnesStore = defineStore('campagnes', {
         }
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la modification de la cohorte'
+        if (err.response?.data?.detail) {
+          this.error = err.response.data.detail
+        } else if (err.response?.data) {
+          const messages = []
+          for (const key in err.response.data) {
+            messages.push(`${key}: ${err.response.data[key]}`)
+          }
+          this.error = messages.join(' | ')
+        } else {
+          this.error = 'Erreur lors de la modification de la cohorte'
+        }
         return null
       } finally {
         this.loading = false
