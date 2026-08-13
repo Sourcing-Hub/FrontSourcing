@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { CheckCircle, ShieldAlert, Loader2 } from 'lucide-vue-next'
@@ -13,6 +13,14 @@ const password = ref('')
 const confirmPassword = ref('')
 const isSuccess = ref(false)
 
+onMounted(() => {
+  // Sécurité: Si quelqu'un est déjà connecté (ex: un admin), on le déconnecte
+  // pour éviter d'être redirigé vers le mauvais dashboard après l'activation.
+  if (authStore.isAuthenticated) {
+    authStore.logout()
+  }
+})
+
 const activate = async () => {
   if (password.value !== confirmPassword.value) {
     authStore.error = "Les mots de passe ne correspondent pas."
@@ -20,7 +28,17 @@ const activate = async () => {
   }
   
   const result = await authStore.activateAccount(token, password.value, confirmPassword.value)
-  if (result) {
+  if (result && result.email) {
+    // Connexion automatique pour fluidifier l'expérience
+    const loginSuccess = await authStore.login(result.email, password.value)
+    if (loginSuccess) {
+      // Le guard de route dans router/index.js forcera la redirection vers /profil
+      // car le profil de ce nouvel utilisateur n'est pas encore complet.
+      router.push('/')
+    } else {
+      isSuccess.value = true
+    }
+  } else if (result) {
     isSuccess.value = true
   }
 }
