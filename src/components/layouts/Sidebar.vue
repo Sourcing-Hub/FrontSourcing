@@ -8,7 +8,10 @@ import {
   BookOpen, 
   FileText,
   Calendar,
-  ClipboardList
+  ClipboardList,
+  User,
+  QrCode,
+  Layers
 } from 'lucide-vue-next'
 
 import { computed } from 'vue'
@@ -23,25 +26,52 @@ const handleLogout = () => {
 }
 
 const navigation = computed(() => {
-  if (authStore.user?.role === 'Candidat') {
+  const role = authStore.user?.role
+
+  // ── Candidat ──────────────────────────────────────────────
+  if (role === 'Candidat') {
     return [
-      { name: 'Mes Candidatures', href: '/candidatures', icon: ClipboardList }
+      { name: 'Mes Candidatures', href: '/candidatures', icon: ClipboardList },
     ]
   }
+
+  // ── Administrateur ─────────────────────────────────────────
+  if (role === 'Administrateur') {
+    return [
+      { name: 'Tableau de bord',  href: '/',             icon: LineChart },
+      { name: 'Formations',       href: '/formations',   icon: BookOpen },
+      { name: 'Campagnes',        href: '/campagnes',    icon: Calendar },
+      { name: 'Formulaires',      href: '/formulaires',  icon: FileText },
+      { name: 'Candidatures',     href: '/candidatures', icon: ClipboardList },
+      { name: 'Utilisateurs',     href: '/utilisateurs', icon: Users },
+    ]
+  }
+
+  // ── Équipe Pédagogique ─────────────────────────────────────
+  if (role === 'Équipe Pédagogique') {
+    return [
+      { name: 'Tableau de bord',  href: '/',             icon: LineChart },
+      { name: 'Formations',       href: '/formations',   icon: BookOpen },
+      { name: 'Campagnes',        href: '/campagnes',    icon: Calendar },
+      { name: 'Formulaires',      href: '/formulaires',  icon: FileText },
+      { name: 'Candidatures',     href: '/candidatures', icon: ClipboardList },
+    ]
+  }
+
+  // ── Équipe Gestion de Projet ───────────────────────────────
+  if (role === 'Équipe Gestion de Projet') {
+    return [
+      { name: 'Tableau de bord',  href: '/',             icon: LineChart },
+      { name: 'Formations',       href: '/formations',   icon: BookOpen },
+      { name: 'Campagnes',        href: '/campagnes',    icon: Calendar },
+      { name: 'Formulaires',      href: '/formulaires',  icon: FileText },
+      { name: 'Candidatures',     href: '/candidatures', icon: ClipboardList },
+    ]
+  }
+
+  // Fallback
   return [
-    { name: 'Vue globale', href: '/', icon: LineChart },
-    { name: 'Campagnes', href: '/campagnes', icon: Calendar },
-    { name: 'Formulaires', href: '/formulaires', icon: ClipboardList },
-    { name: 'Candidats', href: '/candidats', icon: Users },
-    { name: 'Gestion des tests', href: '/tests', icon: Users },
-    { name: 'Formations', href: '/formations', icon: BookOpen },
-    { name: 'Entretiens', href: '/entretiens', icon: BookOpen },
-    { name: 'Candidatures', href: '/candidatures', icon: BookOpen },
-    { name: 'Rapports', href: '/rapports', icon: FileText },
-    { name: 'Questionnaires', href: '/questionnaires', icon: FileText },
-    { name: 'Plannification', href: '/plannification', icon: FileText },
-    { name: 'Convocations', href: '/convocations', icon: FileText },
-    { name: 'Evaluateurs', href: '/evaluateurs', icon: FileText },
+    { name: 'Tableau de bord', href: '/', icon: LineChart },
   ]
 })
 </script>
@@ -84,24 +114,6 @@ const navigation = computed(() => {
         {{ item.name }}
       </RouterLink>
 
-      <!-- Liens spécifiques Administrateur -->
-      <div v-if="authStore.isAdmin" class="mt-6 pt-6 border-t border-white/10">
-        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-          Administration
-        </h3>
-        <RouterLink
-          to="/utilisateurs"
-          class="flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-200"
-          :class="[
-            route.path === '/utilisateurs'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-300 hover:bg-white/10 hover:text-white',
-          ]"
-        >
-          <Users class="mr-4 h-5 w-5 flex-shrink-0" />
-          Utilisateurs
-        </RouterLink>
-      </div>
     </nav>
 
     <div class="p-4 border-t border-white/10 bg-[#00313C]">
