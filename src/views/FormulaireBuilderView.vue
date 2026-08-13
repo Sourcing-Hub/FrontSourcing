@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFormulairesStore } from '../stores/formulaires'
+import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 import {
@@ -27,6 +28,7 @@ import {
 const route = useRoute()
 const router = useRouter()
 const store = useFormulairesStore()
+const modalStore = useModalStore()
 const formulaireId = route.params.id
 
 const activeField = ref(null)
@@ -73,7 +75,12 @@ const addField = async (type) => {
 }
 
 const deleteField = async (champId) => {
-  if (confirm('Êtes-vous sûr de vouloir supprimer ce champ ?')) {
+  const confirmed = await modalStore.showConfirm(
+    'Êtes-vous sûr de vouloir supprimer ce champ ?',
+    'Supprimer la question',
+    { confirmText: 'Supprimer', variant: 'danger' }
+  )
+  if (confirmed) {
     await store.deleteChamp(champId)
     if (activeField.value?.id === champId) activeField.value = null
   }

@@ -1,10 +1,12 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useCampagnesStore } from '../stores/campagnes'
+import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { Plus, Play, Square, Trash2, Loader2 } from 'lucide-vue-next'
 
 const store = useCampagnesStore()
+const modalStore = useModalStore()
 const showModal = ref(false)
 
 const newCampagne = ref({
@@ -62,7 +64,12 @@ const handleAction = async (id, action) => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm("Voulez-vous vraiment supprimer cette campagne définitivement ?")) {
+  const confirmed = await modalStore.showConfirm(
+    "Voulez-vous vraiment supprimer cette campagne définitivement ?",
+    "Supprimer la campagne",
+    { confirmText: 'Supprimer', variant: 'danger' }
+  )
+  if (confirmed) {
     await store.deleteCampagne(id)
   }
 }

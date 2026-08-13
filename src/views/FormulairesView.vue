@@ -2,10 +2,12 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFormulairesStore } from '../stores/formulaires'
+import { useModalStore } from '../stores/modal'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { Plus, FileText, Loader2, Trash2 } from 'lucide-vue-next'
 
 const store = useFormulairesStore()
+const modalStore = useModalStore()
 const router = useRouter()
 
 onMounted(async () => {
@@ -21,15 +23,28 @@ const createNewForm = async () => {
     if (newForm) {
       router.push(`/formulaires/${newForm.id}/edit`)
     } else {
-      alert("Erreur lors de la création : " + (store.error || "Erreur inconnue"))
+      await modalStore.showAlert(
+        "Erreur lors de la création : " + (store.error || "Erreur inconnue"),
+        "Erreur de création",
+        "danger"
+      )
     }
   } catch (err) {
-    alert("Exception interceptée : " + err.message)
+    await modalStore.showAlert(
+      "Exception interceptée : " + err.message,
+      "Erreur technique",
+      "danger"
+    )
   }
 }
 
 const deleteForm = async (id) => {
-  if (confirm('Voulez-vous vraiment supprimer ce formulaire ?')) {
+  const confirmed = await modalStore.showConfirm(
+    'Voulez-vous vraiment supprimer ce formulaire ?',
+    'Supprimer le formulaire',
+    { confirmText: 'Supprimer', variant: 'danger' }
+  )
+  if (confirmed) {
     await store.deleteFormulaire(id)
   }
 }
