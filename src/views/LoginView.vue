@@ -95,28 +95,6 @@ const handleResetPassword = async () => {
           <p class="text-xs text-gray-400 font-medium mt-1">Simplon Sourcing Connect</p>
         </div>
 
-        <!-- Séparateur "OU CONTINUER AVEC" -->
-        <div class="relative my-4">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-200/80"></div>
-          </div>
-          <div class="relative flex justify-center text-xs uppercase">
-            <span class="bg-white px-3 text-gray-400 font-semibold tracking-wider text-[11px]">
-              ou continuer avec
-            </span>
-          </div>
-        </div>
-
-        <!-- Bouton : Recevoir un lien de connexion par email -->
-        <button
-          type="button"
-          @click="openResetModal()"
-          class="w-full py-3 px-4 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs"
-        >
-          <Wand2 class="w-4 h-4 text-gray-600" />
-          <span>Recevoir un lien de connexion par email</span>
-        </button>
-
         <!-- Formulaire de Connexion -->
         <form @submit.prevent="handleLogin" class="space-y-4 pt-1">
           
@@ -199,6 +177,28 @@ const handleResetPassword = async () => {
             <Loader2 class="w-4 h-4 animate-spin text-gray-600" />
             <span>Traitement en cours...</span>
           </div>
+
+          <!-- Séparateur "OU CONTINUER AVEC" (placé en dessous de Se connecter) -->
+          <div class="relative my-5">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200/80"></div>
+            </div>
+            <div class="relative flex justify-center text-xs uppercase">
+              <span class="bg-white px-3 text-gray-400 font-semibold tracking-wider text-[11px]">
+                ou continuer avec
+              </span>
+            </div>
+          </div>
+
+          <!-- Bouton : Recevoir un lien de connexion par email -->
+          <button
+            type="button"
+            @click="openResetModal()"
+            class="w-full py-3 px-4 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs"
+          >
+            <Mail class="w-4 h-4 text-gray-600" />
+            <span>Recevoir un lien de connexion par email</span>
+          </button>
 
           <!-- Lien candidat -->
           <div class="text-center pt-3 border-t border-gray-100">
