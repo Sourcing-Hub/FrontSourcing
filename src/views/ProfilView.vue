@@ -1,5 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+/**
+ * Vue de consultation et mise à jour du profil utilisateur (nom, prénom, téléphone, sexe).
+ */
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
