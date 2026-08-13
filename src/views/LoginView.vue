@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../services/api'
-import { Mail, Lock, Loader2, Wand2, CheckCircle2, AlertCircle, X } from 'lucide-vue-next'
+import { Mail, Lock, Loader2, Wand2, CheckCircle2, AlertCircle, X, Eye, EyeOff } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -14,6 +14,7 @@ const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)
+const showPassword = ref(false)
 
 // Modal "Mot de passe oublié / Lien par email"
 const showResetModal = ref(false)
@@ -131,13 +132,22 @@ const handleResetPassword = async () => {
               <Lock class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 id="password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 v-model="password"
                 required
                 placeholder="••••••••"
-                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033] transition-all"
+                class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033] transition-all"
                 :class="{ 'border-[#CE0033] ring-2 ring-[#CE0033]/10': authStore.error }"
               />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 transition-colors"
+                :title="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+              >
+                <EyeOff v-if="showPassword" class="w-4 h-4" />
+                <Eye v-else class="w-4 h-4" />
+              </button>
             </div>
 
             <!-- Message d'erreur rouge directement sous le mot de passe -->
