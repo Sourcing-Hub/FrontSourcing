@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue de gestion des campagnes de recrutement, associations de cohortes et états.
+ */
 import { onMounted, ref, computed } from 'vue'
 import { useCampagnesStore } from '../stores/campagnes'
 import { useModalStore } from '../stores/modal'
