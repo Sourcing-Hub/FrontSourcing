@@ -98,6 +98,9 @@ const router = createRouter({
   ],
 })
 
+/**
+ * Garde de navigation globale : contrôle l'authentification et force la complétion du profil.
+ */
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
