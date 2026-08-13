@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Page de connexion (Login) permettant l'authentification des utilisateurs par email et mot de passe.
+ */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
