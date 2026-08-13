@@ -102,6 +102,24 @@ export const useAuthStore = defineStore('auth', {
       } finally {
         this.loading = false
       }
+    },
+
+    async changePassword(ancienMotDePasse, nouveauMotDePasse, confirmation) {
+      this.loading = true
+      this.error = null
+      try {
+        await api.put('utilisateurs/changer-mdp/', {
+          ancien_mot_de_passe: ancienMotDePasse,
+          nouveau_mot_de_passe: nouveauMotDePasse,
+          confirmation: confirmation,
+        })
+        return true
+      } catch (err) {
+        this.error = parseBackendError(err)
+        return false
+      } finally {
+        this.loading = false
+      }
     }
   },
 })
