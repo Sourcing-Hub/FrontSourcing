@@ -56,8 +56,13 @@ const champs = computed(() => store.currentFormulaire?.champs || [])
           <h1 class="text-3xl font-normal text-gray-900 mb-4">{{ formulaire.titre }}</h1>
           <p class="text-sm text-gray-600 whitespace-pre-wrap">{{ formulaire.description }}</p>
           
+          <!-- Message d'information si la campagne est en brouillon (en attente) -->
+          <div v-if="formulaire.campagne && formulaire.campagne_statut === 'BROUILLON'" class="mt-6 p-4 bg-amber-50 border-l-4 border-amber-500 rounded text-sm text-amber-700">
+            <span class="font-bold">Campagne en attente :</span> Ce formulaire appartient à la campagne <strong>"{{ formulaire.campagne_nom }}"</strong> qui est actuellement en brouillon (en attente). Il n'est pas encore possible d'envoyer des réponses.
+          </div>
+          
           <!-- Message d'information si la campagne est fermée -->
-          <div v-if="formulaire.campagne && !formulaire.campagne_est_ouverte" class="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded text-sm text-red-700">
+          <div v-else-if="formulaire.campagne && (formulaire.campagne_statut === 'FERMEE' || (!formulaire.campagne_est_ouverte && !formulaire.campagne_statut))" class="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded text-sm text-red-700">
             <span class="font-bold">Campagne clôturée :</span> Ce formulaire appartient à la campagne <strong>"{{ formulaire.campagne_nom }}"</strong> qui est actuellement fermée. Il n'est plus possible d'envoyer des réponses.
           </div>
           
