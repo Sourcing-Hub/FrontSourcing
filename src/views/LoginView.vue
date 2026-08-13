@@ -1,12 +1,13 @@
 <script setup>
 /**
- * Page de connexion (Login) réimaginée selon la maquette exacte de l'utilisateur.
+ * Page de connexion (Login) combinant l'arrière-plan esthétique (split image + blobs #00313C)
+ * et les fonctionnalités complètes du formulaire.
  */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../services/api'
-import { Mail, Lock, Loader2, Wand2, CheckCircle2, AlertCircle, X, Eye, EyeOff } from 'lucide-vue-next'
+import { Mail, Lock, Loader2, CheckCircle2, AlertCircle, X, Eye, EyeOff } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -57,7 +58,7 @@ const handleResetPassword = async () => {
 
 <template>
   <div class="min-h-screen flex flex-col lg:flex-row">
-    <!-- Section Image (Gauche) -->
+    <!-- Section Image & Dégradé (Gauche) -->
     <div class="hidden lg:flex lg:w-1/2 relative bg-gray-900 overflow-hidden">
       <img
         src="/images/login-bg.png"
@@ -65,20 +66,30 @@ const handleResetPassword = async () => {
         class="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-1000 hover:scale-105"
         onerror="this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80';"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-      <div class="absolute bottom-12 left-12 right-12 text-white z-10 animate-slide-up">
-        <h2 class="text-4xl font-bold mb-4">Rejoignez Sourcing Connect</h2>
-        <p class="text-lg text-gray-200">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+      
+      <div class="absolute bottom-12 left-12 right-12 text-white z-10">
+        <h2 class="text-4xl font-bold mb-4 tracking-tight">Rejoignez Sourcing Connect</h2>
+        <p class="text-lg text-gray-200 leading-relaxed">
           Trouvez les meilleurs talents ou la meilleure formation avec notre plateforme intégrée de sourcing.
         </p>
       </div>
     </div>
 
-    <!-- Section Formulaire (Droite) -->
+    <!-- Section Formulaire avec fond sombre #00313C et Blobs animés (Droite) -->
     <div
-      class="flex-1 flex items-center justify-center bg-gray-50/60 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      class="flex-1 flex items-center justify-center bg-[#00313C] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
-      <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 space-y-6 relative z-10">
+      <!-- Blobs animés en arrière-plan -->
+      <div
+        class="absolute -top-40 -right-40 w-96 h-96 bg-[#CE0033]/20 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-2000"
+      ></div>
+
+      <!-- Carte du formulaire -->
+      <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-10 space-y-6 relative z-10">
         
         <!-- En-tête / Logo -->
         <div class="flex flex-col items-center text-center">
@@ -115,7 +126,7 @@ const handleResetPassword = async () => {
             </div>
           </div>
 
-          <!-- Champ Mot de passe avec lien aligné à droite -->
+          <!-- Champ Mot de passe avec lien aligné à droite et icône œil -->
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
               <label for="password" class="block text-xs font-bold text-gray-700">Mot de passe</label>
@@ -188,7 +199,7 @@ const handleResetPassword = async () => {
             <span>Traitement en cours...</span>
           </div>
 
-          <!-- Séparateur "OU CONTINUER AVEC" (placé en dessous de Se connecter) -->
+          <!-- Séparateur "OU CONTINUER AVEC" -->
           <div class="relative my-5">
             <div class="absolute inset-0 flex items-center">
               <div class="w-full border-t border-gray-200/80"></div>
@@ -301,3 +312,18 @@ const handleResetPassword = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.08); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+.animate-blob {
+  animation: blob 8s infinite ease-in-out;
+}
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+</style>
