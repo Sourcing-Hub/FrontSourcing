@@ -1,22 +1,55 @@
 <script setup>
 /**
- * Page de connexion (Login) permettant l'authentification des utilisateurs par email et mot de passe.
+ * Page de connexion (Login) réimaginée selon la maquette exacte de l'utilisateur.
  */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { LogIn, Mail, Lock, Loader2 } from 'lucide-vue-next'
+import api from '../services/api'
+import { Mail, Lock, Loader2, Wand2, CheckCircle2, AlertCircle, X } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
+const rememberMe = ref(false)
+
+// Modal "Mot de passe oublié / Lien par email"
+const showResetModal = ref(false)
+const resetEmail = ref('')
+const resetLoading = ref(false)
+const resetSuccess = ref(false)
+const resetError = ref('')
 
 const handleLogin = async () => {
   const success = await authStore.login(email.value, password.value)
   if (success) {
     router.push('/')
+  }
+}
+
+const openResetModal = () => {
+  resetEmail.value = email.value
+  resetError.value = ''
+  resetSuccess.value = false
+  showResetModal.value = true
+}
+
+const handleResetPassword = async () => {
+  if (!resetEmail.value) {
+    resetError.value = "Veuillez saisir votre adresse e-mail."
+    return
+  }
+  resetLoading.value = true
+  resetError.value = ''
+  try {
+    await api.post('auth/reinit-mdp/', { email: resetEmail.value })
+    resetSuccess.value = true
+  } catch (err) {
+    resetError.value = err.response?.data?.detail || "Une erreur est survenue lors de l'envoi de l'e-mail."
+  } finally {
+    resetLoading.value = false
   }
 }
 </script>
@@ -25,17 +58,13 @@ const handleLogin = async () => {
   <div class="min-h-screen flex flex-col lg:flex-row">
     <!-- Section Image (Gauche) -->
     <div class="hidden lg:flex lg:w-1/2 relative bg-gray-900 overflow-hidden">
-      
       <img
         src="/images/login-bg.png"
         alt="Sourcing Connect Team"
         class="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-1000 hover:scale-105"
         onerror="this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80';"
       />
-      
-      <!-- Overlay de dégradé pour la lisibilité du texte -->
       <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-      
       <div class="absolute bottom-12 left-12 right-12 text-white z-10 animate-slide-up">
         <h2 class="text-4xl font-bold mb-4">Rejoignez Sourcing Connect</h2>
         <p class="text-lg text-gray-200">
@@ -44,135 +73,138 @@ const handleLogin = async () => {
       </div>
     </div>
 
-<!-- Section Formulaire (Droite) -->
+    <!-- Section Formulaire (Droite) -->
     <div
-      class="flex-1 flex items-center justify-center bg-[#00313C] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      class="flex-1 flex items-center justify-center bg-gray-50/60 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
-      <!-- Décoration d'arrière-plan -->
-      <div
-        class="absolute -top-40 -right-40 w-96 h-96 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"
-      ></div>
-
-      <div class="max-w-md w-full space-y-8 glass-panel p-10 relative z-10 animate-fade-in">
-        <div class="flex flex-col items-center">
-          <!-- Logo de l'entreprise -->
+      <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 space-y-6 relative z-10">
+        
+        <!-- En-tête / Logo -->
+        <div class="flex flex-col items-center text-center">
           <img
             src="/images/logo.png"
             alt="Sourcing Connect Logo"
-            class="h-16 w-auto mb-4"
+            class="h-14 w-auto mb-3"
             onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';"
           />
-          <!-- Titre de secours si le logo ne charge pas -->
-          <h2 id="fallback-title" class="hidden text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-            Sourcing<span class="text-primary-600">Connect</span>
+          <h2 id="fallback-title" class="hidden text-center text-2xl font-extrabold text-[#002B35] tracking-tight">
+            Sourcing<span class="text-[#CE0033]">Connect</span>
           </h2>
           
-          <p class="mt-2 text-center text-sm text-gray-600">
-            Connectez-vous à votre espace personnel
-          </p>
+          <h3 class="text-2xl font-extrabold text-[#002B35] tracking-tight mt-1">Connexion à votre espace</h3>
+          <p class="text-xs text-gray-400 font-medium mt-1">Simplon Sourcing Connect</p>
         </div>
 
-        <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-          <!-- Message d'erreur -->
-          <div v-if="authStore.error" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm text-red-700">{{ authStore.error }}</p>
-              </div>
-            </div>
+        <!-- Séparateur "OU CONTINUER AVEC" -->
+        <div class="relative my-4">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200/80"></div>
           </div>
+          <div class="relative flex justify-center text-xs uppercase">
+            <span class="bg-white px-3 text-gray-400 font-semibold tracking-wider text-[11px]">
+              ou continuer avec
+            </span>
+          </div>
+        </div>
 
-          <div class="rounded-md space-y-4 shadow-sm">
+        <!-- Bouton : Recevoir un lien de connexion par email -->
+        <button
+          type="button"
+          @click="openResetModal()"
+          class="w-full py-3 px-4 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs"
+        >
+          <Wand2 class="w-4 h-4 text-gray-600" />
+          <span>Recevoir un lien de connexion par email</span>
+        </button>
+
+        <!-- Formulaire de Connexion -->
+        <form @submit.prevent="handleLogin" class="space-y-4 pt-1">
+          
+          <!-- Champ Email -->
+          <div class="space-y-1.5">
+            <label for="email" class="block text-xs font-bold text-gray-700">Email</label>
             <div class="relative">
-              <label for="email-address" class="sr-only">Adresse email</label>
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail class="h-5 w-5 text-gray-400" />
-              </div>
+              <Mail class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
-                id="email-address"
-                name="email"
+                id="email"
                 type="email"
-                autocomplete="email"
-                required
                 v-model="email"
-                class="input-field pl-10"
-                placeholder="Adresse email"
-              />
-            </div>
-            <div class="relative">
-              <label for="password" class="sr-only">Mot de passe</label>
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock class="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
                 required
-                v-model="password"
-                class="input-field pl-10"
-                placeholder="Mot de passe"
+                placeholder="nom@gmail.com"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033] transition-all placeholder:text-gray-400"
               />
             </div>
           </div>
 
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-              />
-              <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                Se souvenir de moi
-              </label>
-            </div>
-
-            <div class="text-sm">
-              <a
-                href="#"
-                class="font-medium text-primary-600 hover:text-primary-500 transition-colors"
+          <!-- Champ Mot de passe avec lien aligné à droite -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="password" class="block text-xs font-bold text-gray-700">Mot de passe</label>
+              <button
+                type="button"
+                @click="openResetModal()"
+                class="text-xs font-semibold text-gray-500 hover:text-[#CE0033] transition-colors"
               >
                 Mot de passe oublié ?
-              </a>
+              </button>
             </div>
+
+            <div class="relative">
+              <Lock class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                id="password"
+                type="password"
+                v-model="password"
+                required
+                placeholder="••••••••"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033] transition-all"
+                :class="{ 'border-[#CE0033] ring-2 ring-[#CE0033]/10': authStore.error }"
+              />
+            </div>
+
+            <!-- Message d'erreur rouge directement sous le mot de passe -->
+            <p v-if="authStore.error" class="text-xs text-[#CE0033] font-semibold pt-0.5">
+              {{ authStore.error.toLowerCase().includes('identifiant') || authStore.error.toLowerCase().includes('invalide') ? 'mot de passe incorrect' : authStore.error }}
+            </p>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              :disabled="authStore.loading"
-              class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 overflow-hidden shadow-lg hover:shadow-primary-500/30"
-            >
-              <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                <Loader2 v-if="authStore.loading" class="h-5 w-5 text-primary-300 animate-spin" />
-                <LogIn
-                  v-else
-                  class="h-5 w-5 text-primary-300 group-hover:text-primary-200 transition-colors"
-                />
-              </span>
-              {{ authStore.loading ? 'Connexion en cours...' : 'Se connecter' }}
-            </button>
+          <!-- Case Se souvenir de moi -->
+          <div class="flex items-center pt-1">
+            <input
+              id="remember-me"
+              type="checkbox"
+              v-model="rememberMe"
+              class="h-4 w-4 text-[#002B35] focus:ring-[#002B35] border-gray-300 rounded"
+            />
+            <label for="remember-me" class="ml-2.5 block text-xs font-semibold text-gray-600">
+              Se souvenir de moi
+            </label>
           </div>
 
-          <div class="text-center pt-2">
+          <!-- Bouton Se connecter -->
+          <button
+            type="submit"
+            :disabled="authStore.loading"
+            class="w-full py-3.5 px-4 bg-[#002B35] hover:bg-[#001D24] text-white text-sm font-extrabold rounded-xl shadow-xs transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            <Loader2 v-if="authStore.loading" class="w-4 h-4 animate-spin" />
+            <span>Se connecter</span>
+          </button>
+
+          <!-- État "Traitement en cours..." lorsque la connexion est en cours -->
+          <div
+            v-if="authStore.loading"
+            class="w-full py-3 px-4 bg-gray-200/80 text-gray-600 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 animate-pulse"
+          >
+            <Loader2 class="w-4 h-4 animate-spin text-gray-600" />
+            <span>Traitement en cours...</span>
+          </div>
+
+          <!-- Lien candidat -->
+          <div class="text-center pt-3 border-t border-gray-100">
             <router-link
               to="/postuler"
-              class="font-semibold text-primary-400 hover:text-primary-300 transition-colors text-sm"
+              class="text-xs font-bold text-[#CE0033] hover:text-[#a8002a] transition-colors"
             >
               Vous souhaitez postuler ? Découvrir nos campagnes
             </router-link>
@@ -180,29 +212,82 @@ const handleLogin = async () => {
         </form>
       </div>
     </div>
+
+    <!-- Modal Réinitialisation / Lien Email -->
+    <div
+      v-if="showResetModal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs transition-opacity"
+    >
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-gray-100 relative">
+        <button
+          @click="showResetModal = false"
+          class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 p-1"
+        >
+          <X class="w-5 h-5" />
+        </button>
+
+        <div class="text-center space-y-2">
+          <div class="w-12 h-12 bg-red-50 text-[#CE0033] rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <Mail class="w-6 h-6" />
+          </div>
+          <h3 class="text-lg font-bold text-gray-900">Réinitialisation / Connexion par e-mail</h3>
+          <p class="text-xs text-gray-500 max-w-xs mx-auto">
+            Saisissez votre e-mail pour recevoir un lien de connexion ou de réinitialisation sécurisé.
+          </p>
+        </div>
+
+        <div v-if="resetSuccess" class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-2xl text-xs space-y-2">
+          <div class="flex items-center gap-2 font-bold text-emerald-700">
+            <CheckCircle2 class="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>E-mail envoyé avec succès !</span>
+          </div>
+          <p class="text-emerald-700">
+            Si un compte correspond à cette adresse e-mail, vous recevrez sous peu votre lien sécurisé.
+          </p>
+          <button
+            @click="showResetModal = false"
+            class="w-full mt-3 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors"
+          >
+            Fermer
+          </button>
+        </div>
+
+        <form v-else @submit.prevent="handleResetPassword" class="space-y-4">
+          <div v-if="resetError" class="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs flex items-center gap-2">
+            <AlertCircle class="w-4 h-4 text-red-500 flex-shrink-0" />
+            <span>{{ resetError }}</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Votre adresse e-mail</label>
+            <input
+              type="email"
+              v-model="resetEmail"
+              required
+              placeholder="nom@gmail.com"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+            />
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button
+              type="button"
+              @click="showResetModal = false"
+              class="flex-1 py-2.5 border border-gray-200 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              :disabled="resetLoading"
+              class="flex-1 py-2.5 bg-[#002B35] hover:bg-[#001D24] text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Loader2 v-if="resetLoading" class="w-3.5 h-3.5 animate-spin" />
+              <span>{{ resetLoading ? 'Envoi...' : 'Envoyer le lien' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
-
-<style>
-/* Ajout d'une petite animation de blob pour l'arrière-plan de login */
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-.animate-blob {
-  animation: blob 7s infinite;
-}
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-</style>
