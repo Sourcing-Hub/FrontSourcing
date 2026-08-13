@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue d'activation du compte utilisateur avec auto-login et redirection vers le profil.
+ */
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
