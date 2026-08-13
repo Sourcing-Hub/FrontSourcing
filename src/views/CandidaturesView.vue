@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue principale des candidatures : interface adaptative pour candidats et membres du personnel.
+ */
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
