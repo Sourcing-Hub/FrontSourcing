@@ -76,20 +76,20 @@ const handleResetPassword = async () => {
       </div>
     </div>
 
-    <!-- Section Formulaire avec fond sombre #00313C et motif de petits cubes (Droite) -->
+    <!-- Section Formulaire avec fond clair #FAFAFA et motif de petits cubes (Droite) -->
     <div
-      class="flex-1 flex items-center justify-center bg-[#00313C] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      class="flex-1 flex items-center justify-center bg-[#FAFAFA] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
-      <!-- Blobs animés en arrière-plan -->
+      <!-- Blobs animés doux en arrière-plan -->
       <div
-        class="absolute -top-40 -right-40 w-96 h-96 bg-[#CE0033]/20 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob"
+        class="absolute -top-40 -right-40 w-96 h-96 bg-[#CE0033]/10 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"
       ></div>
       <div
-        class="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-2000"
+        class="absolute -bottom-40 -left-40 w-96 h-96 bg-[#002B35]/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"
       ></div>
 
       <!-- Carte du formulaire -->
-      <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-10 space-y-6 relative z-10">
+      <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 space-y-6 relative z-10">
         
         <!-- En-tête / Logo -->
         <div class="flex flex-col items-center text-center">
