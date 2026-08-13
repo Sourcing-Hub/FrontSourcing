@@ -89,6 +89,12 @@ const router = createRouter({
       component: () => import('../views/CandidatureDetailView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/scan-candidat/:candidateId',
+      name: 'scan-candidat',
+      component: () => import('../views/ScanCandidatView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
