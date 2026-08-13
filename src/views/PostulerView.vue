@@ -219,8 +219,8 @@ const submitApplication = async () => {
             </div>
 
             <div>
-              <template v-if="champ.type === 'TEXTE'">
-                <input type="text" :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" class="w-full sm:w-1/2 border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent" />
+              <template v-if="champ.type === 'TEXTE' || champ.type === 'EMAIL' || champ.type === 'TELEPHONE'">
+                <input :type="champ.type === 'EMAIL' ? 'email' : (champ.type === 'TELEPHONE' ? 'tel' : 'text')" :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" class="w-full sm:w-1/2 border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent" />
               </template>
 
               <template v-else-if="champ.type === 'ZONE_TEXTE'">
