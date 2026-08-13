@@ -1,3 +1,4 @@
+<script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -340,9 +341,8 @@ const handleSearch = () => {
             </div>
           </div>
         </div>
-
-        <!-- Mode Staff : Tableau de gestion complet -->
-        <div v-else class="overflow-x-auto">
+      </div>
+      <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
