@@ -18,6 +18,7 @@ const filterStatut = ref('')
 const filterAnnee = ref('')
 const filterFormation = ref('')
 const filterPromotion = ref('')
+const filterEtape = ref('')
 const qrCodeDataUrl = ref('')
 
 onMounted(async () => {
@@ -72,11 +73,40 @@ const filteredCohortesList = computed(() => {
   )
 })
 
-// Reset promotion filter when formation filter changes
+// Reset promotion and step filter when formation filter changes
 const handleFormationChange = () => {
   filterPromotion.value = ''
+  filterEtape.value = ''
   fetchCandidaturesList()
 }
+
+// Reset step filter when promotion filter changes
+const handlePromotionChange = () => {
+  filterEtape.value = ''
+  fetchCandidaturesList()
+}
+
+// Compute available steps based on selected promotion or formation
+const availableSteps = computed(() => {
+  const steps = new Set()
+  steps.add("Dossier") // Toujours présent
+  
+  const cohortesToUse = filterPromotion.value
+    ? campagnesStore.cohortes.filter((c) => c.id === filterPromotion.value)
+    : filteredCohortesList.value
+    
+  cohortesToUse.forEach((cohorte) => {
+    if (cohorte.etapes) {
+      cohorte.etapes.forEach((etape) => {
+        if (etape.nom) {
+          steps.add(etape.nom)
+        }
+      })
+    }
+  })
+  
+  return Array.from(steps)
+})
 
 const fetchCandidaturesList = async () => {
   const params = {}
@@ -86,12 +116,13 @@ const fetchCandidaturesList = async () => {
   if (filterAnnee.value) params.annee = filterAnnee.value
   if (filterFormation.value) params.formation = filterFormation.value
   if (filterPromotion.value) params.promotion = filterPromotion.value
+  if (filterEtape.value) params.etape_nom = filterEtape.value
 
   await store.fetchCandidatures(params)
 }
 
 // Watch filters
-watch([filterCampagne, filterStatut, filterAnnee, filterPromotion], () => {
+watch([filterCampagne, filterStatut, filterAnnee, filterPromotion, filterEtape], () => {
   fetchCandidaturesList()
 })
 
@@ -136,7 +167,7 @@ const handleSearch = () => {
         </div>
 
         <!-- Ligne 2 : Filtres avancés -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           <!-- Filtre Année -->
           <div>
             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Année</label>
@@ -171,11 +202,26 @@ const handleSearch = () => {
             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Promotion</label>
             <select
               v-model="filterPromotion"
+              @change="handlePromotionChange"
               class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
             >
               <option value="">Toutes les promotions</option>
               <option v-for="c in filteredCohortesList" :key="c.id" :value="c.id">
                 {{ c.nom }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Filtre Étape Actuelle -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Étape du parcours</label>
+            <select
+              v-model="filterEtape"
+              class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033]"
+            >
+              <option value="">Toutes les étapes</option>
+              <option v-for="step in availableSteps" :key="step" :value="step">
+                {{ step }}
               </option>
             </select>
           </div>
