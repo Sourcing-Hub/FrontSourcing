@@ -56,6 +56,7 @@ const handleCreate = async () => {
       dateCloture: '',
       cohorte: '',
     }
+    await modalStore.showAlert("La campagne a été créée avec succès.", "Succès", "success")
   }
 }
 
@@ -70,7 +71,10 @@ const handleDelete = async (id) => {
     { confirmText: 'Supprimer', variant: 'danger' }
   )
   if (confirmed) {
-    await store.deleteCampagne(id)
+    const success = await store.deleteCampagne(id)
+    if (success) {
+      await modalStore.showAlert("La campagne a été supprimée avec succès.", "Succès", "success")
+    }
   }
 }
 </script>

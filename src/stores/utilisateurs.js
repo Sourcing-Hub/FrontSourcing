@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
+import { parseBackendError } from '../utils/errorHandler'
 
 export const useUtilisateursStore = defineStore('utilisateurs', {
   state: () => ({
@@ -22,7 +23,7 @@ export const useUtilisateursStore = defineStore('utilisateurs', {
         const response = await api.get('utilisateurs/')
         this.utilisateurs = response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la récupération des utilisateurs'
+        this.error = parseBackendError(err)
       } finally {
         this.loading = false
       }
@@ -37,16 +38,7 @@ export const useUtilisateursStore = defineStore('utilisateurs', {
         await this.fetchUtilisateurs()
         return response.data
       } catch (err) {
-        if (err.response?.data) {
-          // Flatten error object for simple display
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = 'Erreur lors de la création'
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -61,7 +53,7 @@ export const useUtilisateursStore = defineStore('utilisateurs', {
         await this.fetchUtilisateurs()
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la modification du statut utilisateur'
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -76,7 +68,7 @@ export const useUtilisateursStore = defineStore('utilisateurs', {
         await this.fetchUtilisateurs()
         return response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || "Erreur lors de la suppression de l'utilisateur"
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false

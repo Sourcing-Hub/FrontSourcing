@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
+import { parseBackendError } from '../utils/errorHandler'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -44,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Identifiants invalides'
+        this.error = parseBackendError(err)
         return false
       } finally {
         this.loading = false
@@ -70,15 +71,7 @@ export const useAuthStore = defineStore('auth', {
         })
         return response.data
       } catch (err) {
-        if (err.response?.data) {
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = "Erreur lors de l'activation du compte."
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
@@ -101,7 +94,7 @@ export const useAuthStore = defineStore('auth', {
         
         return true
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors de la mise à jour du profil'
+        this.error = parseBackendError(err)
         return false
       } finally {
         this.loading = false

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
+import { parseBackendError } from '../utils/errorHandler'
 
 export const useCandidaturesStore = defineStore('candidatures', {
   state: () => ({
@@ -17,7 +18,7 @@ export const useCandidaturesStore = defineStore('candidatures', {
         const response = await api.get('candidatures/', { params })
         this.candidatures = response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors du chargement des candidatures'
+        this.error = parseBackendError(err)
       } finally {
         this.loading = false
       }
@@ -30,7 +31,7 @@ export const useCandidaturesStore = defineStore('candidatures', {
         const response = await api.get(`candidatures/${id}/`)
         this.currentCandidature = response.data
       } catch (err) {
-        this.error = err.response?.data?.detail || 'Erreur lors du chargement de la candidature'
+        this.error = parseBackendError(err)
       } finally {
         this.loading = false
       }
@@ -67,18 +68,7 @@ export const useCandidaturesStore = defineStore('candidatures', {
         })
         return response.data
       } catch (err) {
-        if (err.response?.data?.detail) {
-          this.error = err.response.data.detail
-        } else if (err.response?.data) {
-          // Flatten dictionary errors (e.g. required field missing)
-          const messages = []
-          for (const key in err.response.data) {
-            messages.push(`${key}: ${err.response.data[key]}`)
-          }
-          this.error = messages.join(' | ')
-        } else {
-          this.error = 'Erreur lors de la soumission de la candidature'
-        }
+        this.error = parseBackendError(err)
         return null
       } finally {
         this.loading = false
