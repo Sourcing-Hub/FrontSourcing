@@ -76,9 +76,9 @@ const handleResetPassword = async () => {
       </div>
     </div>
 
-    <!-- Section Formulaire avec fond clair et motif d'icônes Éducation/Tech (Droite) -->
+    <!-- Section Formulaire avec fond sombre #00313C et motif de petits cubes (Droite) -->
     <div
-      class="flex-1 flex items-center justify-center bg-slate-50 bg-[url('/images/bg-pattern.svg')] bg-repeat py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      class="flex-1 flex items-center justify-center bg-[#00313C] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
     >
       <!-- Blobs animés en arrière-plan -->
       <div
