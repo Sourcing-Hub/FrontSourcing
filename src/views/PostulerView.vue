@@ -17,14 +17,7 @@ const formulaire = ref(null)
 const champs = ref([])
 const loading = ref(true)
 
-const personalInfo = ref({
-  email: '',
-  prenom: '',
-  nom: '',
-  telephone: '',
-  sexe: 'HOMME'
-})
-
+const userProfile = ref(null)
 const formResponses = ref({})
 const filesMap = ref({})
 const submitSuccess = ref(false)
@@ -41,12 +34,38 @@ onMounted(async () => {
     formulaire.value = formRes.data
     champs.value = formRes.data.champs || []
 
-    // 3. Initialize responses
+    // 3. Fetch user profile if logged in
+    if (authStore.isAuthenticated) {
+      try {
+        const profileRes = await api.get('utilisateurs/mon-profil/')
+        userProfile.value = profileRes.data
+      } catch (err) {
+        console.error('Erreur lors de la récupération du profil connecté', err)
+      }
+    }
+
+    // 4. Initialize responses
     champs.value.forEach(champ => {
       if (champ.type === 'CASE_A_COCHER') {
         formResponses.value[champ.id] = []
       } else {
         formResponses.value[champ.id] = ''
+      }
+
+      // Pre-fill profile fields if authenticated
+      if (authStore.isAuthenticated && userProfile.value) {
+        const libelle = champ.libelle.toLowerCase()
+        if (libelle === 'prénom') {
+          formResponses.value[champ.id] = userProfile.value.first_name || ''
+        } else if (libelle === 'nom') {
+          formResponses.value[champ.id] = userProfile.value.last_name || ''
+        } else if (libelle === 'adresse email') {
+          formResponses.value[champ.id] = userProfile.value.email || ''
+        } else if (libelle === 'téléphone') {
+          formResponses.value[champ.id] = userProfile.value.telephone || ''
+        } else if (libelle === 'genre') {
+          formResponses.value[champ.id] = userProfile.value.sexe === 'HOMME' ? 'Homme' : 'Femme'
+        }
       }
     })
   } catch (error) {
@@ -66,17 +85,19 @@ const handleFileChange = (champId, event) => {
   }
 }
 
+const isProfileField = (champ) => {
+  if (!authStore.isAuthenticated) return false
+  const libelle = champ.libelle.toLowerCase()
+  return ['prénom', 'nom', 'adresse email', 'téléphone', 'genre'].includes(libelle)
+}
+
+const getSubmittedEmail = () => {
+  const emailChamp = champs.value.find(c => c.libelle.toLowerCase() === 'adresse email')
+  return emailChamp ? formResponses.value[emailChamp.id] : ''
+}
+
 const submitApplication = async () => {
   store.error = null
-
-  // Validate personal info if anonymous
-  if (!authStore.isAuthenticated) {
-    const { email, prenom, nom, telephone, sexe } = personalInfo.value
-    if (!email || !prenom || !nom || !telephone || !sexe) {
-      store.error = "Veuillez renseigner toutes vos informations personnelles de base."
-      return
-    }
-  }
 
   // Validate dynamic questions
   for (const champ of champs.value) {
@@ -104,10 +125,6 @@ const submitApplication = async () => {
   const payload = {
     campagne: campagneId,
     reponses: formattedResponses
-  }
-
-  if (!authStore.isAuthenticated) {
-    Object.assign(payload, personalInfo.value)
   }
 
   const result = await store.soumettreCandidature(payload, filesMap.value)
@@ -147,7 +164,7 @@ const submitApplication = async () => {
         <div v-if="!authStore.isAuthenticated" class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-left mb-6 max-w-lg mx-auto">
           <h4 class="font-bold text-emerald-900 mb-1">Activation du compte requise</h4>
           <p class="text-xs text-emerald-800 leading-relaxed">
-            Un email contenant un lien sécurisé d'activation a été envoyé à l'adresse <strong>{{ personalInfo.email }}</strong>. Veuillez activer votre compte pour pouvoir vous connecter et suivre l'avancement de votre candidature.
+            Un email contenant un lien sécurisé d'activation a été envoyé à l'adresse <strong>{{ getSubmittedEmail() }}</strong>. Veuillez activer votre compte pour pouvoir vous connecter et suivre l'avancement de votre candidature.
           </p>
         </div>
 
@@ -187,40 +204,6 @@ const submitApplication = async () => {
             <span class="text-sm text-red-700">{{ store.error }}</span>
           </div>
 
-          <!-- Partie Infos Personnelles (si non connecté) -->
-          <div v-if="!authStore.isAuthenticated" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
-            <h3 class="text-lg font-bold text-gray-900 pb-2 border-b border-gray-100">Informations Personnelles</h3>
-            
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Prénom <span class="text-red-500">*</span></label>
-                <input type="text" v-model="personalInfo.prenom" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Nom <span class="text-red-500">*</span></label>
-                <input type="text" v-model="personalInfo.nom" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Adresse Email <span class="text-red-500">*</span></label>
-              <input type="email" v-model="personalInfo.email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Téléphone <span class="text-red-500">*</span></label>
-              <input type="tel" v-model="personalInfo.telephone" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Genre <span class="text-red-500">*</span></label>
-              <select v-model="personalInfo.sexe" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm">
-                <option value="HOMME">Homme</option>
-                <option value="FEMME">Femme</option>
-              </select>
-            </div>
-          </div>
-
           <!-- Questions Dynamiques -->
           <div 
             v-for="champ in champs" 
@@ -237,17 +220,17 @@ const submitApplication = async () => {
 
             <div>
               <template v-if="champ.type === 'TEXTE'">
-                <input type="text" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" class="w-full sm:w-1/2 border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent" />
+                <input type="text" :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" class="w-full sm:w-1/2 border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent" />
               </template>
 
               <template v-else-if="champ.type === 'ZONE_TEXTE'">
-                <textarea v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" rows="3" class="w-full border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent resize-y"></textarea>
+                <textarea :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" rows="3" class="w-full border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent resize-y"></textarea>
               </template>
 
               <template v-else-if="champ.type === 'CHOIX_MULTIPLES'">
                 <div class="space-y-3 mt-2">
                   <label v-for="opt in champ.options" :key="opt.id" class="flex items-center cursor-pointer group">
-                    <input type="radio" :name="champ.id" :value="opt.valeur || opt.libelle" v-model="formResponses[champ.id]" class="w-5 h-5 text-[#CE0033] border-gray-300 focus:ring-[#CE0033] cursor-pointer" />
+                    <input type="radio" :disabled="isProfileField(champ)" :name="champ.id" :value="opt.valeur || opt.libelle" v-model="formResponses[champ.id]" class="w-5 h-5 text-[#CE0033] border-gray-300 focus:ring-[#CE0033] cursor-pointer" />
                     <span class="ml-3 text-sm text-gray-700 group-hover:text-gray-900">{{ opt.libelle }}</span>
                   </label>
                 </div>
@@ -256,14 +239,14 @@ const submitApplication = async () => {
               <template v-else-if="champ.type === 'CASE_A_COCHER'">
                 <div class="space-y-3 mt-2">
                   <label v-for="opt in champ.options" :key="opt.id" class="flex items-center cursor-pointer group">
-                    <input type="checkbox" :value="opt.valeur || opt.libelle" v-model="formResponses[champ.id]" class="w-5 h-5 rounded border-gray-300 text-[#CE0033] focus:ring-[#CE0033] cursor-pointer" />
+                    <input type="checkbox" :disabled="isProfileField(champ)" :value="opt.valeur || opt.libelle" v-model="formResponses[champ.id]" class="w-5 h-5 rounded border-gray-300 text-[#CE0033] focus:ring-[#CE0033] cursor-pointer" />
                     <span class="ml-3 text-sm text-gray-700 group-hover:text-gray-900">{{ opt.libelle }}</span>
                   </label>
                 </div>
               </template>
 
               <template v-else-if="champ.type === 'LISTE_DEROULANTE'">
-                <select v-model="formResponses[champ.id]" class="w-full sm:w-64 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#CE0033] focus:border-[#CE0033] text-sm bg-white">
+                <select :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" class="w-full sm:w-64 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#CE0033] focus:border-[#CE0033] text-sm bg-white">
                   <option value="" disabled selected>Choisir</option>
                   <option v-for="opt in champ.options" :key="opt.id" :value="opt.valeur || opt.libelle">
                     {{ opt.libelle }}
@@ -272,16 +255,16 @@ const submitApplication = async () => {
               </template>
 
               <template v-else-if="champ.type === 'DATE'">
-                <input type="date" v-model="formResponses[champ.id]" class="w-full sm:w-48 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#CE0033] text-sm" />
+                <input type="date" :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" class="w-full sm:w-48 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#CE0033] text-sm" />
               </template>
               
               <template v-else-if="champ.type === 'NOMBRE'">
-                <input type="number" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" class="w-full sm:w-48 border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent" />
+                <input type="number" :disabled="isProfileField(champ)" v-model="formResponses[champ.id]" :placeholder="champ.placeholderTexte || 'Votre réponse'" class="w-full sm:w-48 border-b-2 border-gray-300 hover:border-gray-400 focus:border-[#CE0033] focus:outline-none transition-colors py-1.5 text-sm bg-transparent" />
               </template>
 
               <template v-else-if="champ.type === 'FICHIER'">
                 <div class="flex items-center justify-center w-full">
-                  <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <label :class="{'pointer-events-none opacity-50 bg-gray-200': isProfileField(champ)}" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                       <p class="mb-2 text-sm text-gray-500">
                         <span class="font-semibold">
@@ -291,7 +274,7 @@ const submitApplication = async () => {
                       <p class="text-xs text-gray-400" v-if="champ.typesMimeAutorises">Extensions : {{ champ.typesMimeAutorises }}</p>
                       <p class="text-xs text-gray-400" v-if="champ.tailleMaxMo">Taille Max : {{ champ.tailleMaxMo }} Mo</p>
                     </div>
-                    <input type="file" class="hidden" @change="handleFileChange(champ.id, $event)" />
+                    <input type="file" :disabled="isProfileField(champ)" class="hidden" @change="handleFileChange(champ.id, $event)" />
                   </label>
                 </div>
               </template>
