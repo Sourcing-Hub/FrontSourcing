@@ -1,4 +1,5 @@
-# sourcing_frontend
+# SourcingHub Frontend (Vue 3 + Vite + Tailwind CSS)
+Dernière mise à jour : 2026-08-13 (v1.2.0)
 
 This template should help get you started developing with Vue 3 in Vite.
 
