@@ -3,7 +3,19 @@ import { ref, onMounted, computed } from 'vue'
 import { useUtilisateursStore } from '../stores/utilisateurs'
 import { useAuthStore } from '../stores/auth'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
-import { Plus, Loader2, Users, UserPlus, ShieldAlert, CheckCircle, XCircle } from 'lucide-vue-next'
+import { 
+  Plus, 
+  Loader2, 
+  Users, 
+  UserPlus, 
+  ShieldAlert, 
+  CheckCircle, 
+  XCircle,
+  Lock,
+  Unlock,
+  Trash2,
+  Ban
+} from 'lucide-vue-next'
 
 const store = useUtilisateursStore()
 const authStore = useAuthStore()
@@ -42,6 +54,23 @@ const submitInvite = async () => {
   if (result) {
     showInviteModal.value = false
     alert(result.detail || `Invitation envoyée avec succès à ${result.email}`)
+  }
+}
+
+const handleBlockToggle = async (user) => {
+  const blockAction = user.is_active ? 'bloquer' : 'debloquer'
+  const confirmMsg = user.is_active 
+    ? `Voulez-vous vraiment bloquer le compte de ${user.prenom} ${user.nom} ? L'utilisateur ne pourra plus se connecter.` 
+    : `Voulez-vous réactiver le compte de ${user.prenom} ${user.nom} ?`
+  if (confirm(confirmMsg)) {
+    await store.toggleBlockUser(user.id, blockAction)
+  }
+}
+
+const handleDeleteUser = async (user) => {
+  const confirmMsg = `Voulez-vous vraiment supprimer définitivement le compte de ${user.prenom} ${user.nom} ? Cette action est irréversible et effacera toutes ses données.`
+  if (confirm(confirmMsg)) {
+    await store.deleteUser(user.id)
   }
 }
 </script>
@@ -147,6 +176,7 @@ const submitInvite = async () => {
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créé le</th>
+                  <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -176,15 +206,45 @@ const submitInvite = async () => {
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center text-sm">
-                      <CheckCircle v-if="user.compteActive" class="w-4 h-4 text-emerald-500 mr-1.5" />
-                      <XCircle v-else class="w-4 h-4 text-amber-500 mr-1.5" />
-                      <span :class="user.compteActive ? 'text-gray-900' : 'text-gray-500'">
-                        {{ user.compteActive ? 'Actif' : 'En attente' }}
-                      </span>
+                      <template v-if="!user.is_active">
+                        <Ban class="w-4 h-4 text-red-500 mr-1.5" />
+                        <span class="text-red-600 font-semibold">Bloqué</span>
+                      </template>
+                      <template v-else-if="!user.compteActive">
+                        <XCircle class="w-4 h-4 text-amber-500 mr-1.5" />
+                        <span class="text-gray-500">En attente</span>
+                      </template>
+                      <template v-else>
+                        <CheckCircle class="w-4 h-4 text-emerald-500 mr-1.5" />
+                        <span class="text-emerald-600 font-semibold">Actif</span>
+                      </template>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ new Date(user.dateCreation).toLocaleDateString('fr-FR') }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                    <template v-if="user.id !== authStore.user?.id">
+                      <button
+                        @click="handleBlockToggle(user)"
+                        :class="user.is_active ? 'text-amber-600 hover:text-amber-900 bg-amber-50' : 'text-emerald-600 hover:text-emerald-900 bg-emerald-50'"
+                        class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                        :title="user.is_active ? 'Bloquer le compte' : 'Débloquer le compte'"
+                      >
+                        <Lock v-if="user.is_active" class="w-3.5 h-3.5 mr-1" />
+                        <Unlock v-else class="w-3.5 h-3.5 mr-1" />
+                        {{ user.is_active ? 'Bloquer' : 'Débloquer' }}
+                      </button>
+                      <button
+                        @click="handleDeleteUser(user)"
+                        class="text-red-600 hover:text-red-900 bg-red-50 inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                        title="Supprimer définitivement"
+                      >
+                        <Trash2 class="w-3.5 h-3.5 mr-1" />
+                        Supprimer
+                      </button>
+                    </template>
+                    <span v-else class="text-xs text-gray-400 italic">Moi</span>
                   </td>
                 </tr>
               </tbody>

@@ -51,6 +51,36 @@ export const useUtilisateursStore = defineStore('utilisateurs', {
       } finally {
         this.loading = false
       }
+    },
+
+    async toggleBlockUser(id, blockAction) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.patch(`utilisateurs/${id}/`, { action: blockAction })
+        await this.fetchUtilisateurs()
+        return response.data
+      } catch (err) {
+        this.error = err.response?.data?.detail || 'Erreur lors de la modification du statut utilisateur'
+        return null
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async deleteUser(id) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.delete(`utilisateurs/${id}/`)
+        await this.fetchUtilisateurs()
+        return response.data
+      } catch (err) {
+        this.error = err.response?.data?.detail || "Erreur lors de la suppression de l'utilisateur"
+        return null
+      } finally {
+        this.loading = false
+      }
     }
   }
 })
