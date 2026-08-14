@@ -18,6 +18,12 @@ const router = createRouter({
       meta: { requiresAuth: false },
     },
     {
+      path: '/confirmation-presence/:token',
+      name: 'confirmation-presence',
+      component: () => import('../views/ConfirmationPresenceView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
       path: '/',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
@@ -33,6 +39,24 @@ const router = createRouter({
       path: '/formations',
       name: 'formations',
       component: () => import('../views/FormationsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/planification',
+      name: 'planification',
+      component: () => import('../views/PlanificationView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/convocations',
+      name: 'convocations',
+      component: () => import('../views/ConvocationsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/emargement',
+      name: 'emargement',
+      component: () => import('../views/EmargementView.vue'),
       meta: { requiresAuth: true },
     },
     {

@@ -39,8 +39,9 @@ const navigation = computed(() => {
     { name: 'Candidatures', href: '/candidatures', icon: BookOpen },
     { name: 'Rapports', href: '/rapports', icon: FileText },
     { name: 'Questionnaires', href: '/questionnaires', icon: FileText },
-    { name: 'Plannification', href: '/plannification', icon: FileText },
+    { name: 'Planification', href: '/planification', icon: Calendar },
     { name: 'Convocations', href: '/convocations', icon: FileText },
+    { name: 'Émargement', href: '/emargement', icon: ClipboardList },
     { name: 'Evaluateurs', href: '/evaluateurs', icon: FileText },
   ]
 })
