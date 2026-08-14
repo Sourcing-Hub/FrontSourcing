@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue détaillée d'une candidature : réponses aux formulaires, pièces jointes et étapes d'évaluation.
+ */
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCandidaturesStore } from '../stores/candidatures'

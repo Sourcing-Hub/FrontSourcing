@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { parseBackendError } from '../utils/errorHandler'
 
+/**
+ * Store Pinia centralisant la soumission, le filtrage et la consultation des candidatures.
+ */
 export const useCandidaturesStore = defineStore('candidatures', {
   state: () => ({
     candidatures: [],

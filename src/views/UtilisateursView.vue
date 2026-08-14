@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue d'administration de la gestion du personnel (Équipe Pédagogique et Gestion de Projet).
+ */
 import { ref, onMounted, computed } from 'vue'
 import { useUtilisateursStore } from '../stores/utilisateurs'
 import { useAuthStore } from '../stores/auth'
@@ -26,7 +29,7 @@ const currentTab = ref('TOUS') // TOUS, PEDAGOGIE, GESTION
 const showInviteModal = ref(false)
 const inviteForm = ref({
   email: '',
-  role: 'Équipe Pédagogique' // ou 'Équipe Gestion de Projet'
+  role: ''  // L'admin doit toujours choisir explicitement
 })
 
 onMounted(async () => {
@@ -46,7 +49,8 @@ const filteredUsers = computed(() => {
 })
 
 const openInviteModal = () => {
-  inviteForm.value = { email: '', role: 'Équipe Pédagogique' }
+  // Toujours repartir à zéro — l'admin doit choisir le rôle explicitement
+  inviteForm.value = { email: '', role: '' }
   store.error = null
   showInviteModal.value = true
 }
@@ -55,8 +59,9 @@ const submitInvite = async () => {
   const result = await store.createPersonnel(inviteForm.value)
   if (result) {
     showInviteModal.value = false
+    const roleLabel = result.role || inviteForm.value.role
     await modalStore.showAlert(
-      result.detail || `Invitation envoyée avec succès à ${result.email}`,
+      `Invitation envoyée avec succès à ${result.email} en tant que « ${roleLabel} ».`,
       'Invitation envoyée',
       'success'
     )
@@ -223,13 +228,13 @@ const handleDeleteUser = async (user) => {
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center text-sm">
-                      <template v-if="!user.is_active">
-                        <Ban class="w-4 h-4 text-red-500 mr-1.5" />
-                        <span class="text-red-600 font-semibold">Bloqué</span>
-                      </template>
-                      <template v-else-if="!user.compteActive">
+                      <template v-if="!user.compteActive">
                         <XCircle class="w-4 h-4 text-amber-500 mr-1.5" />
                         <span class="text-gray-500">En attente</span>
+                      </template>
+                      <template v-else-if="!user.is_active">
+                        <Ban class="w-4 h-4 text-red-500 mr-1.5" />
+                        <span class="text-red-600 font-semibold">Bloqué</span>
                       </template>
                       <template v-else>
                         <CheckCircle class="w-4 h-4 text-emerald-500 mr-1.5" />
@@ -243,6 +248,7 @@ const handleDeleteUser = async (user) => {
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                     <template v-if="user.id !== authStore.user?.id">
                       <button
+                        v-if="user.compteActive"
                         @click="handleBlockToggle(user)"
                         :class="user.is_active ? 'text-amber-600 hover:text-amber-900 bg-amber-50' : 'text-emerald-600 hover:text-emerald-900 bg-emerald-50'"
                         class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors"
@@ -307,7 +313,9 @@ const handleDeleteUser = async (user) => {
                     <select 
                       v-model="inviteForm.role"
                       class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm"
+                      required
                     >
+                      <option value="" disabled>-- Choisissez un rôle --</option>
                       <option value="Équipe Pédagogique">Équipe Pédagogique</option>
                       <option value="Équipe Gestion de Projet">Équipe Gestion de Projet</option>
                     </select>
@@ -325,7 +333,7 @@ const handleDeleteUser = async (user) => {
               type="button" 
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#CE0033] text-base font-medium text-white hover:bg-[#a8002a] focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
               @click="submitInvite"
-              :disabled="store.loading || !inviteForm.email"
+              :disabled="store.loading || !inviteForm.email || !inviteForm.role"
             >
               <Loader2 v-if="store.loading" class="w-4 h-4 mr-2 animate-spin" />
               Envoyer l'invitation

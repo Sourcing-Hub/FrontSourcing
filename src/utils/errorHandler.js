@@ -1,6 +1,10 @@
 /**
  * Formate les erreurs du backend (Axios) pour les rendre lisibles et compréhensibles.
  */
+/**
+ * Formate proprement les erreurs retournées par l'API backend Django (DRF)
+ * pour un affichage clair dans les interfaces utilisateur Vue.
+ */
 export function parseBackendError(err) {
   if (!err) {
     return "Une erreur inconnue est survenue."

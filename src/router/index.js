@@ -18,6 +18,12 @@ const router = createRouter({
       meta: { requiresAuth: false },
     },
     {
+      path: '/auth/reinit-mdp/confirmer/:token',
+      name: 'reinit-mdp-confirmer',
+      component: () => import('../views/ReinitialisationPasswordView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
       path: '/',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
@@ -98,6 +104,9 @@ const router = createRouter({
   ],
 })
 
+/**
+ * Garde de navigation globale : contrôle l'authentification et force la complétion du profil.
+ */
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 

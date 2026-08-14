@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Vue d'émargement et vérification des candidats via scan de Code QR.
+ */
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
