@@ -1,21 +1,17 @@
 <script setup>
-import {
-  onMounted,
-  ref,
-} from 'vue'
+//  Prépare un import groupé depuis une dépendance.
+import {onMounted, ref} from 'vue'
 
-import {
-  useRoute,
-  useRouter,
-} from 'vue-router'
+//  Prépare un import groupé depuis une dépendance.
+import {useRoute,useRouter,} from 'vue-router'
 
 import CandidateInfoCard
   from '@/components/evaluator/CandidateInfoCard.vue'
 
-import {
-  fetchCandidate,
-  fetchMyInterviews,
-} from '@/api/evaluator'
+
+//  Prépare un import groupé depuis une dépendance.
+import {fetchCandidate,fetchMyInterviews,} from '@/services/evaluator'
+
 
 const route = useRoute()
 const router = useRouter()

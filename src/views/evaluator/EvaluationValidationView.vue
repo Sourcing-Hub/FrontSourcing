@@ -1,24 +1,17 @@
 <script setup>
-import {
-  computed,
-  onMounted,
-  ref,
-} from 'vue'
 
-import {
-  useRoute,
-  useRouter,
-} from 'vue-router'
+//  Prépare un import groupé depuis une dépendance.
+import {computed,onMounted,ref,} from 'vue'
+
+//  Prépare un import groupé depuis une dépendance.
+import {useRoute,useRouter,} from 'vue-router'
+
 
 import EvaluationSummary
   from '@/components/evaluator/EvaluationSummary.vue'
 
-import {
-  fetchInterview,
-  fetchCandidate,
-  fetchEvaluation,
-  validateEvaluation,
-} from '@/api/evaluator'
+//  Prépare un import groupé depuis une dépendance.
+import {fetchInterview,fetchCandidate,fetchEvaluation,validateEvaluation,} from '@/services/evaluator'
 
 const route = useRoute()
 const router = useRouter()
