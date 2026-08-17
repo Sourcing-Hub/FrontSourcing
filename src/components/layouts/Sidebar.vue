@@ -207,7 +207,7 @@ const navigation = computed(() => {
     {
       label: 'Tableau de bord',
       icon: 'dashboard',
-      // href: '/',
+      href: '/',
     },
   ]
 })
