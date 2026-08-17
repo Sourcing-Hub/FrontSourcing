@@ -1,4 +1,7 @@
 <script setup>
+/**
+ * Éditeur dynamique de formulaires : gestion des champs, types, règles et glisser-déposer.
+ */
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useFormulairesStore } from '../stores/formulaires'

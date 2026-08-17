@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { parseBackendError } from '../utils/errorHandler'
 
+/**
+ * Store Pinia pour la création, l'édition et la publication des formulaires dynamiques.
+ */
 export const useFormulairesStore = defineStore('formulaires', {
   state: () => ({
     formulaires: [],

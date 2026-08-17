@@ -1,0 +1,634 @@
+<script setup>
+//  Prépare un import groupé depuis une dépendance.
+import {
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  computed,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  onMounted,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  ref,
+//  Ferme la liste d'import et précise le module source.
+} from 'vue'
+
+//  Prépare un import groupé depuis une dépendance.
+import {
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  useRoute,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  useRouter,
+//  Ferme la liste d'import et précise le module source.
+} from 'vue-router'
+
+//  Importe EvaluationSummary utilisé dans la partie évaluateur.
+import EvaluationSummary from '@/components/evaluator/EvaluationSummary.vue'
+
+//  Prépare un import groupé depuis une dépendance.
+import {
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  fetchInterview,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  fetchCandidate,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  fetchEvaluation,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  validateEvaluation,
+//  Ferme la liste d'import et précise le module source.
+} from '@/services/evaluator'
+
+//  Déclare route pour stocker une donnée ou un calcul de la vue.
+const route = useRoute()
+//  Déclare router pour stocker une donnée ou un calcul de la vue.
+const router = useRouter()
+
+//  Déclare interview pour stocker une donnée ou un calcul de la vue.
+const interview = ref(null)
+//  Déclare candidate pour stocker une donnée ou un calcul de la vue.
+const candidate = ref(null)
+//  Déclare evaluation pour stocker une donnée ou un calcul de la vue.
+const evaluation = ref(null)
+
+//  Déclare loading pour stocker une donnée ou un calcul de la vue.
+const loading = ref(true)
+//  Déclare validating pour stocker une donnée ou un calcul de la vue.
+const validating = ref(false)
+//  Déclare error pour stocker une donnée ou un calcul de la vue.
+const error = ref('')
+
+//  Déclare isValidated pour stocker une donnée ou un calcul de la vue.
+const isValidated = computed(
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  () => evaluation.value?.validated,
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+)
+
+//  Déclare la fonction loadData pour isoler un traitement évaluateur.
+async function loadData() {
+  //  Met à jour ou lit la valeur réactive utilisée par Vue.
+  loading.value = true
+
+  //  Démarre un bloc qui tente une action pouvant échouer.
+  try {
+    //  Déclare interviewData pour stocker une donnée ou un calcul de la vue.
+    const interviewData =
+      //  Attend la réponse d'une action asynchrone avant de continuer.
+      await fetchInterview(
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        route.params.interviewId,
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      )
+
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    const [
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      candidateData,
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      evaluationData,
+    //  Attend la réponse d'une action asynchrone avant de continuer.
+    ] = await Promise.all([
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      fetchCandidate(
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        interviewData.candidateId,
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      ),
+
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      fetchEvaluation(
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        route.params.interviewId,
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      ),
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    ])
+
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    interview.value =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      interviewData
+
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    candidate.value =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      candidateData
+
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    evaluation.value =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      evaluationData
+  //  Gère l'erreur si le traitement précédent échoue.
+  } catch {
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    error.value =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      'Impossible de charger les données.'
+  //  Exécute ce bloc dans tous les cas après l'action.
+  } finally {
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    loading.value = false
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+//  Déclare la fonction validate pour isoler un traitement évaluateur.
+async function validate() {
+  //  Met à jour ou lit la valeur réactive utilisée par Vue.
+  validating.value = true
+  //  Met à jour ou lit la valeur réactive utilisée par Vue.
+  error.value = ''
+
+  //  Démarre un bloc qui tente une action pouvant échouer.
+  try {
+    //  Déclare response pour stocker une donnée ou un calcul de la vue.
+    const response =
+      //  Attend la réponse d'une action asynchrone avant de continuer.
+      await validateEvaluation(
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        route.params.interviewId,
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      )
+
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    evaluation.value =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      response.evaluation
+
+    //  Redirige l'utilisateur vers la page evaluator correspondante.
+    router.push({
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      name: 'evaluator-interviews',
+    //  Ferme le bloc de configuration ou de traitement.
+    })
+  //  Gère l'erreur si le traitement précédent échoue.
+  } catch {
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    error.value =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      'Impossible de valider l’évaluation.'
+  //  Exécute ce bloc dans tous les cas après l'action.
+  } finally {
+    //  Met à jour ou lit la valeur réactive utilisée par Vue.
+    validating.value = false
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+//  Déclare la fonction editEvaluation pour isoler un traitement évaluateur.
+function editEvaluation() {
+  //  Redirige l'utilisateur vers la page evaluator correspondante.
+  router.push({
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    name: 'evaluator-evaluation',
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    params: {
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      interviewId:
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        route.params.interviewId,
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    },
+  //  Ferme le bloc de configuration ou de traitement.
+  })
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+//  Lance ce traitement au montage du composant.
+onMounted(loadData)
+</script>
+
+<template>
+  <!--  Définit le conteneur principal de la page évaluateur. -->
+  <main class="page">
+
+    <!--  Structure un groupe d’éléments visuels. -->
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+      Chargement...
+    <!--  Ferme l’élément div. -->
+    </div>
+
+    <div
+      v-else-if="error"
+      class="error"
+    >
+      <!--  Affiche une donnée dynamique dans l’interface. -->
+      {{ error }}
+    <!--  Ferme l’élément div. -->
+    </div>
+
+    <template v-else>
+
+      <!--  Regroupe le titre et les informations d’introduction. -->
+      <header class="header">
+
+        <!--  Structure un groupe d’éléments visuels. -->
+        <div>
+          <!--  Affiche une information courte ou décorative. -->
+          <span class="eyebrow">
+            <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+            VALIDATION
+          <!--  Ferme l’élément span. -->
+          </span>
+
+          <!--  Affiche le titre principal de la page. -->
+          <h1>
+            <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+            Vérifier l'évaluation
+          <!--  Ferme l’élément h1. -->
+          </h1>
+
+          <!--  Affiche un paragraphe de texte. -->
+          <p>
+            <!--  Affiche une donnée dynamique dans l’interface. -->
+            {{ candidate.firstName }}
+            <!--  Affiche une donnée dynamique dans l’interface. -->
+            {{ candidate.lastName }}
+          <!--  Ferme l’élément p. -->
+          </p>
+        <!--  Ferme l’élément div. -->
+        </div>
+
+      <!--  Ferme l’élément header. -->
+      </header>
+
+
+      <!--  Délimite une zone fonctionnelle de la page. -->
+      <section class="validation-layout">
+
+        <!--  Structure un groupe d’éléments visuels. -->
+        <div class="card">
+
+          <!--  Structure un groupe d’éléments visuels. -->
+          <div class="check">
+
+            <!--  Affiche une information courte ou décorative. -->
+            <span class="icon">
+              <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+              ✓
+            <!--  Ferme l’élément span. -->
+            </span>
+
+            <!--  Structure un groupe d’éléments visuels. -->
+            <div>
+              <!--  Met en avant une valeur importante. -->
+              <strong>
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                Évaluation complétée
+              <!--  Ferme l’élément strong. -->
+              </strong>
+
+              <!--  Affiche un paragraphe de texte. -->
+              <p>
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                Vérifiez les informations avant
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                de valider définitivement.
+              <!--  Ferme l’élément p. -->
+              </p>
+            <!--  Ferme l’élément div. -->
+            </div>
+
+          <!--  Ferme l’élément div. -->
+          </div>
+
+
+          <!--  Affiche ou configure l’élément EvaluationSummary. -->
+          <EvaluationSummary
+            :evaluation="evaluation"
+          />
+
+        <!--  Ferme l’élément div. -->
+        </div>
+
+
+        <!--  Affiche ou configure l’élément aside. -->
+        <aside class="actions">
+
+          <!--  Affiche un bouton d’action pour l’utilisateur. -->
+          <button
+            type="button"
+            class="secondary"
+            @click="editEvaluation"
+          >
+            <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+            Modifier l'évaluation
+          <!--  Ferme l’élément button. -->
+          </button>
+
+          <!--  Affiche un bouton d’action pour l’utilisateur. -->
+          <button
+            type="button"
+            class="primary"
+            :disabled="
+              validating ||
+              isValidated
+            "
+            @click="validate"
+          >
+            <!--  Affiche une donnée dynamique dans l’interface. -->
+            {{
+              isValidated
+                ? 'Évaluation validée'
+                : validating
+                  ? 'Validation...'
+                  : 'Valider l’évaluation'
+            }}
+          <!--  Ferme l’élément button. -->
+          </button>
+
+        <!--  Ferme l’élément aside. -->
+        </aside>
+
+      <!--  Ferme l’élément section. -->
+      </section>
+
+    </template>
+
+  </main>
+</template>
+
+<style scoped>
+/*  Ouvre un sélecteur CSS à styliser. */
+.page {
+  /*  Définit une propriété visuelle pour cet élément. */
+  min-height: 100vh;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  padding: 36px 42px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  background: #f6f8fb;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.header {
+  /*  Définit une propriété visuelle pour cet élément. */
+  margin-bottom: 25px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.eyebrow {
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #6372be;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-size: 9px;
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-weight: 800;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  letter-spacing: 0.12em;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+h1 {
+  /*  Définit une propriété visuelle pour cet élément. */
+  margin: 8px 0 0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #172033;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-size: 28px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.header p {
+  /*  Définit une propriété visuelle pour cet élément. */
+  margin: 7px 0 0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #7d8797;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-size: 11px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.validation-layout {
+  /*  Définit une propriété visuelle pour cet élément. */
+  display: grid;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  grid-template-columns:
+    /*  Définit une propriété visuelle pour cet élément. */
+    minmax(0, 1fr)
+    /*  Définit une propriété visuelle pour cet élément. */
+    260px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  gap: 18px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Définit une propriété visuelle pour cet élément. */
+.card,
+/*  Ouvre un sélecteur CSS à styliser. */
+.actions {
+  /*  Définit une propriété visuelle pour cet élément. */
+  padding: 22px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  border: 1px solid #e7ebf0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  border-radius: 16px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  background: #fff;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.check {
+  /*  Définit une propriété visuelle pour cet élément. */
+  display: flex;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  align-items: center;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  gap: 13px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  padding-bottom: 20px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  margin-bottom: 20px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  border-bottom: 1px solid #edf0f4;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.icon {
+  /*  Définit une propriété visuelle pour cet élément. */
+  width: 40px;
+  /*  Définit une propriété visuelle pour cet élément. */
+  height: 40px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  display: flex;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  align-items: center;
+  /*  Définit une propriété visuelle pour cet élément. */
+  justify-content: center;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  flex-shrink: 0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  border-radius: 50%;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  background: #eaf8f0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #2d8a59;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-weight: 800;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.check strong {
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #344054;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-size: 12px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.check p {
+  /*  Définit une propriété visuelle pour cet élément. */
+  margin: 5px 0 0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #939baa;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-size: 9px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.actions {
+  /*  Définit une propriété visuelle pour cet élément. */
+  align-self: start;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  display: flex;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  flex-direction: column;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  gap: 10px;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.actions button {
+  /*  Définit une propriété visuelle pour cet élément. */
+  height: 42px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  border-radius: 9px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-size: 10px;
+  /*  Définit une propriété visuelle pour cet élément. */
+  font-weight: 700;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  cursor: pointer;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.secondary {
+  /*  Définit une propriété visuelle pour cet élément. */
+  border: 1px solid #dfe4eb;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  background: white;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #596477;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.primary {
+  /*  Définit une propriété visuelle pour cet élément. */
+  border: 0;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  background: #3046a7;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: white;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.primary:disabled {
+  /*  Définit une propriété visuelle pour cet élément. */
+  opacity: 0.55;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  cursor: not-allowed;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Définit une propriété visuelle pour cet élément. */
+.loading,
+/*  Ouvre un sélecteur CSS à styliser. */
+.error {
+  /*  Définit une propriété visuelle pour cet élément. */
+  padding: 60px;
+
+  /*  Définit une propriété visuelle pour cet élément. */
+  text-align: center;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Ouvre un sélecteur CSS à styliser. */
+.error {
+  /*  Définit une propriété visuelle pour cet élément. */
+  color: #a64d4d;
+/*  Ferme le bloc de styles courant. */
+}
+
+/*  Déclare une règle CSS spéciale. */
+@media (max-width: 800px) {
+  /*  Ouvre un sélecteur CSS à styliser. */
+  .page {
+    /*  Définit une propriété visuelle pour cet élément. */
+    padding: 25px 18px;
+  /*  Ferme le bloc de styles courant. */
+  }
+
+  /*  Ouvre un sélecteur CSS à styliser. */
+  .validation-layout {
+    /*  Définit une propriété visuelle pour cet élément. */
+    grid-template-columns: 1fr;
+  /*  Ferme le bloc de styles courant. */
+  }
+/*  Ferme le bloc de styles courant. */
+}
+</style>

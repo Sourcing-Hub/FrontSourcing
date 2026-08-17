@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { parseBackendError } from '../utils/errorHandler'
 
+/**
+ * Store Pinia pour l'administration et le suivi des comptes utilisateurs/personnel.
+ */
 export const useUtilisateursStore = defineStore('utilisateurs', {
   state: () => ({
     utilisateurs: [],

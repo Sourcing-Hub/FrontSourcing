@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { parseBackendError } from '../utils/errorHandler'
 
+/**
+ * Store Pinia gérant le statut d'authentification, le profil utilisateur et les jetons JWT.
+ */
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('sourcing_token') || null,
@@ -92,6 +95,24 @@ export const useAuthStore = defineStore('auth', {
         }
         localStorage.setItem('sourcing_user', JSON.stringify(this.user))
         
+        return true
+      } catch (err) {
+        this.error = parseBackendError(err)
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async changePassword(ancienMotDePasse, nouveauMotDePasse, confirmation) {
+      this.loading = true
+      this.error = null
+      try {
+        await api.put('utilisateurs/changer-mdp/', {
+          ancien_mot_de_passe: ancienMotDePasse,
+          nouveau_mot_de_passe: nouveauMotDePasse,
+          confirmation: confirmation,
+        })
         return true
       } catch (err) {
         this.error = parseBackendError(err)

@@ -1,0 +1,790 @@
+<script setup>
+//  Prépare un import groupé depuis une dépendance.
+import {
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  computed,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  reactive,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  watch,
+//  Ferme la liste d'import et précise le module source.
+} from 'vue'
+
+//  Déclare props pour stocker une donnée ou un calcul de la vue.
+const props = defineProps({
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  evaluation: {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    type: Object,
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    default: null,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  interview: {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    type: Object,
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    required: true,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+//  Ferme le bloc de configuration ou de traitement.
+})
+
+//  Déclare emit pour stocker une donnée ou un calcul de la vue.
+const emit = defineEmits([
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  'save',
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+])
+
+// ============================================================
+// QUESTIONS TECHNIQUES
+// ============================================================
+
+//  Déclare technicalQuestions pour stocker une donnée ou un calcul de la vue.
+const technicalQuestions = [
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'technical-1',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Comment expliqueriez-vous votre démarche pour résoudre un problème technique ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'technical-2',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Quelle est votre expérience avec les technologies utilisées dans cette formation ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'technical-3',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Comment testez-vous et vérifiez-vous la qualité de votre code ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'technical-4',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Comment réagissez-vous face à une erreur que vous ne comprenez pas ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+]
+
+// ============================================================
+// QUESTIONS MOTIVATION
+// ============================================================
+
+//  Déclare motivationQuestions pour stocker une donnée ou un calcul de la vue.
+const motivationQuestions = [
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'motivation-1',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Pourquoi souhaitez-vous intégrer cette formation ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'motivation-2',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Quels sont vos objectifs professionnels ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'motivation-3',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Qu’attendez-vous de cette formation ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    id: 'motivation-4',
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    question: 'Comment comptez-vous vous investir dans la formation ?',
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+]
+
+// ============================================================
+// QUESTIONS SELON LE TYPE D'ENTRETIEN
+// ============================================================
+
+//  Déclare questions pour stocker une donnée ou un calcul de la vue.
+const questions = computed(() => {
+  //  Vérifie cette condition avant de continuer.
+  if (props.interview?.type === 'technique') {
+    //  Retourne le résultat attendu par le reste du code.
+    return technicalQuestions
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+
+  //  Vérifie cette condition avant de continuer.
+  if (props.interview?.type === 'motivation') {
+    //  Retourne le résultat attendu par le reste du code.
+    return motivationQuestions
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+
+  //  Retourne le résultat attendu par le reste du code.
+  return []
+//  Ferme le bloc de configuration ou de traitement.
+})
+
+// ============================================================
+// FORMULAIRE
+// ============================================================
+
+//  Déclare form pour stocker une donnée ou un calcul de la vue.
+const form = reactive({
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  questions: {},
+
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  recommendation: '',
+//  Ferme le bloc de configuration ou de traitement.
+})
+
+// ============================================================
+// INITIALISATION DES QUESTIONS
+// ============================================================
+
+//  Déclare la fonction initializeQuestions pour isoler un traitement évaluateur.
+function initializeQuestions() {
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  form.questions = {}
+
+  //  Met à jour ou lit la valeur réactive utilisée par Vue.
+  questions.value.forEach((question) => {
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    form.questions[question.id] = {
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      score: null,
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      comment: '',
+    //  Ferme le bloc de configuration ou de traitement.
+    }
+  //  Ferme le bloc de configuration ou de traitement.
+  })
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+// ============================================================
+// CHARGEMENT D'UNE ÉVALUATION EXISTANTE
+// ============================================================
+
+//  Observe un changement de donnée pour déclencher une réaction.
+watch(
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  [
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    () => props.interview,
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    () => props.evaluation,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  ],
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  () => {
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    initializeQuestions()
+
+    //  Vérifie cette condition avant de continuer.
+    if (!props.evaluation) {
+      //  Retourne le résultat attendu par le reste du code.
+      return
+    //  Ferme le bloc de configuration ou de traitement.
+    }
+
+    //  Vérifie cette condition avant de continuer.
+    if (props.evaluation.questions) {
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      Object.entries(
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        props.evaluation.questions,
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      ).forEach(
+        //  Exécute cette ligne de logique propre à la partie évaluateur.
+        ([questionId, value]) => {
+          //  Vérifie cette condition avant de continuer.
+          if (
+            //  Exécute cette ligne de logique propre à la partie évaluateur.
+            form.questions[questionId]
+          //  Exécute cette ligne de logique propre à la partie évaluateur.
+          ) {
+            //  Exécute cette ligne de logique propre à la partie évaluateur.
+            form.questions[questionId] = {
+              //  Exécute cette ligne de logique propre à la partie évaluateur.
+              score:
+                //  Ajoute cette valeur à la structure ou à la liste en cours.
+                value.score ?? null,
+
+              //  Exécute cette ligne de logique propre à la partie évaluateur.
+              comment:
+                //  Ajoute cette valeur à la structure ou à la liste en cours.
+                value.comment ?? '',
+            //  Ferme le bloc de configuration ou de traitement.
+            }
+          //  Ferme le bloc de configuration ou de traitement.
+          }
+        //  Ajoute cette valeur à la structure ou à la liste en cours.
+        },
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      )
+    //  Ferme le bloc de configuration ou de traitement.
+    }
+
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    form.recommendation =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      props.evaluation.recommendation ??
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      ''
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+  //  Ouvre un bloc de configuration ou de données.
+  {
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    immediate: true,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  },
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+)
+
+// ============================================================
+// MODIFICATION DE LA NOTE
+// ============================================================
+
+//  Déclare la fonction updateScore pour isoler un traitement évaluateur.
+function updateScore(
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  questionId,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  value,
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+) {
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  form.questions[questionId].score =
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    value === ''
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      ? null
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      : Number(value)
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+// ============================================================
+// MODIFICATION DU COMMENTAIRE
+// ============================================================
+
+//  Déclare la fonction updateComment pour isoler un traitement évaluateur.
+function updateComment(
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  questionId,
+  //  Ajoute cette valeur à la structure ou à la liste en cours.
+  value,
+//  Exécute cette ligne de logique propre à la partie évaluateur.
+) {
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  form.questions[questionId].comment =
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    value
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
+
+//  Déclare la fonction validateForm pour isoler un traitement évaluateur.
+function validateForm() {
+  //  Met à jour ou lit la valeur réactive utilisée par Vue.
+  for (const question of questions.value) {
+    //  Déclare answer pour stocker une donnée ou un calcul de la vue.
+    const answer =
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      form.questions[question.id]
+
+    //  Vérifie cette condition avant de continuer.
+    if (
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      answer.score === null ||
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      answer.score === ''
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    ) {
+      //  Retourne le résultat attendu par le reste du code.
+      return `Veuillez attribuer une note à la question : "${question.question}"`
+    //  Ferme le bloc de configuration ou de traitement.
+    }
+
+    //  Vérifie cette condition avant de continuer.
+    if (
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      !answer.comment ||
+      //  Exécute cette ligne de logique propre à la partie évaluateur.
+      !answer.comment.trim()
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    ) {
+      //  Retourne le résultat attendu par le reste du code.
+      return `Veuillez ajouter un commentaire pour la question : "${question.question}"`
+    //  Ferme le bloc de configuration ou de traitement.
+    }
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+
+  //  Vérifie cette condition avant de continuer.
+  if (!form.recommendation) {
+    //  Retourne le résultat attendu par le reste du code.
+    return 'Veuillez sélectionner une recommandation.'
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+
+  //  Retourne le résultat attendu par le reste du code.
+  return null
+//  Ferme le bloc de configuration ou de traitement.
+}
+
+// ============================================================
+// ENREGISTREMENT
+// ============================================================
+
+//  Déclare la fonction submit pour isoler un traitement évaluateur.
+function submit() {
+  //  Déclare validationError pour stocker une donnée ou un calcul de la vue.
+  const validationError =
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    validateForm()
+
+  //  Vérifie cette condition avant de continuer.
+  if (validationError) {
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    window.alert(validationError)
+    //  Retourne le résultat attendu par le reste du code.
+    return
+  //  Ferme le bloc de configuration ou de traitement.
+  }
+
+  //  Exécute cette ligne de logique propre à la partie évaluateur.
+  emit('save', {
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    interviewId:
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      props.interview.id,
+
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    interviewType:
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      props.interview.type,
+
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    questions: {
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      ...form.questions,
+    //  Ajoute cette valeur à la structure ou à la liste en cours.
+    },
+
+    //  Exécute cette ligne de logique propre à la partie évaluateur.
+    recommendation:
+      //  Ajoute cette valeur à la structure ou à la liste en cours.
+      form.recommendation,
+  //  Ferme le bloc de configuration ou de traitement.
+  })
+//  Ferme le bloc de configuration ou de traitement.
+}
+</script>
+
+<template>
+  <!--  Regroupe les champs soumis ensemble. -->
+  <form
+    class="space-y-6"
+    @submit.prevent="submit"
+  >
+
+    <!-- =====================================================
+         EN-TÊTE
+    ====================================================== -->
+
+    <!--  Structure un groupe d’éléments visuels. -->
+    <div>
+      <!--  Affiche une information courte ou décorative. -->
+      <span
+        class="inline-flex rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-black uppercase tracking-wide text-indigo-700"
+      >
+        <!--  Affiche une donnée dynamique dans l’interface. -->
+        {{ interview.typeLabel }}
+      <!--  Ferme l’élément span. -->
+      </span>
+
+      <!--  Affiche un titre de section. -->
+      <h2
+        class="mt-3 text-2xl font-black tracking-tight text-slate-950"
+      >
+        <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+        Évaluation de l'entretien
+      <!--  Ferme l’élément h2. -->
+      </h2>
+
+      <!--  Affiche un paragraphe de texte. -->
+      <p
+        class="mt-2 text-sm font-medium leading-6 text-slate-500"
+      >
+        <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+        Évaluez chaque question avec une note sur 10
+        <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+        et ajoutez obligatoirement votre commentaire.
+      <!--  Ferme l’élément p. -->
+      </p>
+    <!--  Ferme l’élément div. -->
+    </div>
+
+
+    <!-- =====================================================
+         QUESTIONS
+    ====================================================== -->
+
+    <!--  Délimite une zone fonctionnelle de la page. -->
+    <section class="space-y-4">
+
+      <!--  Affiche une carte ou un bloc de contenu autonome. -->
+      <article
+        v-for="(
+          question,
+          index
+        ) in questions"
+        :key="question.id"
+        class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+      >
+
+        <!-- Question -->
+
+        <!--  Structure un groupe d’éléments visuels. -->
+        <div
+          class="border-b border-slate-100 bg-slate-50/80 p-5"
+        >
+
+          <!--  Structure un groupe d’éléments visuels. -->
+          <div
+            class="flex items-start gap-3"
+          >
+
+            <!--  Affiche une information courte ou décorative. -->
+            <span
+              class="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-indigo-600 text-xs font-black text-white"
+            >
+              <!--  Affiche une donnée dynamique dans l’interface. -->
+              {{ index + 1 }}
+            <!--  Ferme l’élément span. -->
+            </span>
+
+            <!--  Structure un groupe d’éléments visuels. -->
+            <div>
+              <!--  Affiche une information courte ou décorative. -->
+              <span
+                class="text-[11px] font-black uppercase tracking-wide text-slate-400"
+              >
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                Question {{ index + 1 }}
+              <!--  Ferme l’élément span. -->
+              </span>
+
+              <!--  Affiche un sous-titre ou un nom important. -->
+              <h3
+                class="mt-1 text-sm font-black leading-6 text-slate-900"
+              >
+                <!--  Affiche une donnée dynamique dans l’interface. -->
+                {{ question.question }}
+              <!--  Ferme l’élément h3. -->
+              </h3>
+            <!--  Ferme l’élément div. -->
+            </div>
+
+          <!--  Ferme l’élément div. -->
+          </div>
+
+        <!--  Ferme l’élément div. -->
+        </div>
+
+
+        <!-- Évaluation -->
+
+        <!--  Structure un groupe d’éléments visuels. -->
+        <div class="grid gap-5 p-5 md:grid-cols-[150px_1fr]">
+
+          <!-- Note -->
+
+          <!--  Structure un groupe d’éléments visuels. -->
+          <div>
+            <!--  Associe un libellé à un champ. -->
+            <label
+              class="block text-xs font-black uppercase tracking-wide text-slate-500"
+            >
+              <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+              Note
+              <!--  Affiche une information courte ou décorative. -->
+              <span class="text-rose-500">
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                *
+              <!--  Ferme l’élément span. -->
+              </span>
+            <!--  Ferme l’élément label. -->
+            </label>
+
+            <!--  Affiche une liste de choix. -->
+            <select
+              class="mt-2 h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              :value="
+                form.questions[question.id]?.score ?? ''
+              "
+              @change="
+                updateScore(
+                  question.id,
+                  $event.target.value,
+                )
+              "
+            >
+
+              <!--  Déclare une option disponible dans la liste. -->
+              <option value="">
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                Choisir
+              <!--  Ferme l’élément option. -->
+              </option>
+
+              <!--  Déclare une option disponible dans la liste. -->
+              <option
+                v-for="n in 10"
+                :key="n"
+                :value="n"
+              >
+                <!--  Affiche une donnée dynamique dans l’interface. -->
+                {{ n }} / 10
+              <!--  Ferme l’élément option. -->
+              </option>
+
+            <!--  Ferme l’élément select. -->
+            </select>
+          <!--  Ferme l’élément div. -->
+          </div>
+
+
+          <!-- Commentaire -->
+
+          <!--  Structure un groupe d’éléments visuels. -->
+          <div>
+
+            <!--  Associe un libellé à un champ. -->
+            <label
+              class="block text-xs font-black uppercase tracking-wide text-slate-500"
+            >
+              <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+              Commentaire
+              <!--  Affiche une information courte ou décorative. -->
+              <span class="text-rose-500">
+                <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+                *
+              <!--  Ferme l’élément span. -->
+              </span>
+            <!--  Ferme l’élément label. -->
+            </label>
+
+            <!--  Affiche une zone de saisie longue. -->
+            <textarea
+              class="mt-2 min-h-[100px] w-full resize-y rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              placeholder="Expliquez votre appréciation pour cette réponse..."
+              :value="
+                form.questions[question.id]?.comment ?? ''
+              "
+              @input="
+                updateComment(
+                  question.id,
+                  $event.target.value,
+                )
+              "
+            />
+
+            <!--  Affiche un paragraphe de texte. -->
+            <p
+              class="mt-1 text-[11px] font-medium text-slate-400"
+            >
+              <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+              Le commentaire est obligatoire.
+            <!--  Ferme l’élément p. -->
+            </p>
+
+          <!--  Ferme l’élément div. -->
+          </div>
+
+        <!--  Ferme l’élément div. -->
+        </div>
+
+      <!--  Ferme l’élément article. -->
+      </article>
+
+    <!--  Ferme l’élément section. -->
+    </section>
+
+
+    <!-- =====================================================
+         RECOMMANDATION
+    ====================================================== -->
+
+    <!--  Délimite une zone fonctionnelle de la page. -->
+    <section
+      class="rounded-3xl border border-slate-200 bg-white p-5"
+    >
+
+      <!--  Structure un groupe d’éléments visuels. -->
+      <div>
+        <!--  Affiche un sous-titre ou un nom important. -->
+        <h3
+          class="text-sm font-black text-slate-900"
+        >
+          <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+          Recommandation finale
+          <!--  Affiche une information courte ou décorative. -->
+          <span class="text-rose-500">*</span>
+        <!--  Ferme l’élément h3. -->
+        </h3>
+
+        <!--  Affiche un paragraphe de texte. -->
+        <p
+          class="mt-1 text-xs font-medium text-slate-400"
+        >
+          <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+          Quelle est votre recommandation concernant ce candidat ?
+        <!--  Ferme l’élément p. -->
+        </p>
+      <!--  Ferme l’élément div. -->
+      </div>
+
+
+      <!--  Structure un groupe d’éléments visuels. -->
+      <div
+        class="mt-4 grid gap-3 sm:grid-cols-3"
+      >
+
+        <!--  Associe un libellé à un champ. -->
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 transition hover:border-emerald-300"
+        >
+
+          <!--  Affiche un champ de saisie utilisateur. -->
+          <input
+            v-model="form.recommendation"
+            type="radio"
+            value="favorable"
+            class="accent-emerald-600"
+          />
+
+          <!--  Affiche une information courte ou décorative. -->
+          <span
+            class="text-sm font-black text-emerald-700"
+          >
+            <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+            Favorable
+          <!--  Ferme l’élément span. -->
+          </span>
+
+        <!--  Ferme l’élément label. -->
+        </label>
+
+
+        <!--  Associe un libellé à un champ. -->
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-2xl border border-amber-100 bg-amber-50 p-4 transition hover:border-amber-300"
+        >
+
+          <!--  Affiche un champ de saisie utilisateur. -->
+          <input
+            v-model="form.recommendation"
+            type="radio"
+            value="reserve"
+            class="accent-amber-600"
+          />
+
+          <!--  Affiche une information courte ou décorative. -->
+          <span
+            class="text-sm font-black text-amber-700"
+          >
+            <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+            À revoir
+          <!--  Ferme l’élément span. -->
+          </span>
+
+        <!--  Ferme l’élément label. -->
+        </label>
+
+
+        <!--  Associe un libellé à un champ. -->
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 transition hover:border-rose-300"
+        >
+
+          <!--  Affiche un champ de saisie utilisateur. -->
+          <input
+            v-model="form.recommendation"
+            type="radio"
+            value="defavorable"
+            class="accent-rose-600"
+          />
+
+          <!--  Affiche une information courte ou décorative. -->
+          <span
+            class="text-sm font-black text-rose-700"
+          >
+            <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+            Défavorable
+          <!--  Ferme l’élément span. -->
+          </span>
+
+        <!--  Ferme l’élément label. -->
+        </label>
+
+      <!--  Ferme l’élément div. -->
+      </div>
+
+    <!--  Ferme l’élément section. -->
+    </section>
+
+
+    <!-- =====================================================
+         BOUTON
+    ====================================================== -->
+
+    <!--  Structure un groupe d’éléments visuels. -->
+    <div
+      class="flex justify-end border-t border-slate-100 pt-5"
+    >
+
+      <!--  Affiche un bouton d’action pour l’utilisateur. -->
+      <button
+        type="submit"
+        class="inline-flex h-12 items-center justify-center rounded-2xl bg-indigo-600 px-7 text-sm font-black text-white shadow-lg shadow-indigo-500/15 transition hover:-translate-y-0.5 hover:bg-slate-950 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 active:scale-[0.98]"
+      >
+        <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
+        Enregistrer l'évaluation →
+      <!--  Ferme l’élément button. -->
+      </button>
+
+    <!--  Ferme l’élément div. -->
+    </div>
+
+  <!--  Ferme l’élément form. -->
+  </form>
+</template>

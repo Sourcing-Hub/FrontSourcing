@@ -2,6 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
 
+import MyInterviewsView from '../views/evaluator/MyInterviewsView.vue'
+import MyCandidatesView from '../views/evaluator/MyCandidatesView.vue'
+import CandidateDetailView from '../views/evaluator/CandidateDetailView.vue'
+import ConductInterviewView from '../views/evaluator/ConductInterviewView.vue'
+import EvaluationView from '../views/evaluator/EvaluationView.vue'
+import EvaluationValidationView from '../views/evaluator/EvaluationValidationView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -21,6 +28,13 @@ const router = createRouter({
       path: '/confirmation-presence/:token',
       name: 'confirmation-presence',
       component: () => import('../views/ConfirmationPresenceView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/auth/reinit-mdp/confirmer/:token',
+      name: 'reinit-mdp-confirmer',
+      component: () => import('../views/ReinitialisationPasswordView.vue'),
+      meta: { requiresAuth: false },
       meta: { requiresAuth: false },
     },
     {
@@ -119,28 +133,105 @@ const router = createRouter({
       component: () => import('../views/ScanCandidatView.vue'),
       meta: { requiresAuth: true },
     },
+
+    // ============================================================
+    // ROUTES ÉVALUATEUR
+    // ============================================================
+
+    {
+      path: '/evaluator/interviews',
+      name: 'evaluator-interviews',
+      component: MyInterviewsView,
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/evaluator/candidates',
+      name: 'evaluator-candidates',
+      component: MyCandidatesView,
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/evaluator/candidates/:candidateId',
+      name: 'evaluator-candidate-detail',
+      component: CandidateDetailView,
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/evaluator/interviews/:interviewId',
+      name: 'evaluator-conduct-interview',
+      component: ConductInterviewView,
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/evaluator/interviews/:interviewId/evaluation',
+      name: 'evaluator-evaluation',
+      component: EvaluationView,
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/evaluator/interviews/:interviewId/evaluation/validation',
+      name: 'evaluator-evaluation-validation',
+      component: EvaluationValidationView,
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
-router.beforeEach((to, from, next) => {
+/**
+ * Garde de navigation globale : contrôle l'authentification et force la complétion du profil.
+ */
+router.beforeEach((to) => {
   const authStore = useAuthStore()
 
+  // Utilisateur non authentifié
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ name: 'login' })
-  } else if (to.name === 'login' && authStore.isAuthenticated) {
-    next({ name: 'dashboard' })
-  } else if (authStore.isAuthenticated && to.meta.requiresAuth) {
-    // Si l'utilisateur est authentifié et que la route nécessite l'auth
-    if (!authStore.user?.profilComplet && to.name !== 'profil') {
-      // Rediriger de force vers /profil si le profil n'est pas complet
-      next({ name: 'profil' })
-    } else {
-      next()
-    }
-  } else {
-    next()
+    return { name: 'login' }
   }
+
+  // Utilisateur déjà authentifié
+  if (to.name === 'login' && authStore.isAuthenticated) {
+    // Evaluateur → espace évaluateur
+    if (authStore.user?.role === 'Evaluateur') {
+      return { name: 'evaluator-interviews' }
+    }
+
+    // Autres rôles → dashboard
+    return { name: 'dashboard' }
+  }
+
+  // Les routes Evaluateur ne sont pas bloquées par profilComplet
+  const isEvaluatorRoute =
+    typeof to.name === 'string' &&
+    to.name.startsWith('evaluator-')
+
+  if (
+    authStore.isAuthenticated &&
+    isEvaluatorRoute &&
+    authStore.user?.role !== 'Evaluateur'
+  ) {
+    return { name: 'dashboard' }
+  }
+
+  // Vérification du profil pour les autres espaces
+  if (
+    authStore.isAuthenticated &&
+    to.meta.requiresAuth &&
+    !isEvaluatorRoute &&
+    !authStore.user?.profilComplet &&
+    to.name !== 'profil'
+  ) {
+    return { name: 'profil' }
+  }
+
+  return true
 })
+
+  // Vérification de la complétion du profil
 
 export default router
 
