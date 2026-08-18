@@ -37,7 +37,7 @@ const activate = async () => {
     if (loginSuccess) {
       // Le guard de route dans router/index.js forcera la redirection vers /profil
       // car le profil de ce nouvel utilisateur n'est pas encore complet.
-      router.push('/')
+      router.push('/dashboard')
     } else {
       isSuccess.value = true
     }

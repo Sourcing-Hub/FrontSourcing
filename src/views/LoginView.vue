@@ -27,7 +27,7 @@ const resetError = ref('')
 const handleLogin = async () => {
   const success = await authStore.login(email.value, password.value)
   if (success) {
-    router.push('/')
+    router.push('/dashboard')
   }
 }
 
@@ -224,7 +224,7 @@ const handleResetPassword = async () => {
           <!-- Lien candidat -->
           <div class="text-center pt-3 border-t border-gray-100">
             <router-link
-              to="/postuler"
+              to="/"
               class="text-xs font-bold text-[#CE0033] hover:text-[#a8002a] transition-colors"
             >
               Vous souhaitez postuler ? Découvrir nos campagnes

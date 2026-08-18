@@ -33,9 +33,29 @@ const filteredAssignments = computed(() => {
   const query = search.value.trim().toLocaleLowerCase('fr')
   return (detail.value?.affectations || []).filter((item) => !query || `${item.nom} ${item.numero} ${item.email}`.toLocaleLowerCase('fr').includes(query))
 })
-const formatDate = (value) => new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${value}T12:00:00`))
-const formatTime = (value) => value?.slice(0, 5)
-const sessionLabel = (session) => `${session.cohorteNom} — ${session.etapeNom} · ${formatDate(session.date)} · ${formatTime(session.heureDebut)}`
+const getInitials = (name) => {
+  if (!name) return '?'
+  return name.trim().split(/\s+/).map((n) => n[0]).slice(0, 2).join('').toUpperCase() || '?'
+}
+const formatDate = (value) => {
+  if (!value) return ''
+  try {
+    const d = new Date(String(value).includes('T') ? value : `${value}T12:00:00`)
+    if (isNaN(d.getTime())) return String(value)
+    return new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d)
+  } catch {
+    return String(value)
+  }
+}
+const formatTime = (value) => value ? String(value).slice(0, 5) : ''
+const sessionLabel = (session) => {
+  if (!session) return ''
+  const cohorte = session.cohorteNom || ''
+  const etape = session.etapeNom || ''
+  const dateStr = formatDate(session.date)
+  const timeStr = formatTime(session.heureDebut)
+  return `${cohorte} — ${etape} · ${dateStr} · ${timeStr}`
+}
 const presenceLabel = (status) => status === 'PRESENT' ? 'Présent' : status === 'ABSENT' ? 'Absent' : 'À pointer'
 
 const extractToken = (value) => {
@@ -142,30 +162,34 @@ const loadSessions = async () => {
   error.value = ''
   try {
     const { data } = await api.get('evaluations/emargement/sessions/')
-    if (data.length) {
-      sessions.value = data
-    } else {
-      demoMode.value = true
-      sessions.value = demoSessions
+    sessions.value = data || []
+    demoMode.value = false
+    if (!selectedSessionId.value && sessions.value.length) {
+      selectedSessionId.value = sessions.value[0].id
     }
-    if (!selectedSessionId.value && sessions.value.length) selectedSessionId.value = sessions.value[0].id
-    if (selectedSessionId.value) await loadDetail()
-  } catch {
-    demoMode.value = true
-    sessions.value = demoSessions
-    if (!selectedSessionId.value) selectedSessionId.value = sessions.value[0]?.id || ''
-    if (selectedSessionId.value) await loadDetail()
-    error.value = ''
-  } finally { loading.value = false }
+    if (selectedSessionId.value) {
+      await loadDetail()
+    }
+  } catch (err) {
+    error.value = parseBackendError(err)
+  } finally {
+    loading.value = false
+  }
 }
 const loadDetail = async () => {
-  if (!selectedSessionId.value) return
+  if (!selectedSessionId.value) {
+    detail.value = null
+    return
+  }
   loading.value = true
   try {
-    detail.value = demoMode.value
-      ? demoDetails[selectedSessionId.value]
-      : (await api.get(`evaluations/emargement/sessions/${selectedSessionId.value}/`)).data
-  } catch (err) { error.value = parseBackendError(err) } finally { loading.value = false }
+    const { data } = await api.get(`evaluations/emargement/sessions/${selectedSessionId.value}/`)
+    detail.value = data
+  } catch (err) {
+    error.value = parseBackendError(err)
+  } finally {
+    loading.value = false
+  }
 }
 const markPresence = async (assignment, statutPresence) => {
   savingId.value = assignment.id
@@ -208,13 +232,13 @@ onBeforeUnmount(stopCamera)
     <div v-if="loading && !detail" class="flex h-56 items-center justify-center"><Loader2 class="h-8 w-8 animate-spin text-primary-600" /></div>
     <template v-else-if="detail">
       <section class="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-primary-50 p-5"><div><p class="text-xs font-bold uppercase tracking-wide text-primary-700">{{ detail.session.cohorteNom }}</p><h3 class="mt-1 font-bold text-[#00313C]">{{ detail.session.etapeNom }}</h3><p class="mt-1 text-sm text-slate-600"><CalendarDays class="mr-1 inline h-4 w-4" />{{ formatDate(detail.session.date) }} · {{ formatTime(detail.session.heureDebut) }} – {{ formatTime(detail.session.heureFin) }}</p></div><div class="flex items-center gap-5"><div class="flex gap-4 text-center text-sm"><span><b class="block text-lg text-emerald-700">{{ selectedSession?.presents || 0 }}</b>Présents</span><span><b class="block text-lg text-red-600">{{ selectedSession?.absents || 0 }}</b>Absents</span><span><b class="block text-lg text-amber-600">{{ selectedSession?.enAttente || 0 }}</b>À pointer</span></div><button class="scan-button" @click="openScanner"><ScanLine class="h-4 w-4" />Scanner une convocation</button></div></section>
-      <section class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"><div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><h3 class="font-bold text-[#00313C]">Candidats convoqués</h3><label class="relative"><Search class="absolute left-3 top-2.5 h-4 w-4 text-slate-400" /><input v-model="search" class="input-field h-9 pl-9" placeholder="Rechercher…" /></label></div><div class="max-h-[480px] overflow-y-auto"><div v-for="assignment in filteredAssignments" :key="assignment.id" class="flex flex-wrap items-center gap-3 border-b border-slate-50 px-5 py-3 last:border-0"><span class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-primary-700">{{ assignment.nom.split(' ').map((name) => name[0]).slice(0, 2).join('') }}</span><div class="min-w-48 flex-1"><p class="text-sm font-bold text-[#00313C]">{{ assignment.nom }}</p><p class="text-xs text-slate-500">{{ assignment.numero }} · {{ assignment.email }}</p></div><span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="assignment.statutPresence === 'PRESENT' ? 'bg-emerald-50 text-emerald-700' : assignment.statutPresence === 'ABSENT' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'">{{ assignment.statutPresence === 'PRESENT' ? 'Présent' : assignment.statutPresence === 'ABSENT' ? 'Absent' : 'À pointer' }}</span><div class="flex gap-2"><button class="presence-btn presence-btn-ok" :disabled="savingId === assignment.id" @click="markPresence(assignment, 'PRESENT')"><UserCheck class="mr-1 h-4 w-4" />Présent</button><button class="presence-btn presence-btn-no" :disabled="savingId === assignment.id" @click="markPresence(assignment, 'ABSENT')"><UserX class="mr-1 h-4 w-4" />Absent</button></div></div></div><div class="flex justify-end border-t border-slate-100 bg-slate-50 p-4"><button class="btn-primary bg-red-600 hover:bg-red-700" :disabled="closing" @click="closeSession"><Loader2 v-if="closing" class="mr-2 h-4 w-4 animate-spin" />Clôturer l’émargement</button></div></section>
+      <section class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"><div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><h3 class="font-bold text-[#00313C]">Candidats convoqués</h3><label class="relative"><Search class="absolute left-3 top-2.5 h-4 w-4 text-slate-400" /><input v-model="search" class="input-field h-9 pl-9" placeholder="Rechercher…" /></label></div><div class="max-h-[480px] overflow-y-auto"><div v-for="assignment in filteredAssignments" :key="assignment.id" class="flex flex-wrap items-center gap-3 border-b border-slate-50 px-5 py-3 last:border-0"><span class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-primary-700">{{ getInitials(assignment.nom) }}</span><div class="min-w-48 flex-1"><p class="text-sm font-bold text-[#00313C]">{{ assignment.nom }}</p><p class="text-xs text-slate-500">{{ assignment.numero }} · {{ assignment.email }}</p></div><span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="assignment.statutPresence === 'PRESENT' ? 'bg-emerald-50 text-emerald-700' : assignment.statutPresence === 'ABSENT' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'">{{ assignment.statutPresence === 'PRESENT' ? 'Présent' : assignment.statutPresence === 'ABSENT' ? 'Absent' : 'À pointer' }}</span><div class="flex gap-2"><button class="presence-btn presence-btn-ok" :disabled="savingId === assignment.id" @click="markPresence(assignment, 'PRESENT')"><UserCheck class="mr-1 h-4 w-4" />Présent</button><button class="presence-btn presence-btn-no" :disabled="savingId === assignment.id" @click="markPresence(assignment, 'ABSENT')"><UserX class="mr-1 h-4 w-4" />Absent</button></div></div></div><div class="flex justify-end border-t border-slate-100 bg-slate-50 p-4"><button class="btn-primary bg-red-600 hover:bg-red-700" :disabled="closing" @click="closeSession"><Loader2 v-if="closing" class="mr-2 h-4 w-4 animate-spin" />Clôturer l’émargement</button></div></section>
     </template>
     <div v-if="scanOpen" class="scan-overlay" role="dialog" aria-modal="true" aria-labelledby="scan-title" @click.self="closeScanner">
       <section class="scan-dialog">
         <div class="flex items-start justify-between gap-4"><div><div class="flex items-center gap-2 text-primary-700"><ClipboardCheck class="h-5 w-5" /><h3 id="scan-title" class="font-bold">Scanner une convocation</h3></div><p class="mt-1 text-sm text-slate-500">Scannez le QR code, ou collez le lien de la convocation.</p></div><button class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Fermer" @click="closeScanner"><X class="h-5 w-5" /></button></div>
         <div v-if="!scannedCandidate" class="mt-5 space-y-4"><div class="camera-preview"><video ref="video" muted playsinline></video><div v-if="!scannerActive" class="camera-placeholder"><Camera class="h-8 w-8" /><span>Prêt à scanner votre QR code</span></div></div><button class="btn-secondary w-full justify-center" :disabled="scannerActive" @click="startCamera"><Camera class="mr-2 h-4 w-4" />{{ scannerActive ? 'Caméra active…' : 'Ouvrir la caméra' }}</button><div class="relative flex items-center py-1"><span class="h-px flex-1 bg-slate-200"></span><span class="px-3 text-xs text-slate-400">ou</span><span class="h-px flex-1 bg-slate-200"></span></div><form class="flex gap-2" @submit.prevent="readConvocation()"><input v-model="scanValue" class="input-field min-w-0 flex-1" placeholder="Lien ou code de convocation" autofocus /><button class="btn-primary shrink-0" :disabled="scanLoading || !scanValue.trim()"><Loader2 v-if="scanLoading" class="h-4 w-4 animate-spin" /><span v-else>Lire</span></button></form></div>
-        <div v-else class="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-4"><div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">{{ scannedCandidate.nom.split(' ').map((name) => name[0]).slice(0, 2).join('') }}</span><div class="min-w-0 flex-1"><p class="font-bold text-[#00313C]">{{ scannedCandidate.nom }}</p><p class="truncate text-sm text-slate-500">{{ scannedCandidate.numero }} · {{ scannedCandidate.email }}</p><p class="mt-2 text-xs font-semibold text-slate-600">{{ scannedCandidate.session?.etapeNom }} · {{ scannedCandidate.session?.date }}</p></div><span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="scannedCandidate.statutPresence === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">{{ presenceLabel(scannedCandidate.statutPresence) }}</span></div><div class="mt-4 flex flex-wrap justify-end gap-2"><button class="btn-secondary" :disabled="scanSaving" @click="scannedCandidate = null">Scanner un autre</button><button class="scan-button" :disabled="scanSaving || scannedCandidate.statutPresence === 'PRESENT'" @click="validateScannedPresence"><Loader2 v-if="scanSaving" class="h-4 w-4 animate-spin" /><CheckCircle2 v-else class="h-4 w-4" />{{ scannedCandidate.statutPresence === 'PRESENT' ? 'Présence déjà validée' : 'Valider la présence' }}</button></div></div>
+        <div v-else class="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-4"><div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">{{ getInitials(scannedCandidate.nom) }}</span><div class="min-w-0 flex-1"><p class="font-bold text-[#00313C]">{{ scannedCandidate.nom }}</p><p class="truncate text-sm text-slate-500">{{ scannedCandidate.numero }} · {{ scannedCandidate.email }}</p><p class="mt-2 text-xs font-semibold text-slate-600">{{ scannedCandidate.session?.etapeNom }} · {{ scannedCandidate.session?.date }}</p></div><span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="scannedCandidate.statutPresence === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">{{ presenceLabel(scannedCandidate.statutPresence) }}</span></div><div class="mt-4 flex flex-wrap justify-end gap-2"><button class="btn-secondary" :disabled="scanSaving" @click="scannedCandidate = null">Scanner un autre</button><button class="scan-button" :disabled="scanSaving || scannedCandidate.statutPresence === 'PRESENT'" @click="validateScannedPresence"><Loader2 v-if="scanSaving" class="h-4 w-4 animate-spin" /><CheckCircle2 v-else class="h-4 w-4" />{{ scannedCandidate.statutPresence === 'PRESENT' ? 'Présence déjà validée' : 'Valider la présence' }}</button></div></div>
         <p v-if="scanError" class="mt-4 flex gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700"><AlertCircle class="mt-0.5 h-4 w-4 shrink-0" />{{ scanError }}</p>
       </section>
     </div>

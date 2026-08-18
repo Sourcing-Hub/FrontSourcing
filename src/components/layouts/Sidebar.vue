@@ -48,7 +48,7 @@ function goHome() {
     return
   }
 
-  router.push('/')
+  router.push('/dashboard')
 }
 
 /* ============================================================
@@ -81,7 +81,7 @@ const navigation = computed(() => {
       {
         label: 'Tableau de bord',
         icon: 'dashboard',
-        href: '/',
+        href: '/dashboard',
       },
       {
         label: 'Formations',
@@ -99,19 +99,19 @@ const navigation = computed(() => {
         href: '/formulaires',
       },
       {
-        label: 'planification',
-        icon: '',
-        href: '/planification'
+        label: 'Planification',
+        icon: 'calendar',
+        href: '/planification',
       },
       {
-        label: 'convocations',
-        icon: '',
-        href: '/convocations'
+        label: 'Convocations',
+        icon: 'clipboard',
+        href: '/convocations',
       },
       {
-        label: 'emargement',
-        icon: '',
-        href: '/emargement'
+        label: 'Émargement',
+        icon: 'clipboard',
+        href: '/emargement',
       },
       {
         label: 'Candidatures',
@@ -130,12 +130,12 @@ const navigation = computed(() => {
      ÉQUIPE PÉDAGOGIQUE
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Equipe Pédagogique') {
+  if (role === 'Equipe Pédagogique' || role === 'Équipe Pédagogique' || role === 'Equipe Pedagogique') {
     return [
       {
         label: 'Tableau de bord',
         icon: 'dashboard',
-        href: '/',
+        href: '/dashboard',
       },
       {
         label: 'Formations',
@@ -151,6 +151,21 @@ const navigation = computed(() => {
         label: 'Formulaires',
         icon: 'file',
         href: '/formulaires',
+      },
+      {
+        label: 'Planification',
+        icon: 'calendar',
+        href: '/planification',
+      },
+      {
+        label: 'Convocations',
+        icon: 'clipboard',
+        href: '/convocations',
+      },
+      {
+        label: 'Émargement',
+        icon: 'clipboard',
+        href: '/emargement',
       },
       {
         label: 'Candidatures',
@@ -164,12 +179,12 @@ const navigation = computed(() => {
      ÉQUIPE GESTION DE PROJET
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Equipe Gestion de Projet') {
+  if (role === 'Equipe Gestion de Projet' || role === 'Équipe Gestion de Projet') {
     return [
       {
         label: 'Tableau de bord',
         icon: 'dashboard',
-        href: '/',
+        href: '/dashboard',
       },
       {
         label: 'Formations',
@@ -187,24 +202,24 @@ const navigation = computed(() => {
         href: '/formulaires',
       },
       {
+        label: 'Planification',
+        icon: 'calendar',
+        href: '/planification',
+      },
+      {
+        label: 'Convocations',
+        icon: 'clipboard',
+        href: '/convocations',
+      },
+      {
+        label: 'Émargement',
+        icon: 'clipboard',
+        href: '/emargement',
+      },
+      {
         label: 'Candidatures',
         icon: 'clipboard',
         href: '/candidatures',
-      },
-      {
-        label: 'planification',
-        icon: '',
-        href: '/planification'
-      },
-      {
-        label: 'convocations',
-        icon: '',
-        href: '/convocations'
-      },
-      {
-        label: 'emargement',
-        icon: '',
-        href: '/emargement'
       },
     ]
   }
@@ -213,7 +228,7 @@ const navigation = computed(() => {
      ÉVALUATEUR
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Evaluateur') {
+  if (role === 'Evaluateur' || role === 'Évaluateur') {
     return [
       
       {
@@ -237,7 +252,7 @@ const navigation = computed(() => {
     {
       label: 'Tableau de bord',
       icon: 'dashboard',
-      href: '/',
+      href: '/dashboard',
     },
   ]
 })
@@ -433,8 +448,8 @@ const icons = {
    ============================================================ */
 
 function isActive(href) {
-  if (href === '/') {
-    return route.path === '/'
+  if (href === '/dashboard') {
+    return route.path === '/dashboard'
   }
 
   return route.path === href || route.path.startsWith(`${href}/`)
@@ -611,17 +626,16 @@ const userRole = computed(() => {
           Navigation
         </p>
 
-        <button
+        <RouterLink
           v-for="item in navigation"
           :key="item.href"
-          type="button"
+          :to="item.href"
           class="group flex min-h-12 w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-bold transition-all duration-200"
           :class="
             isActive(item.href)
               ? 'bg-white text-[#00313C] shadow-lg shadow-black/10'
               : 'text-white/65 hover:bg-white/10 hover:text-white'
           "
-          @click="router.push(item.href)"
         >
 
           <span
@@ -645,7 +659,7 @@ const userRole = computed(() => {
             {{ item.label }}
           </span>
 
-        </button>
+        </RouterLink>
 
       </nav>
 
@@ -663,7 +677,7 @@ const userRole = computed(() => {
         <button
           type="button"
           class="group flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-bold text-white/55 transition-all duration-200 hover:bg-white/10 hover:text-white"
-          
+          @click="router.push('/profil')"
         >
 
           <span

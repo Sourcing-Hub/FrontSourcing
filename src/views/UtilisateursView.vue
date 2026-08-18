@@ -29,6 +29,8 @@ const currentTab = ref('TOUS') // TOUS, PEDAGOGIE, GESTION
 const showInviteModal = ref(false)
 const inviteForm = ref({
   email: '',
+  prenom: '',
+  nom: '',
   role: ''  // L'admin doit toujours choisir explicitement
 })
 
@@ -50,7 +52,7 @@ const filteredUsers = computed(() => {
 
 const openInviteModal = () => {
   // Toujours repartir à zéro — l'admin doit choisir le rôle explicitement
-  inviteForm.value = { email: '', role: '' }
+  inviteForm.value = { email: '', prenom: '', nom: '', role: '' }
   store.error = null
   showInviteModal.value = true
 }
@@ -297,6 +299,27 @@ const handleDeleteUser = async (user) => {
                   
                   <div v-if="store.error" class="bg-red-50 text-red-600 p-3 rounded text-sm border border-red-100">
                     {{ store.error }}
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                      <input 
+                        type="text" 
+                        v-model="inviteForm.prenom"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
+                        placeholder="Ex: Souleymane"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                      <input 
+                        type="text" 
+                        v-model="inviteForm.nom"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
+                        placeholder="Ex: Ba"
+                      />
+                    </div>
                   </div>
 
                   <div>

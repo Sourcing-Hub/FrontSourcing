@@ -41,7 +41,7 @@ const submitProfile = async () => {
     isProfileSuccess.value = true
     setTimeout(() => {
       if (!authStore.user?.profilComplet) {
-        router.push('/')
+        router.push('/dashboard')
       } else {
         isProfileSuccess.value = false
       }

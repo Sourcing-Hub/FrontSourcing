@@ -12,7 +12,7 @@ const campagnesStore = useCampagnesStore()
 const authStore = useAuthStore()
 const modalStore = useModalStore()
 const selectedEtape = ref('')
-const selectedCategory = ref('information')
+const selectedCategory = ref('all')
 const selectedFormation = ref('')
 const selectedCohorte = ref('')
 const selectedStatus = ref('all')
@@ -33,7 +33,7 @@ const emptyPlanning = () => ({
 })
 const form = reactive(emptyPlanning())
 const configuration = reactive({
-  formation: '', cohorte: '', etape: '', lieu: '', localisation: '', coachTechnique: '', coachMotivation: '',
+  formation: '', cohorte: '', etape: '', lieu: '', localisation: '', encadreur: '',
   jours: [],
 })
 
@@ -69,6 +69,7 @@ const getCategory = (etapeNom) => {
   return 'other'
 }
 const categoryTabs = computed(() => [
+  { id: 'all', label: 'Toutes les étapes', count: planningsStore.plannings.length },
   { id: 'information', label: 'Réunion d’information', count: planningsStore.plannings.filter((planning) => getCategory(planning.etape_nom) === 'information').length },
   { id: 'technique', label: 'Entretien technique et motivation', count: planningsStore.plannings.filter((planning) => getCategory(planning.etape_nom) === 'technique').length },
   { id: 'final', label: 'Entretien final', count: planningsStore.plannings.filter((planning) => getCategory(planning.etape_nom) === 'final').length },
@@ -77,7 +78,7 @@ const filteredPlannings = computed(() => {
   const today = new Date().toISOString().slice(0, 10)
   const query = normalize(searchTerm.value.trim())
   return planningsStore.plannings.filter((planning) => {
-    const matchesCategory = getCategory(planning.etape_nom) === selectedCategory.value
+    const matchesCategory = !selectedCategory.value || selectedCategory.value === 'all' || getCategory(planning.etape_nom) === selectedCategory.value
     const matchesFormation = !selectedFormation.value || planning.formation_nom === selectedFormationName.value
     const matchesCohorte = !selectedCohorte.value || planning.cohorte_nom === selectedCohorte.value
     const matchesStatus = selectedStatus.value === 'all'
@@ -92,9 +93,28 @@ const configurationEtapes = computed(() =>
   cohortes.value.find((cohorte) => cohorte.id === configuration.cohorte)?.etapes || [],
 )
 const configurationCohortes = computed(() =>
-  cohortes.value.filter((cohorte) => cohorte.formation === configuration.formation),
+  cohortes.value.filter((cohorte) => !configuration.formation || cohorte.formation === configuration.formation),
 )
-const stepForType = (type) => configurationEtapes.value.find((etape) => getCategory(etape.nom) === type)
+const displayedEtapes = computed(() => {
+  if (configuration.cohorte) {
+    const cohorteObj = cohortes.value.find((c) => c.id === configuration.cohorte)
+    return (cohorteObj?.etapes || []).map((e) => ({
+      ...e,
+      label: `${e.nom} (${cohorteObj?.nom || ''})`,
+    }))
+  }
+  if (configuration.formation) {
+    const formationCohortes = cohortes.value.filter((c) => c.formation === configuration.formation)
+    return formationCohortes.flatMap((c) => (c.etapes || []).map((e) => ({
+      ...e,
+      label: `${e.nom} — ${c.nom}`,
+    })))
+  }
+  return etapes.value
+})
+
+const stepForType = (type) => displayedEtapes.value.find((etape) => getCategory(etape.nom) === type)
+
 const canManage = computed(() =>
   authStore.user?.role === 'Administrateur' || authStore.user?.role === 'Équipe Gestion de Projet',
 )
@@ -113,26 +133,58 @@ onBeforeUnmount(() => {
 
 const openCreate = () => {
   editingId.value = null
-  const presetEtape = etapes.value.find((etape) => etape.id === selectedEtape.value)
-  Object.assign(configuration, { formation: presetEtape?.formation || '', cohorte: presetEtape?.cohorte || '', etape: selectedEtape.value, lieu: '', localisation: '', coachTechnique: '', coachMotivation: '', jours: [] })
+  const defaultFormation = selectedFormation.value || (formations.value[0]?.id || '')
+  const availableCohortes = cohortes.value.filter((c) => !defaultFormation || c.formation === defaultFormation)
+  const defaultCohorte = availableCohortes[0]?.id || (cohortes.value[0]?.id || '')
+  const availableEtapes = defaultCohorte
+    ? (cohortes.value.find((c) => c.id === defaultCohorte)?.etapes || [])
+    : etapes.value
+
+  Object.assign(configuration, {
+    formation: defaultFormation,
+    cohorte: defaultCohorte,
+    etape: availableEtapes[0]?.id || (etapes.value[0]?.id || ''),
+    lieu: '',
+    localisation: '',
+    encadreur: '',
+    jours: [],
+  })
   addDay()
   selectedDayIndex.value = 0
   showForm.value = true
 }
 
 const selectConfigurationFormation = () => {
-  configuration.cohorte = ''
-  configuration.etape = ''
+  if (configuration.formation && configurationCohortes.value.length > 0) {
+    configuration.cohorte = configurationCohortes.value[0].id
+  } else {
+    configuration.cohorte = ''
+  }
+  selectConfigurationCohorte()
 }
 const selectConfigurationCohorte = () => {
-  configuration.etape = ''
+  if (displayedEtapes.value.length > 0) {
+    configuration.etape = displayedEtapes.value[0].id
+  } else {
+    configuration.etape = ''
+  }
+}
+const onEtapeSelectChange = () => {
+  const selectedObj = etapes.value.find((e) => e.id === configuration.etape)
+  if (selectedObj) {
+    if (!configuration.cohorte) configuration.cohorte = selectedObj.cohorte
+    if (!configuration.formation) configuration.formation = selectedObj.formation
+  }
 }
 const resetCohorteFilter = () => {
   selectedCohorte.value = ''
 }
 const selectStepType = (type) => {
   const etape = stepForType(type)
-  if (etape) configuration.etape = etape.id
+  if (etape) {
+    configuration.etape = etape.id
+    onEtapeSelectChange()
+  }
 }
 
 const openEdit = (planning) => {
@@ -336,10 +388,11 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
           <table class="w-full min-w-[780px] text-left">
             <caption class="sr-only">Liste des plannings</caption>
             <thead>
-              <tr class="planning-table-header"><th>Formation / promo</th><th>Rendez-vous</th><th>Lieu</th><th>Capacité</th><th>Statut</th><th class="text-right">Actions</th></tr>
+              <tr class="planning-table-header"><th>Étape de sélection</th><th>Formation / promo</th><th>Rendez-vous</th><th>Lieu</th><th>Capacité</th><th>Statut</th><th class="text-right">Actions</th></tr>
             </thead>
             <tbody>
               <tr v-for="planning in filteredPlannings" :key="planning.id" class="planning-table-row">
+                <td><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#CE0033]/10 text-[#CE0033]">{{ planning.etape_nom || 'Étape non renseignée' }}</span></td>
                 <td><div class="planning-program"><strong>{{ planning.formation_nom || 'Formation non renseignée' }}</strong><span>{{ planning.cohorte_nom || 'Promo non renseignée' }}</span></div></td>
                 <td><div class="planning-appointment"><strong>{{ formatDate(planning.date) }}</strong><span>{{ planning.heureDebut?.slice(0, 5) }} — {{ planning.heureFin?.slice(0, 5) }}</span></div></td>
                 <td><div class="planning-place"><MapPin class="h-4 w-4 shrink-0 text-primary-600" /><span>{{ planning.lieu || planning.localisation || 'Non renseigné' }}</span></div></td>
@@ -386,17 +439,62 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
         </div>
         <div v-else class="flex-1 overflow-y-auto p-5 sm:p-6">
           <div class="mb-5 grid gap-4 md:grid-cols-[0.8fr_0.8fr_1.2fr]">
-            <div><label class="form-label">Formation</label><select v-model="configuration.formation" class="input-field mt-1" required @change="selectConfigurationFormation"><option value="" disabled>Sélectionnez une formation</option><option v-for="formation in formations" :key="formation.id" :value="formation.id">{{ formation.nom }}</option></select></div>
-            <div><label class="form-label">Promo / cohorte</label><select v-model="configuration.cohorte" class="input-field mt-1" required :disabled="!configuration.formation" @change="selectConfigurationCohorte"><option value="" disabled>Sélectionnez une promo</option><option v-for="cohorte in configurationCohortes" :key="cohorte.id" :value="cohorte.id">{{ cohorte.nom }}</option></select></div>
-            <div><label class="form-label">Lieu ou modalité</label><input v-model="configuration.lieu" class="input-field mt-1" placeholder="Ex. Salle de réunion A / Visioconférence" /></div>
-          </div>
-          <section class="mb-6">
-            <div class="mb-2 flex items-center justify-between"><label class="form-label">Type d'étape de sélection</label><span v-if="configuration.cohorte" class="text-xs text-slate-500">Choisissez le type de créneau à créer</span></div>
-            <div class="step-type-tabs" role="tablist" aria-label="Type d'étape de sélection">
-              <button v-for="type in stepTypes" :key="type.id" type="button" class="step-type-tab" :class="{ 'step-type-tab-active': getCategory(configurationEtapes.find((etape) => etape.id === configuration.etape)?.nom) === type.id }" :disabled="!stepForType(type.id)" role="tab" :aria-selected="getCategory(configurationEtapes.find((etape) => etape.id === configuration.etape)?.nom) === type.id" @click="selectStepType(type.id)">{{ type.label }}</button>
+            <div>
+              <label class="form-label">Formation</label>
+              <select v-model="configuration.formation" class="input-field mt-1" @change="selectConfigurationFormation">
+                <option value="">Toutes les formations</option>
+                <option v-for="formation in formations" :key="formation.id" :value="formation.id">{{ formation.nom }}</option>
+              </select>
             </div>
-            <p v-if="!configuration.cohorte" class="mt-2 text-xs text-slate-500">Sélectionnez d'abord une cohorte pour choisir le type de créneau.</p>
-            <p v-else-if="!configuration.etape" class="mt-2 text-xs text-amber-700">Sélectionnez un type d'étape pour continuer.</p>
+            <div>
+              <label class="form-label">Promo / cohorte</label>
+              <select v-model="configuration.cohorte" class="input-field mt-1" @change="selectConfigurationCohorte">
+                <option value="">Toutes les promos</option>
+                <option v-for="cohorte in configurationCohortes" :key="cohorte.id" :value="cohorte.id">{{ cohorte.nom }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Lieu ou modalité</label>
+              <input v-model="configuration.lieu" class="input-field mt-1" placeholder="Ex. Salle de réunion A / Visioconférence" />
+            </div>
+          </div>
+
+          <section class="mb-6">
+            <div class="mb-2 flex items-center justify-between">
+              <label class="form-label">Étape de sélection <span class="text-red-500">*</span></label>
+              <span class="text-xs text-slate-500">Choisissez l'étape d'évaluation à planifier</span>
+            </div>
+            
+            <!-- Liste déroulante directe des étapes d'évaluation -->
+            <div class="mt-1">
+              <select v-model="configuration.etape" class="input-field" required @change="onEtapeSelectChange">
+                <option value="" disabled>-- Sélectionner l'étape d'évaluation --</option>
+                <option v-for="etape in displayedEtapes" :key="etape.id" :value="etape.id">
+                  {{ etape.label || etape.nom }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Onglets raccourcis par type d'étape -->
+            <div v-if="displayedEtapes.length" class="step-type-tabs mt-3" role="tablist" aria-label="Type d'étape de sélection">
+              <button
+                v-for="type in stepTypes"
+                :key="type.id"
+                type="button"
+                class="step-type-tab"
+                :class="{ 'step-type-tab-active': getCategory(displayedEtapes.find((etape) => etape.id === configuration.etape)?.nom) === type.id }"
+                :disabled="!stepForType(type.id)"
+                role="tab"
+                :aria-selected="getCategory(displayedEtapes.find((etape) => etape.id === configuration.etape)?.nom) === type.id"
+                @click="selectStepType(type.id)"
+              >
+                {{ type.label }}
+              </button>
+            </div>
+
+            <p v-if="!displayedEtapes.length" class="mt-2 text-xs text-amber-700 font-medium">
+              Aucune étape d'évaluation disponible.
+            </p>
           </section>
           <section>
             <p class="section-title">Sélection des jours</p>
@@ -424,9 +522,20 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
               </div>
             </section>
             <section>
-              <p class="section-title">Encadrement de la session</p>
-              <div class="mt-4 space-y-4"><div><label class="form-label">Coach technique référent</label><select v-model="configuration.coachTechnique" class="input-field mt-1"><option value="">Aucun coach attribué</option><option v-for="coach in encadrants" :key="coach.id" :value="coach.id">{{ coach.nomComplet }} — {{ coach.role }}</option></select></div><div><label class="form-label">Coach motivation</label><select v-model="configuration.coachMotivation" class="input-field mt-1"><option value="">Aucun coach attribué</option><option v-for="coach in encadrants" :key="coach.id" :value="coach.id">{{ coach.nomComplet }} — {{ coach.role }}</option></select></div></div>
-              <div class="mt-4 rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-[#00313C]"><p class="font-bold">Note de session</p><p class="mt-1 leading-6">Les coachs recevront une affectation sur chacun des créneaux enregistrés.</p></div>
+              <p class="section-title">Encadreur de la sélection</p>
+              <div class="mt-4">
+                <label class="form-label">Sélectionner un encadreur</label>
+                <select v-model="configuration.encadreur" class="input-field mt-1">
+                  <option value="">Aucun encadreur attribué</option>
+                  <option v-for="user in encadrants" :key="user.id" :value="user.id">
+                    {{ user.nomComplet }} — {{ user.role }}
+                  </option>
+                </select>
+              </div>
+              <div class="mt-4 rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-[#00313C]">
+                <p class="font-bold">Note de session</p>
+                <p class="mt-1 leading-6">L'encadreur sélectionné recevra une affectation sur chacun des créneaux enregistrés.</p>
+              </div>
             </section>
           </div>
           <div class="mt-5 flex flex-wrap gap-x-7 gap-y-2 border-t border-slate-100 bg-slate-50 px-4 py-3 text-sm text-[#00313C]"><span><b>{{ configuration.jours.length }}</b> jour(s) sélectionné(s)</span><span><b>{{ totalSlots }}</b> créneau(x) créé(s)</span><span><b>Capacité : {{ totalCapacity }}</b> candidats</span><span class="ml-auto font-bold text-emerald-700">● Configuration valide</span></div>

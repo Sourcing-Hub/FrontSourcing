@@ -43,6 +43,13 @@ const router = createRouter({
 
     {
       path: '/',
+      name: 'landing',
+      component: () => import('../views/PublicCampagnesView.vue'),
+      meta: { requiresAuth: false },
+    },
+
+    {
+      path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
       meta: { requiresAuth: true },
@@ -121,8 +128,7 @@ const router = createRouter({
     {
       path: '/postuler',
       name: 'postuler-campagnes',
-      component: () => import('../views/PublicCampagnesView.vue'),
-      meta: { requiresAuth: false },
+      redirect: '/',
     },
 
     {
@@ -248,11 +254,12 @@ router.beforeEach((to) => {
     return { name: 'dashboard' }
   }
 
-  // Vérification du profil pour les autres espaces
+  // Vérification du profil uniquement pour les candidats
   if (
     authStore.isAuthenticated &&
     to.meta.requiresAuth &&
     !isEvaluatorRoute &&
+    authStore.user?.role === 'Candidat' &&
     !authStore.user?.profilComplet &&
     to.name !== 'profil'
   ) {
