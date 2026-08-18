@@ -76,7 +76,7 @@ const navigation = computed(() => {
      ADMINISTRATEUR
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'admin') {
+  if (role === 'Administrateur') {
     return [
       {
         label: 'Tableau de bord',
@@ -97,6 +97,21 @@ const navigation = computed(() => {
         label: 'Formulaires',
         icon: 'file',
         href: '/formulaires',
+      },
+      {
+        label: 'planification',
+        icon: '',
+        href: '/planification'
+      },
+      {
+        label: 'convocations',
+        icon: '',
+        href: '/convocations'
+      },
+      {
+        label: 'emargement',
+        icon: '',
+        href: '/emargement'
       },
       {
         label: 'Candidatures',
@@ -175,6 +190,21 @@ const navigation = computed(() => {
         label: 'Candidatures',
         icon: 'clipboard',
         href: '/candidatures',
+      },
+      {
+        label: 'planification',
+        icon: '',
+        href: '/planification'
+      },
+      {
+        label: 'convocations',
+        icon: '',
+        href: '/convocations'
+      },
+      {
+        label: 'emargement',
+        icon: '',
+        href: '/emargement'
       },
     ]
   }
