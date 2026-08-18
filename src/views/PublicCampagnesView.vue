@@ -73,7 +73,7 @@ const filteredCampaigns = computed(() => {
         <div class="flex items-center gap-3">
           <button
             @click="router.push('/login')"
-            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-[#00313C] bg-slate-100 hover:bg-[#CE0033] hover:text-white transition-all duration-300 shadow-xs"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-[#00313C] bg-slate-100 hover:bg-[#CE0033] hover:text-white transition-all duration-300"
           >
             <LogIn class="w-4 h-4" />
             <span>Espace Connexion</span>
@@ -101,7 +101,7 @@ const filteredCampaigns = computed(() => {
 
       <!-- Barre de recherche -->
       <div class="mt-10 max-w-2xl mx-auto">
-        <div class="relative flex items-center shadow-lg shadow-slate-200/60 rounded-2xl bg-white border border-slate-200 focus-within:border-[#CE0033] focus-within:ring-2 focus-within:ring-[#CE0033]/20 transition-all">
+        <div class="relative flex items-center rounded-2xl bg-white border border-slate-200 focus-within:border-[#CE0033] focus-within:ring-2 focus-within:ring-[#CE0033]/20 transition-all">
           <Search class="w-5 h-5 text-slate-400 absolute left-4" />
           <input
             type="text"
@@ -121,7 +121,7 @@ const filteredCampaigns = computed(() => {
 
       <!-- Stats / Points forts -->
       <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-[#CE0033]/10 text-[#CE0033] flex items-center justify-center shrink-0">
             <CheckCircle2 class="w-5 h-5" />
           </div>
@@ -131,7 +131,7 @@ const filteredCampaigns = computed(() => {
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-[#00313C]/10 text-[#00313C] flex items-center justify-center shrink-0">
             <GraduationCap class="w-5 h-5" />
           </div>
@@ -141,7 +141,7 @@ const filteredCampaigns = computed(() => {
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-[#CE0033]/10 text-[#CE0033] flex items-center justify-center shrink-0">
             <Users class="w-5 h-5" />
           </div>
@@ -151,7 +151,7 @@ const filteredCampaigns = computed(() => {
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <Layers class="w-5 h-5" />
           </div>
@@ -186,7 +186,7 @@ const filteredCampaigns = computed(() => {
       </div>
 
       <!-- State: Empty -->
-      <div v-else-if="filteredCampaigns.length === 0" class="text-center py-16 bg-white rounded-3xl border border-slate-200 max-w-md mx-auto shadow-sm p-8">
+      <div v-else-if="filteredCampaigns.length === 0" class="text-center py-16 bg-white rounded-3xl border border-slate-200 max-w-md mx-auto p-8">
         <div class="w-16 h-16 bg-red-50 text-[#CE0033] rounded-2xl flex items-center justify-center mx-auto mb-4">
           <Calendar class="w-8 h-8" />
         </div>
@@ -208,7 +208,7 @@ const filteredCampaigns = computed(() => {
         <div
           v-for="camp in filteredCampaigns"
           :key="camp.id"
-          class="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-[#CE0033]/40 transition-all duration-300 flex flex-col justify-between overflow-hidden relative"
+          class="group bg-white rounded-3xl border border-slate-200 hover:border-[#CE0033]/40 transition-all duration-300 flex flex-col justify-between overflow-hidden relative"
         >
           <!-- Accent line top on hover -->
           <div class="h-1.5 w-full bg-slate-100 group-hover:bg-[#CE0033] transition-colors duration-300"></div>
@@ -254,7 +254,7 @@ const filteredCampaigns = computed(() => {
           <div class="p-6 pt-0">
             <button
               @click="router.push(`/postuler/${camp.id}`)"
-              class="w-full flex items-center justify-center py-3.5 px-4 bg-[#CE0033] hover:bg-[#a8002a] text-white rounded-2xl transition-all duration-200 font-extrabold shadow-md shadow-[#CE0033]/20 group-hover:shadow-lg group-hover:shadow-[#CE0033]/30 gap-2 text-sm"
+              class="w-full flex items-center justify-center py-3.5 px-4 bg-[#CE0033] hover:bg-[#a8002a] text-white rounded-2xl transition-all duration-200 font-extrabold gap-2 text-sm"
             >
               <span>Déposer ma candidature</span>
               <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -355,7 +355,7 @@ const filteredCampaigns = computed(() => {
             </div>
             <button
               type="submit"
-              class="w-full py-2.5 px-4 bg-white text-slate-900 font-extrabold rounded text-sm hover:bg-slate-100 transition-colors flex items-center justify-center gap-2 shadow-sm"
+              class="w-full py-2.5 px-4 bg-white text-slate-900 font-extrabold rounded text-sm hover:bg-slate-100 transition-colors flex items-center justify-center gap-2"
             >
               <span>S'abonner</span>
               <Mail class="w-4 h-4 text-slate-900 fill-slate-900" />
@@ -382,7 +382,7 @@ const filteredCampaigns = computed(() => {
           <button
             @click="scrollToTop"
             aria-label="Haut de page"
-            class="w-9 h-9 bg-[#CE0033] text-white flex items-center justify-center rounded hover:bg-[#a8002a] transition-colors absolute right-6 top-1/2 -translate-y-1/2 shadow-lg"
+            class="w-9 h-9 bg-[#CE0033] text-white flex items-center justify-center rounded hover:bg-[#a8002a] transition-colors absolute right-6 top-1/2 -translate-y-1/2"
           >
             <ChevronUp class="w-5 h-5" />
           </button>

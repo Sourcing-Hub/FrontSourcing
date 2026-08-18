@@ -249,7 +249,7 @@ const handleDelete = async (id) => {
         >
 
         <div
-          class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full"
+          class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full"
         >
           <form @submit.prevent="handleCreate">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

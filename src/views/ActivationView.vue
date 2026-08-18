@@ -68,7 +68,7 @@ const activate = async () => {
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-      <div class="bg-white/10 backdrop-blur-md py-8 px-4 shadow-2xl sm:rounded-2xl sm:px-10 border border-white/20">
+      <div class="bg-white/10 backdrop-blur-md py-8 px-4 sm:rounded-2xl sm:px-10 border border-white/20">
         
         <div v-if="isSuccess" class="text-center">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4">
@@ -80,7 +80,7 @@ const activate = async () => {
           </p>
           <button
             @click="router.push('/login')"
-            class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none transition-colors"
+            class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none transition-colors"
           >
             Aller à la connexion
           </button>
@@ -103,7 +103,7 @@ const activate = async () => {
                 type="password"
                 v-model="password"
                 required
-                class="appearance-none block w-full px-3 py-2.5 border border-white/10 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm bg-white/5 text-white transition-all duration-200"
+                class="appearance-none block w-full px-3 py-2.5 border border-white/10 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm bg-white/5 text-white transition-all duration-200"
               />
             </div>
           </div>
@@ -118,7 +118,7 @@ const activate = async () => {
                 type="password"
                 v-model="confirmPassword"
                 required
-                class="appearance-none block w-full px-3 py-2.5 border border-white/10 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm bg-white/5 text-white transition-all duration-200"
+                class="appearance-none block w-full px-3 py-2.5 border border-white/10 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm bg-white/5 text-white transition-all duration-200"
               />
             </div>
           </div>
@@ -127,7 +127,7 @@ const activate = async () => {
             <button
               type="submit"
               :disabled="authStore.loading"
-              class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#00313C] focus:ring-[#CE0033] transition-all duration-200 disabled:opacity-50"
+              class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#00313C] focus:ring-[#CE0033] transition-all duration-200 disabled:opacity-50"
             >
               <Loader2 v-if="authStore.loading" class="w-4 h-4 mr-2 animate-spin" />
               Activer mon compte

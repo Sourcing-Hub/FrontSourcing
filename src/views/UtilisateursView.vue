@@ -126,7 +126,7 @@ const handleDeleteUser = async (user) => {
           <div class="mt-4 sm:mt-0">
             <button
               @click="openInviteModal"
-              class="flex items-center px-4 py-2 bg-[#CE0033] text-white rounded-lg hover:bg-[#a8002a] transition-colors shadow-sm font-medium text-sm"
+              class="flex items-center px-4 py-2 bg-[#CE0033] text-white rounded-lg hover:bg-[#a8002a] transition-colors font-medium text-sm"
             >
               <UserPlus class="w-4 h-4 mr-2" />
               Inviter un membre
@@ -139,34 +139,19 @@ const handleDeleteUser = async (user) => {
           <nav class="-mb-px flex space-x-8">
             <button
               @click="currentTab = 'TOUS'"
-              :class="[
-                currentTab === 'TOUS'
-                  ? 'border-[#CE0033] text-[#CE0033]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm'
-              ]"
+              :class="[ currentTab === 'TOUS' ? 'border-[#CE0033] text-[#CE0033]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm' ]"
             >
               Tous les membres
             </button>
             <button
               @click="currentTab = 'PEDAGOGIE'"
-              :class="[
-                currentTab === 'PEDAGOGIE'
-                  ? 'border-[#CE0033] text-[#CE0033]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm'
-              ]"
+              :class="[ currentTab === 'PEDAGOGIE' ? 'border-[#CE0033] text-[#CE0033]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm' ]"
             >
               Équipe Pédagogique
             </button>
             <button
               @click="currentTab = 'GESTION'"
-              :class="[
-                currentTab === 'GESTION'
-                  ? 'border-[#CE0033] text-[#CE0033]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm'
-              ]"
+              :class="[ currentTab === 'GESTION' ? 'border-[#CE0033] text-[#CE0033]' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm' ]"
             >
               Équipe Gestion de Projet
             </button>
@@ -179,7 +164,7 @@ const handleDeleteUser = async (user) => {
         </div>
 
         <!-- Table des utilisateurs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <div v-if="store.loading" class="flex justify-center items-center py-20">
             <Loader2 class="w-8 h-8 animate-spin text-[#CE0033]" />
           </div>
@@ -220,11 +205,7 @@ const handleDeleteUser = async (user) => {
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                          :class="{
-                            'bg-blue-100 text-blue-800': user.role_nom === 'Administrateur',
-                            'bg-purple-100 text-purple-800': user.role_nom === 'Équipe Pédagogique',
-                            'bg-emerald-100 text-emerald-800': user.role_nom === 'Équipe Gestion de Projet',
-                          }">
+                          :class="{ 'bg-blue-100 text-blue-800': user.role_nom === 'Administrateur', 'bg-purple-100 text-purple-800': user.role_nom === 'Équipe Pédagogique', 'bg-emerald-100 text-emerald-800': user.role_nom === 'Équipe Gestion de Projet', }">
                       {{ user.role_nom }}
                     </span>
                   </td>
@@ -287,7 +268,7 @@ const handleDeleteUser = async (user) => {
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         
         <!-- Contenu Modal -->
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-[#CE0033]/10 sm:mx-0 sm:h-10 sm:w-10">
@@ -307,7 +288,7 @@ const handleDeleteUser = async (user) => {
                       <input 
                         type="text" 
                         v-model="inviteForm.prenom"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
+                        class="w-full border-gray-300 rounded-md focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
                         placeholder="Ex: Souleymane"
                       />
                     </div>
@@ -316,7 +297,7 @@ const handleDeleteUser = async (user) => {
                       <input 
                         type="text" 
                         v-model="inviteForm.nom"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
+                        class="w-full border-gray-300 rounded-md focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
                         placeholder="Ex: Ba"
                       />
                     </div>
@@ -327,7 +308,7 @@ const handleDeleteUser = async (user) => {
                     <input 
                       type="email" 
                       v-model="inviteForm.email"
-                      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
+                      class="w-full border-gray-300 rounded-md focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" 
                       placeholder="prenom.nom@sourcinghub.com"
                     />
                   </div>
@@ -335,7 +316,7 @@ const handleDeleteUser = async (user) => {
                     <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
                     <select 
                       v-model="inviteForm.role"
-                      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm"
+                      class="w-full border-gray-300 rounded-md focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm"
                       required
                     >
                       <option value="" disabled>-- Choisissez un rôle --</option>
@@ -354,7 +335,7 @@ const handleDeleteUser = async (user) => {
           <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button 
               type="button" 
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#CE0033] text-base font-medium text-white hover:bg-[#a8002a] focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+              class="w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-[#CE0033] text-base font-medium text-white hover:bg-[#a8002a] focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
               @click="submitInvite"
               :disabled="store.loading || !inviteForm.email || !inviteForm.role"
             >
@@ -363,7 +344,7 @@ const handleDeleteUser = async (user) => {
             </button>
             <button 
               type="button" 
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               @click="showInviteModal = false"
               :disabled="store.loading"
             >

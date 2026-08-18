@@ -16,7 +16,7 @@ defineProps({
 <template>
   <!--  Délimite une zone fonctionnelle de la page. -->
   <section
-    class="overflow-hidden rounded-[2rem] border border-[#64CCC9]/20 bg-white shadow-xl shadow-[#00313C]/10"
+    class="overflow-hidden rounded-[2rem] border border-[#64CCC9]/20 bg-white"
   >
 
     <!-- =====================================================
@@ -55,7 +55,7 @@ defineProps({
           <!-- AVATAR -->
           <!--  Structure un groupe d’éléments visuels. -->
           <div
-            class="grid h-20 w-20 shrink-0 place-items-center rounded-[1.7rem] border border-[#E40046]/30 bg-[#E40046] text-3xl font-black text-white shadow-2xl shadow-[#E40046]/15 ring-4 ring-[#E40046]/10"
+            class="grid h-20 w-20 shrink-0 place-items-center rounded-[1.7rem] border border-[#E40046]/30 bg-[#E40046] text-3xl font-black text-white ring-4 ring-[#E40046]/10"
           >
             <!--  Affiche une donnée dynamique dans l’interface. -->
             {{ candidate.firstName?.charAt(0).toUpperCase() }}
@@ -106,7 +106,7 @@ defineProps({
 
           <!--  Structure un groupe d’éléments visuels. -->
           <div
-            class="inline-flex items-center rounded-full border border-[#64CCC9]/30 bg-[#64CCC9]/15 px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-[#64CCC9] shadow-lg shadow-[#00313C]/10 backdrop-blur"
+            class="inline-flex items-center rounded-full border border-[#64CCC9]/30 bg-[#64CCC9]/15 px-4 py-2 text-xs font-black uppercase tracking-[0.15em] text-[#64CCC9] backdrop-blur"
           >
             <!--  Affiche une information courte ou décorative. -->
             <span
@@ -173,13 +173,13 @@ defineProps({
              ================================================= -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="group flex h-full min-h-[175px] flex-col rounded-2xl border border-[#64CCC9]/20 bg-[#64CCC9]/5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:bg-white hover:shadow-lg hover:shadow-[#00313C]/7"
+          class="group flex h-full min-h-[175px] flex-col rounded-2xl border border-[#64CCC9]/20 bg-[#64CCC9]/5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:bg-white"
         >
 
           <!-- ICÔNE -->
           <!--  Structure un groupe d’éléments visuels. -->
           <div
-            class="mb-4 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#00313C] shadow-sm ring-1 ring-[#64CCC9]/20"
+            class="mb-4 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#00313C] ring-1 ring-[#64CCC9]/20"
           >
 
             <!--  Affiche ou configure l’élément svg. -->
@@ -230,13 +230,13 @@ defineProps({
              ================================================= -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="group flex h-full min-h-[175px] flex-col rounded-2xl border border-[#64CCC9]/20 bg-[#64CCC9]/5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:bg-white hover:shadow-lg hover:shadow-[#00313C]/7"
+          class="group flex h-full min-h-[175px] flex-col rounded-2xl border border-[#64CCC9]/20 bg-[#64CCC9]/5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:bg-white"
         >
 
           <!-- ICÔNE -->
           <!--  Structure un groupe d’éléments visuels. -->
           <div
-            class="mb-4 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#00313C] shadow-sm ring-1 ring-[#64CCC9]/20"
+            class="mb-4 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#00313C] ring-1 ring-[#64CCC9]/20"
           >
 
             <!--  Affiche ou configure l’élément svg. -->
@@ -296,13 +296,13 @@ defineProps({
              ================================================= -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="group flex h-full min-h-[175px] flex-col rounded-2xl border border-[#E40046]/15 bg-[#E40046]/5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#E40046]/30 hover:bg-white hover:shadow-lg hover:shadow-[#E40046]/7"
+          class="group flex h-full min-h-[175px] flex-col rounded-2xl border border-[#E40046]/15 bg-[#E40046]/5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#E40046]/30 hover:bg-white"
         >
 
           <!-- ICÔNE -->
           <!--  Structure un groupe d’éléments visuels. -->
           <div
-            class="mb-4 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#E40046] shadow-sm ring-1 ring-[#E40046]/15"
+            class="mb-4 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#E40046] ring-1 ring-[#E40046]/15"
           >
 
             <!--  Affiche ou configure l’élément svg. -->

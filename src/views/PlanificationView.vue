@@ -364,7 +364,7 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
       {{ planningsStore.error }}
     </div>
 
-    <section class="mb-6 overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
+    <section class="mb-6 overflow-hidden rounded-xl border border-slate-100 bg-white">
       <nav class="flex overflow-x-auto border-b border-slate-100" aria-label="Filtrer par type d'étape">
         <button v-for="tab in categoryTabs" :key="tab.id" type="button" class="planning-tab" :class="{ 'planning-tab-active': selectedCategory === tab.id }" @click="selectedCategory = tab.id">
           {{ tab.label }} <span class="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px]">{{ tab.count }}</span>
@@ -409,7 +409,7 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
 
     <div v-if="showForm" class="fixed inset-y-0 left-64 right-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/40 p-4 sm:p-6">
       <div class="absolute inset-0" @click="closeForm" />
-      <form class="relative my-auto flex max-h-[88vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" @submit.prevent="save">
+      <form class="relative my-auto flex max-h-[88vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white" @submit.prevent="save">
         <div class="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-3 sm:px-6">
           <div>
             <p v-if="!editingId" class="mb-1 text-xs font-bold uppercase tracking-widest text-pink-600">Configuration de session</p>
@@ -555,7 +555,7 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
 .icon-action { @apply inline-flex rounded-lg p-2 transition-colors hover:opacity-75; }
 .planning-tab { @apply shrink-0 border-b-2 border-transparent px-5 py-4 text-sm font-semibold text-[#00313C] transition hover:bg-slate-50; }
 .planning-tab-active { @apply border-pink-500 bg-pink-50/40 text-pink-600; }
-.planning-table { @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm; }
+.planning-table { @apply overflow-hidden rounded-2xl border border-slate-200 bg-white; }
 .planning-table-header { @apply border-b border-[#00313C] bg-[#00313C] text-left text-[11px] font-bold uppercase tracking-wider text-white; }
 .planning-table-header th { @apply whitespace-nowrap px-5 py-4; }
 .planning-table-row { @apply border-b border-slate-100 transition-colors last:border-b-0 hover:bg-primary-50/30; }
@@ -580,12 +580,12 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
 .icon-delete { @apply bg-red-50 text-red-600 hover:bg-red-100; }
 .step-type-tabs { @apply grid overflow-hidden rounded-xl border border-slate-200 bg-slate-50 sm:grid-cols-3; }
 .step-type-tab { @apply relative min-h-[3.75rem] border-b border-slate-200 px-4 py-3 text-sm font-semibold text-[#00313C] transition hover:bg-white focus:z-10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 sm:border-b-0 sm:border-r last:border-r-0; }
-.step-type-tab-active { @apply bg-white text-primary-700 shadow-sm after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary-600; }
+.step-type-tab-active { @apply bg-white text-primary-700 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary-600; }
 .section-title { @apply text-xs font-bold uppercase tracking-wide text-[#00313C]; }
 .day-card { @apply relative flex min-w-24 flex-col items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-[#00313C] transition hover:border-pink-300; }
 .day-card strong { @apply mt-0.5 text-base; }
 .day-card-active { @apply border-2 border-pink-500 bg-pink-50 text-pink-600; }
-.day-remove { @apply absolute -right-1.5 -top-1.5 rounded-full bg-white p-0.5 text-slate-500 shadow hover:text-red-600; }
+.day-remove { @apply absolute -right-1.5 -top-1.5 rounded-full bg-white p-0.5 text-slate-500 hover:text-red-600; }
 .day-add { @apply border-dashed text-[#00313C]; }
 .slot-row { @apply grid grid-cols-[1fr_18px_1fr_1fr_24px] items-end gap-2 rounded-xl border border-slate-200 bg-white p-3; }
 .slot-label { @apply mb-1 block text-xs font-semibold text-slate-500; }

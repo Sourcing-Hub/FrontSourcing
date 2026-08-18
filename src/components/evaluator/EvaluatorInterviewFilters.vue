@@ -45,7 +45,7 @@ function reset() {
 <template>
   <!--  Délimite une zone fonctionnelle de la page. -->
   <section
-    class="grid gap-3 rounded-3xl border border-[#64CCC9]/20 bg-white p-3 shadow-xl shadow-[#00313C]/10 backdrop-blur xl:grid-cols-[1fr_190px_190px_auto]"
+    class="grid gap-3 rounded-3xl border border-[#64CCC9]/20 bg-white p-3 backdrop-blur xl:grid-cols-[1fr_190px_190px_auto]"
   >
 
     <!-- =====================================================
@@ -180,7 +180,7 @@ function reset() {
     <!--  Affiche un bouton d’action pour l’utilisateur. -->
     <button
       type="button"
-      class="h-12 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white shadow-lg shadow-[#00313C]/10 transition hover:-translate-y-0.5 hover:bg-[#E40046] hover:shadow-lg hover:shadow-[#E40046]/10 focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/20 active:scale-[0.98]"
+      class="h-12 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#E40046] focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/20 active:scale-[0.98]"
       @click="reset"
     >
       <!--  Affiche ce contenu textuel dans la vue évaluateur. -->

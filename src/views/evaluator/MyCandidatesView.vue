@@ -149,7 +149,7 @@ onMounted(loadCandidates)
     </header>
 
     <!-- Structure un groupe d’éléments visuels. -->
-    <div class="mb-5 flex h-14 max-w-2xl items-center gap-3 rounded-3xl border border-white/70 bg-white/90 px-5 shadow-xl shadow-slate-200/70 backdrop-blur ring-indigo-500/10 transition focus-within:border-indigo-300 focus-within:ring-4">
+    <div class="mb-5 flex h-14 max-w-2xl items-center gap-3 rounded-3xl border border-white/70 bg-white/90 px-5 backdrop-blur ring-indigo-500/10 transition focus-within:border-indigo-300 focus-within:ring-4">
       <!-- Affiche une information courte ou décorative. -->
       <span class="text-xl text-slate-400">⌕</span>
 
@@ -176,7 +176,7 @@ onMounted(loadCandidates)
     <!-- Structure un groupe d’éléments visuels. -->
     <div
       v-if="loading"
-      class="rounded-3xl border border-white/70 bg-white/80 py-20 text-center text-sm font-bold text-slate-400 shadow-xl shadow-slate-200/70"
+      class="rounded-3xl border border-white/70 bg-white/80 py-20 text-center text-sm font-bold text-slate-400"
     >
       <!-- Affiche ce contenu textuel dans la vue évaluateur. -->
       Chargement des candidats...

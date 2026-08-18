@@ -468,7 +468,7 @@ function submit() {
           index
         ) in questions"
         :key="question.id"
-        class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+        class="overflow-hidden rounded-3xl border border-slate-200 bg-white"
       >
 
         <!-- Question -->
@@ -775,7 +775,7 @@ function submit() {
       <!--  Affiche un bouton d’action pour l’utilisateur. -->
       <button
         type="submit"
-        class="inline-flex h-12 items-center justify-center rounded-2xl bg-indigo-600 px-7 text-sm font-black text-white shadow-lg shadow-indigo-500/15 transition hover:-translate-y-0.5 hover:bg-slate-950 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 active:scale-[0.98]"
+        class="inline-flex h-12 items-center justify-center rounded-2xl bg-indigo-600 px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-slate-950 focus:outline-none focus:ring-4 focus:ring-indigo-200 active:scale-[0.98]"
       >
         <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
         Enregistrer l'évaluation →

@@ -51,7 +51,7 @@ const getDownloadUrl = (filePath) => {
       <div class="lg:col-span-2 space-y-6">
         
         <!-- Détails de la candidature -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
+        <div class="bg-white rounded-xl border border-gray-100 p-8 space-y-6">
           <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Informations de Candidature</h3>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -83,7 +83,7 @@ const getDownloadUrl = (filePath) => {
         </div>
 
         <!-- Réponses du Formulaire -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
+        <div class="bg-white rounded-xl border border-gray-100 p-8 space-y-6">
           <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Réponses au Formulaire</h3>
           
           <div class="space-y-6">
@@ -113,15 +113,11 @@ const getDownloadUrl = (filePath) => {
       <div class="space-y-6">
         
         <!-- Statut global -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center space-y-4">
+        <div class="bg-white rounded-xl border border-gray-100 p-6 text-center space-y-4">
           <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block">Statut Actuel</span>
           
           <div class="inline-flex items-center justify-center px-4 py-2 rounded-full font-bold text-sm"
-               :class="{
-                 'bg-amber-50 text-amber-800 border border-amber-200': store.currentCandidature.statut === 'EN_ATTENTE',
-                 'bg-blue-50 text-blue-800 border border-blue-200': store.currentCandidature.statut === 'EN_COURS',
-                 'bg-emerald-50 text-emerald-800 border border-emerald-200': store.currentCandidature.statut === 'TERMINEE'
-               }">
+               :class="{ 'bg-amber-50 text-amber-800 border border-amber-200': store.currentCandidature.statut === 'EN_ATTENTE', 'bg-blue-50 text-blue-800 border border-blue-200': store.currentCandidature.statut === 'EN_COURS', 'bg-emerald-50 text-emerald-800 border border-emerald-200': store.currentCandidature.statut === 'TERMINEE' }">
             <Clock v-if="store.currentCandidature.statut === 'EN_ATTENTE'" class="w-4 h-4 mr-1.5" />
             <Clock v-if="store.currentCandidature.statut === 'EN_COURS'" class="w-4 h-4 mr-1.5" />
             <CheckCircle v-if="store.currentCandidature.statut === 'TERMINEE'" class="w-4 h-4 mr-1.5" />
@@ -130,7 +126,7 @@ const getDownloadUrl = (filePath) => {
         </div>
 
         <!-- Informations Candidat -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <div class="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
           <h4 class="font-bold text-gray-900 border-b border-gray-100 pb-2">Profil du Candidat</h4>
           
           <div class="space-y-3">
@@ -158,7 +154,7 @@ const getDownloadUrl = (filePath) => {
         </div>
 
         <!-- Documents Téléchargeables -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <div class="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
           <h4 class="font-bold text-gray-900 border-b border-gray-100 pb-2">Documents Joints</h4>
           
           <div v-if="store.currentCandidature.documents.length === 0" class="text-center py-4 text-xs text-gray-400">

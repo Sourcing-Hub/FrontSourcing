@@ -545,7 +545,7 @@ onMounted(loadData)
     <!--  Structure un groupe d’éléments visuels. -->
     <div
       v-if="loading"
-      class="rounded-3xl border border-[#64CCC9]/20 bg-white py-20 text-center text-sm font-bold text-[#00313C]/50 shadow-xl shadow-[#00313C]/10"
+      class="rounded-3xl border border-[#64CCC9]/20 bg-white py-20 text-center text-sm font-bold text-[#00313C]/50"
     >
       <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
       Chargement de l'évaluation...
@@ -563,7 +563,7 @@ onMounted(loadData)
 
     <form
       v-else
-      class="space-y-6 rounded-[2rem] border border-[#64CCC9]/20 bg-white p-6 shadow-xl shadow-[#00313C]/10 lg:p-10"
+      class="space-y-6 rounded-[2rem] border border-[#64CCC9]/20 bg-white p-6 lg:p-10"
       @submit.prevent="submit"
     >
 
@@ -669,22 +669,14 @@ onMounted(loadData)
         <button
           type="button"
           class="group min-w-0 rounded-xl border p-3.5 text-left transition-all duration-200 sm:p-4"
-          :class="
-            selectedType === 'motivation'
-              ? 'border-[#E40046] bg-[#E40046]/5 shadow-md shadow-[#E40046]/10 ring-2 ring-[#E40046]/10'
-              : 'border-[#64CCC9]/20 bg-white hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:shadow-md'
-          "
+          :class="selectedType === 'motivation' ? 'border-[#E40046] bg-[#E40046]/5 ring-2 ring-[#E40046]/10' : 'border-[#64CCC9]/20 bg-white hover:-translate-y-0.5 hover:border-[#64CCC9]/40 '"
           @click="selectType('motivation')"
         >
 
           <!--  Structure un groupe d’éléments visuels. -->
           <div
             class="mb-3 grid h-9 w-9 place-items-center rounded-lg"
-            :class="
-              selectedType === 'motivation'
-                ? 'bg-[#E40046] text-white'
-                : 'bg-[#E40046]/10 text-[#E40046]'
-            "
+            :class="selectedType === 'motivation' ? 'bg-[#E40046] text-white' : 'bg-[#E40046]/10 text-[#E40046]'"
           >
             <!--  Affiche ou configure l’élément svg. -->
             <svg
@@ -731,22 +723,14 @@ onMounted(loadData)
         <button
           type="button"
           class="group min-w-0 rounded-xl border p-3.5 text-left transition-all duration-200 sm:p-4"
-          :class="
-            selectedType === 'technique'
-              ? 'border-[#00313C] bg-[#00313C]/5 shadow-md shadow-[#00313C]/10 ring-2 ring-[#00313C]/10'
-              : 'border-[#64CCC9]/20 bg-white hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:shadow-md'
-          "
+          :class="selectedType === 'technique' ? 'border-[#00313C] bg-[#00313C]/5 ring-2 ring-[#00313C]/10' : 'border-[#64CCC9]/20 bg-white hover:-translate-y-0.5 hover:border-[#64CCC9]/40 '"
           @click="selectType('technique')"
         >
 
           <!--  Structure un groupe d’éléments visuels. -->
           <div
             class="mb-3 grid h-9 w-9 place-items-center rounded-lg"
-            :class="
-              selectedType === 'technique'
-                ? 'bg-[#00313C] text-white'
-                : 'bg-[#64CCC9]/15 text-[#00313C]'
-            "
+            :class="selectedType === 'technique' ? 'bg-[#00313C] text-white' : 'bg-[#64CCC9]/15 text-[#00313C]'"
           >
             <!--  Affiche ou configure l’élément svg. -->
             <svg
@@ -807,22 +791,14 @@ onMounted(loadData)
         <button
           type="button"
           class="group min-w-0 rounded-xl border p-3.5 text-left transition-all duration-200 sm:p-4"
-          :class="
-            selectedType === 'final'
-              ? 'border-[#64CCC9] bg-[#64CCC9]/10 shadow-md shadow-[#64CCC9]/10 ring-2 ring-[#64CCC9]/20'
-              : 'border-[#64CCC9]/20 bg-white hover:-translate-y-0.5 hover:border-[#64CCC9]/40 hover:shadow-md'
-          "
+          :class="selectedType === 'final' ? 'border-[#64CCC9] bg-[#64CCC9]/10 ring-2 ring-[#64CCC9]/20' : 'border-[#64CCC9]/20 bg-white hover:-translate-y-0.5 hover:border-[#64CCC9]/40 '"
           @click="selectType('final')"
         >
 
           <!--  Structure un groupe d’éléments visuels. -->
           <div
             class="mb-3 grid h-9 w-9 place-items-center rounded-lg"
-            :class="
-              selectedType === 'final'
-                ? 'bg-[#64CCC9] text-[#00313C]'
-                : 'bg-[#64CCC9]/15 text-[#00313C]'
-            "
+            :class="selectedType === 'final' ? 'bg-[#64CCC9] text-[#00313C]' : 'bg-[#64CCC9]/15 text-[#00313C]'"
           >
             <!--  Affiche ou configure l’élément svg. -->
             <svg
@@ -980,7 +956,7 @@ onMounted(loadData)
       <article
         v-for="(question, index) in currentQuestions"
         :key="question.id"
-        class="rounded-xl border border-[#64CCC9]/20 bg-white p-4 shadow-sm transition-all duration-200 hover:border-[#64CCC9]/40 hover:shadow-md sm:p-5"
+        class="rounded-xl border border-[#64CCC9]/20 bg-white p-4 transition-all duration-200 hover:border-[#64CCC9]/40 sm:p-5"
       >
 
         <!--  Structure un groupe d’éléments visuels. -->
@@ -1087,11 +1063,7 @@ onMounted(loadData)
                 :key="note"
                 type="button"
                 class="grid h-8 w-8 place-items-center rounded-lg border text-xs font-black transition-all duration-150"
-                :class="
-                  Number(notes[question.id]) >= note
-                    ? 'border-[#E40046] bg-[#E40046] text-white shadow-sm shadow-[#E40046]/20'
-                    : 'border-[#E40046]/20 bg-white text-[#E40046] hover:border-[#E40046]/50 hover:bg-[#E40046]/10'
-                "
+                :class="Number(notes[question.id]) >= note ? 'border-[#E40046] bg-[#E40046] text-white ' : 'border-[#E40046]/20 bg-white text-[#E40046] hover:border-[#E40046]/50 hover:bg-[#E40046]/10'"
                 @click="setNote(question.id, note)"
               >
                 <!--  Affiche une donnée dynamique dans l’interface. -->
@@ -1128,7 +1100,7 @@ onMounted(loadData)
 
       <!--  Délimite une zone fonctionnelle de la page. -->
       <section
-        class="rounded-xl border border-[#64CCC9]/20 bg-white p-4 shadow-sm sm:p-5"
+        class="rounded-xl border border-[#64CCC9]/20 bg-white p-4 sm:p-5"
       >
 
         <!--  Associe un libellé à un champ. -->
@@ -1303,7 +1275,7 @@ onMounted(loadData)
         <!--  Affiche un bouton d’action pour l’utilisateur. -->
         <button
           type="submit"
-          class="h-10 rounded-xl bg-[#00313C] px-6 text-xs font-black text-white shadow-md shadow-[#00313C]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] hover:shadow-lg hover:shadow-[#E40046]/20 disabled:cursor-not-allowed disabled:opacity-40"
+          class="h-10 rounded-xl bg-[#00313C] px-6 text-xs font-black text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="!isComplete || saving"
         >
           <!--  Affiche une donnée dynamique dans l’interface. -->

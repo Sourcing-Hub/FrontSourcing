@@ -246,7 +246,7 @@ onMounted(loadInterviews)
       <!-- TOTAL -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#64CCC9]/20 bg-white p-5 shadow-xl shadow-[#00313C]/10"
+        class="rounded-3xl border border-[#64CCC9]/20 bg-white p-5"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
@@ -272,7 +272,7 @@ onMounted(loadInterviews)
       <!-- À VENIR -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/20"
+        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
@@ -298,7 +298,7 @@ onMounted(loadInterviews)
       <!-- EN COURS -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#64CCC9]/30 bg-white p-5 shadow-xl shadow-[#00313C]/10"
+        class="rounded-3xl border border-[#64CCC9]/30 bg-white p-5"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
@@ -324,7 +324,7 @@ onMounted(loadInterviews)
       <!-- TERMINÉS -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/10"
+        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
@@ -355,7 +355,7 @@ onMounted(loadInterviews)
          ========================================================= -->
     <!-- Délimite une zone fonctionnelle de la page. -->
     <section
-      class="rounded-[2rem] border border-[#64CCC9]/20 bg-white/90 p-4 shadow-2xl shadow-[#00313C]/10 backdrop-blur lg:p-6"
+      class="rounded-[2rem] border border-[#64CCC9]/20 bg-white/90 p-4 backdrop-blur lg:p-6"
     >
 
       <!-- Titre -->

@@ -57,7 +57,7 @@ const handleSubmit = async () => {
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50/60 p-4 sm:p-6 lg:p-8">
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 space-y-6">
+    <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 sm:p-10 space-y-6">
       <div class="text-center space-y-2">
         <div class="w-12 h-12 bg-red-50 text-[#CE0033] rounded-2xl flex items-center justify-center mx-auto mb-3">
           <Key class="w-6 h-6" />
@@ -127,7 +127,7 @@ const handleSubmit = async () => {
         <button
           type="submit"
           :disabled="loading"
-          class="w-full py-3.5 px-4 bg-[#002B35] hover:bg-[#001D24] text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
+          class="w-full py-3.5 px-4 bg-[#002B35] hover:bg-[#001D24] text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
         >
           <Loader2 v-if="loading" class="w-4 h-4 animate-spin" />
           <span>Valider le nouveau mot de passe</span>

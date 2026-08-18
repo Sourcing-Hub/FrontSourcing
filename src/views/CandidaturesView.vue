@@ -202,7 +202,7 @@ const handleSearch = () => {
       <!-- Cartes d'indicateurs clés (KPIs) - Pour l'administration / staff -->
       <div v-if="authStore.user?.role !== 'Candidat'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total -->
-        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 flex items-center justify-between">
           <div>
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Candidatures</p>
             <h3 class="text-2xl font-extrabold text-gray-900 mt-1">{{ totalCandidatures }}</h3>
@@ -213,7 +213,7 @@ const handleSearch = () => {
         </div>
 
         <!-- En attente -->
-        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 flex items-center justify-between">
           <div>
             <p class="text-xs font-semibold text-amber-600 uppercase tracking-wider">En attente</p>
             <h3 class="text-2xl font-extrabold text-amber-700 mt-1">{{ countEnAttente }}</h3>
@@ -224,7 +224,7 @@ const handleSearch = () => {
         </div>
 
         <!-- En cours -->
-        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 flex items-center justify-between">
           <div>
             <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">En cours</p>
             <h3 class="text-2xl font-extrabold text-blue-700 mt-1">{{ countEnCours }}</h3>
@@ -235,7 +235,7 @@ const handleSearch = () => {
         </div>
 
         <!-- Terminées -->
-        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 shadow-xs flex items-center justify-between">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/70 flex items-center justify-between">
           <div>
             <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Terminées</p>
             <h3 class="text-2xl font-extrabold text-emerald-700 mt-1">{{ countTerminee }}</h3>
@@ -247,7 +247,7 @@ const handleSearch = () => {
       </div>
 
       <!-- Section de filtres pour l'administration (Staff) -->
-      <div v-if="authStore.user?.role !== 'Candidat'" class="bg-white rounded-2xl shadow-xs border border-gray-200/80 p-5 space-y-4">
+      <div v-if="authStore.user?.role !== 'Candidat'" class="bg-white rounded-2xl border border-gray-200/80 p-5 space-y-4">
         <!-- Ligne 1 : Recherche & Boutons d'action -->
         <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between border-b border-gray-100 pb-4">
           <div class="relative flex-1">
@@ -264,7 +264,7 @@ const handleSearch = () => {
           <div class="flex items-center gap-2">
             <button
               @click="handleSearch"
-              class="px-5 py-2.5 bg-[#CE0033] hover:bg-[#a8002a] text-white rounded-xl text-sm font-semibold transition-all shadow-xs flex items-center justify-center gap-2"
+              class="px-5 py-2.5 bg-[#CE0033] hover:bg-[#a8002a] text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
             >
               <Search class="w-4 h-4" />
               Rechercher
@@ -382,7 +382,7 @@ const handleSearch = () => {
       </div>
 
       <!-- Conteneur principal Liste / Tableau -->
-      <div class="bg-white rounded-2xl shadow-xs border border-gray-200/80 overflow-hidden min-w-0">
+      <div class="bg-white rounded-2xl border border-gray-200/80 overflow-hidden min-w-0">
         <!-- Spinner Chargement -->
         <div v-if="store.loading" class="flex flex-col justify-center items-center py-20 space-y-3">
           <Loader2 class="w-10 h-10 animate-spin text-[#CE0033]" />
@@ -410,7 +410,7 @@ const handleSearch = () => {
         <!-- Mode Candidat : Vue en cartes avec badge d'identification QR -->
         <div v-else-if="authStore.user?.role === 'Candidat'" class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Carte Badge QR Code -->
-          <div class="border border-gray-200/80 rounded-2xl p-6 bg-gradient-to-br from-white via-gray-50 to-gray-100 flex flex-col items-center justify-between text-center shadow-xs h-full">
+          <div class="border border-gray-200/80 rounded-2xl p-6 bg-gradient-to-br from-white via-gray-50 to-gray-100 flex flex-col items-center justify-between text-center h-full">
             <div>
               <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-3 text-[#CE0033]">
                 <QrCode class="w-6 h-6" />
@@ -421,7 +421,7 @@ const handleSearch = () => {
               </p>
             </div>
             
-            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center my-2">
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 flex items-center justify-center my-2">
               <div v-if="!qrCodeDataUrl" class="w-36 h-36 flex items-center justify-center">
                 <Loader2 class="w-6 h-6 animate-spin text-gray-300" />
               </div>
@@ -431,7 +431,7 @@ const handleSearch = () => {
             <button
               @click="downloadQrCode"
               :disabled="!qrCodeDataUrl"
-              class="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 text-xs font-bold rounded-xl shadow-xs transition-all"
+              class="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 text-xs font-bold rounded-xl transition-all"
             >
               <Download class="w-4 h-4" />
               Télécharger mon QR Code
@@ -443,7 +443,7 @@ const handleSearch = () => {
             <div
               v-for="cand in store.candidatures"
               :key="cand.id"
-              class="border border-gray-200/80 rounded-2xl p-6 hover:shadow-md transition-all bg-white relative group"
+              class="border border-gray-200/80 rounded-2xl p-6 transition-all bg-white relative group"
             >
               <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2.5 py-1 rounded-lg">
@@ -451,11 +451,7 @@ const handleSearch = () => {
                 </span>
                 <span
                   class="px-3 py-1 text-xs font-bold rounded-full border"
-                  :class="{
-                    'bg-amber-50 text-amber-700 border-amber-200': cand.statut === 'EN_ATTENTE',
-                    'bg-blue-50 text-blue-700 border-blue-200': cand.statut === 'EN_COURS',
-                    'bg-emerald-50 text-emerald-700 border-emerald-200': cand.statut === 'TERMINEE'
-                  }"
+                  :class="{ 'bg-amber-50 text-amber-700 border-amber-200': cand.statut === 'EN_ATTENTE', 'bg-blue-50 text-blue-700 border-blue-200': cand.statut === 'EN_COURS', 'bg-emerald-50 text-emerald-700 border-emerald-200': cand.statut === 'TERMINEE' }"
                 >
                   {{ cand.statut === 'EN_ATTENTE' ? 'En attente' : cand.statut === 'EN_COURS' ? 'En cours' : 'Terminée' }}
                 </span>
@@ -569,12 +565,7 @@ const handleSearch = () => {
                 <td class="px-5 py-4 whitespace-nowrap text-xs">
                   <span 
                     class="px-2.5 py-1 inline-flex text-[11px] font-semibold rounded-full border"
-                    :class="{
-                      'bg-red-50 text-red-700 border-red-200': ['ECHOUEE', 'ABSENT', 'ANNULEE'].includes(cand.etape_actuelle?.statut),
-                      'bg-blue-50 text-blue-700 border-blue-200': cand.etape_actuelle?.statut === 'EN_COURS',
-                      'bg-amber-50 text-amber-700 border-amber-200': cand.etape_actuelle?.statut === 'EN_ATTENTE',
-                      'bg-emerald-50 text-emerald-700 border-emerald-200': cand.etape_actuelle?.statut === 'REUSSIE'
-                    }"
+                    :class="{ 'bg-red-50 text-red-700 border-red-200': ['ECHOUEE', 'ABSENT', 'ANNULEE'].includes(cand.etape_actuelle?.statut), 'bg-blue-50 text-blue-700 border-blue-200': cand.etape_actuelle?.statut === 'EN_COURS', 'bg-amber-50 text-amber-700 border-amber-200': cand.etape_actuelle?.statut === 'EN_ATTENTE', 'bg-emerald-50 text-emerald-700 border-emerald-200': cand.etape_actuelle?.statut === 'REUSSIE' }"
                   >
                     {{ cand.etape_actuelle?.label || 'Dossier soumis' }}
                   </span>
@@ -583,11 +574,7 @@ const handleSearch = () => {
                 <td class="px-5 py-4 whitespace-nowrap">
                   <span
                     class="px-2.5 py-1 inline-flex text-[11px] font-bold rounded-full border"
-                    :class="{
-                      'bg-amber-50 text-amber-800 border-amber-200': cand.statut === 'EN_ATTENTE',
-                      'bg-blue-50 text-blue-800 border-blue-200': cand.statut === 'EN_COURS',
-                      'bg-emerald-50 text-emerald-800 border-emerald-200': cand.statut === 'TERMINEE'
-                    }"
+                    :class="{ 'bg-amber-50 text-amber-800 border-amber-200': cand.statut === 'EN_ATTENTE', 'bg-blue-50 text-blue-800 border-blue-200': cand.statut === 'EN_COURS', 'bg-emerald-50 text-emerald-800 border-emerald-200': cand.statut === 'TERMINEE' }"
                   >
                     {{ cand.statut === 'EN_ATTENTE' ? 'En attente' : cand.statut === 'EN_COURS' ? 'En cours' : 'Terminée' }}
                   </span>

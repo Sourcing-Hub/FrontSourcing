@@ -89,7 +89,7 @@ const handleResetPassword = async () => {
       ></div>
 
       <!-- Carte du formulaire -->
-      <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 space-y-6 relative z-10">
+      <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 sm:p-10 space-y-6 relative z-10">
         
         <!-- En-tête / Logo -->
         <div class="flex flex-col items-center text-center">
@@ -184,7 +184,7 @@ const handleResetPassword = async () => {
           <button
             type="submit"
             :disabled="authStore.loading"
-            class="w-full py-3.5 px-4 bg-[#002B35] hover:bg-[#001D24] text-white text-sm font-extrabold rounded-xl shadow-xs transition-all duration-200 flex items-center justify-center gap-2"
+            class="w-full py-3.5 px-4 bg-[#002B35] hover:bg-[#001D24] text-white text-sm font-extrabold rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
           >
             <Loader2 v-if="authStore.loading" class="w-4 h-4 animate-spin" />
             <span>Se connecter</span>
@@ -215,7 +215,7 @@ const handleResetPassword = async () => {
           <button
             type="button"
             @click="openResetModal()"
-            class="w-full py-3 px-4 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs"
+            class="w-full py-3 px-4 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
           >
             <Mail class="w-4 h-4 text-gray-600" />
             <span>Recevoir un lien de connexion par email</span>
@@ -239,7 +239,7 @@ const handleResetPassword = async () => {
       v-if="showResetModal"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs transition-opacity"
     >
-      <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-gray-100 relative">
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 border border-gray-100 relative">
         <button
           @click="showResetModal = false"
           class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 p-1"

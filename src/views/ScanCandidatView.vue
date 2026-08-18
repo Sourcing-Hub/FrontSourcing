@@ -168,7 +168,7 @@ const getStatusLabel = (status) => {
       <Loader2 class="w-10 h-10 animate-spin text-[#CE0033]" />
     </div>
 
-    <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-sm text-red-700 max-w-xl mx-auto flex items-start">
+    <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl text-red-700 max-w-xl mx-auto flex items-start">
       <AlertCircle class="w-6 h-6 mr-3 flex-shrink-0 mt-0.5 text-red-500" />
       <div>
         <h4 class="font-bold text-red-950 mb-1">Erreur de scan</h4>
@@ -187,7 +187,7 @@ const getStatusLabel = (status) => {
       <!-- Colonne Fiche Candidat & Candidature -->
       <div class="space-y-6">
         <!-- Fiche Candidat -->
-        <div class="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
+        <div class="bg-white rounded-2xl border border-gray-150 p-6">
           <div class="flex items-center space-x-4 mb-6">
             <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-[#CE0033]">
               <User class="w-7 h-7" />
@@ -215,7 +215,7 @@ const getStatusLabel = (status) => {
         </div>
 
         <!-- Fiche Candidature -->
-        <div class="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
+        <div class="bg-white rounded-2xl border border-gray-150 p-6">
           <h4 class="font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center">
             <FileText class="w-4 h-4 mr-2 text-[#CE0033]" />
             Détails du dossier
@@ -238,11 +238,7 @@ const getStatusLabel = (status) => {
               <span class="text-gray-500">Statut Dossier:</span>
               <span 
                 class="px-2.5 py-0.5 text-xs font-semibold rounded-full"
-                :class="{
-                  'bg-amber-100 text-amber-800': candidature.statut === 'EN_ATTENTE',
-                  'bg-blue-100 text-blue-800': candidature.statut === 'EN_COURS',
-                  'bg-emerald-100 text-emerald-800': candidature.statut === 'TERMINEE'
-                }"
+                :class="{ 'bg-amber-100 text-amber-800': candidature.statut === 'EN_ATTENTE', 'bg-blue-100 text-blue-800': candidature.statut === 'EN_COURS', 'bg-emerald-100 text-emerald-800': candidature.statut === 'TERMINEE' }"
               >
                 {{ candidature.statut === 'EN_ATTENTE' ? 'En attente' : candidature.statut === 'EN_COURS' ? 'En cours' : 'Terminée' }}
               </span>
@@ -253,7 +249,7 @@ const getStatusLabel = (status) => {
 
       <!-- Colonne Suivi des Étapes / Émargement -->
       <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
+        <div class="bg-white rounded-2xl border border-gray-150 p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="font-bold text-lg text-gray-900 flex items-center">
               <Activity class="w-5 h-5 mr-2 text-[#CE0033]" />
@@ -271,7 +267,7 @@ const getStatusLabel = (status) => {
               v-else
               v-for="part in participations" 
               :key="part.id"
-              class="p-5 border border-gray-100 rounded-xl space-y-4 hover:border-gray-200 transition-colors bg-white relative shadow-xxs"
+              class="p-5 border border-gray-100 rounded-xl space-y-4 hover:border-gray-200 transition-colors bg-white relative"
             >
               <!-- Info Etape -->
               <div class="flex items-start justify-between flex-wrap gap-2">

@@ -64,10 +64,8 @@ const updateField = (key, value) => {
 
 <template>
   <div
-    class="relative bg-white rounded-lg transition-shadow duration-200"
-    :class="[
-      isActive ? 'shadow-md border-l-4 border-l-primary-500 border-t border-r border-b border-gray-200' : 'shadow-sm border border-gray-200 hover:shadow-md cursor-pointer',
-    ]"
+    class="relative bg-white rounded-lg transition- duration-200"
+    :class="[ isActive ? ' border-l-4 border-l-primary-500 border-t border-r border-b border-gray-200' : ' border border-gray-200 cursor-pointer', ]"
     @click="!isActive && emit('click')"
   >
     <!-- Handle de drag (visible au survol ou si actif) -->

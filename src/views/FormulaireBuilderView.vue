@@ -137,7 +137,7 @@ const onDragEnd = async (evt) => {
     <div class="flex h-[calc(100vh-8rem)] gap-6" v-if="form">
       <!-- Zone de construction principale -->
       <div
-        class="flex-1 flex flex-col min-w-0 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+        class="flex-1 flex flex-col min-w-0 bg-white rounded-2xl border border-gray-100 overflow-hidden"
       >
         <!-- Toolbar Ajout de champs -->
         <div
@@ -150,7 +150,7 @@ const onDragEnd = async (evt) => {
             v-for="ft in fieldTypes"
             :key="ft.value"
             @click="addField(ft.value)"
-            class="inline-flex items-center px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:border-primary-500 hover:text-primary-600 transition-colors whitespace-nowrap shadow-sm"
+            class="inline-flex items-center px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-sm font-medium text-gray-700 hover:border-primary-500 hover:text-primary-600 transition-colors whitespace-nowrap"
           >
             <component :is="ft.icon" class="w-4 h-4 mr-1.5" />
             {{ ft.label }}
@@ -176,12 +176,8 @@ const onDragEnd = async (evt) => {
           >
             <template #item="{ element }">
               <div
-                class="bg-white rounded-xl shadow-sm border p-5 relative transition-all group cursor-pointer"
-                :class="
-                  activeField?.id === element.id
-                    ? 'border-primary-500 ring-1 ring-primary-500'
-                    : 'border-gray-200 hover:border-primary-300'
-                "
+                class="bg-white rounded-xl border p-5 relative transition-all group cursor-pointer"
+                :class="activeField?.id === element.id ? 'border-primary-500 ring-1 ring-primary-500' : 'border-gray-200 hover:border-primary-300'"
                 @click="activeField = element"
               >
                 <!-- Drag Handle -->
@@ -260,7 +256,7 @@ const onDragEnd = async (evt) => {
 
       <!-- Panneau latéral : Propriétés du champ actif -->
       <div
-        class="w-80 flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden"
+        class="w-80 flex-shrink-0 bg-white rounded-2xl border border-gray-100 flex flex-col overflow-hidden"
       >
         <div class="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
           <h3 class="font-medium text-gray-900 flex items-center">
@@ -369,7 +365,7 @@ const onDragEnd = async (evt) => {
         </div>
 
         <div class="p-4 border-t border-gray-100 bg-gray-50" v-if="activeField">
-          <button @click="saveActiveField" :disabled="saving" class="btn-primary w-full shadow-md">
+          <button @click="saveActiveField" :disabled="saving" class="btn-primary w-full">
             <Loader2 v-if="saving" class="w-4 h-4 mr-2 animate-spin" />
             <Save v-else class="w-4 h-4 mr-2" />
             Sauvegarder le champ

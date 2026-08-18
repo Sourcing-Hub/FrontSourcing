@@ -509,12 +509,12 @@ const userRole = computed(() => {
 
   <button
     type="button"
-    class="fixed left-4 top-4 z-40 grid h-11 w-11 place-items-center rounded-2xl border border-[#64CCC9]/20 bg-white/95 text-[#00313C] shadow-xl shadow-[#00313C]/10 backdrop-blur lg:hidden"
+    class="fixed left-4 top-4 z-40 grid h-11 w-11 place-items-center rounded-2xl border border-[#64CCC9]/20 bg-white/95 text-[#00313C] backdrop-blur lg:hidden"
     aria-label="Ouvrir le menu"
     @click="mobileOpen = true"
   >
     <span
-      class="relative block h-0.5 w-5 rounded bg-current shadow-[0_6px_0_currentColor,0_-6px_0_currentColor]"
+      class="relative block h-0.5 w-5 rounded bg-current -[0_6px_0_currentColor,0_-6px_0_currentColor]"
     />
   </button>
 
@@ -535,7 +535,7 @@ const userRole = computed(() => {
        ========================================================= -->
 
   <aside
-    class="fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col overflow-hidden border-r border-white/10 bg-[#00313C] px-4 py-5 text-white shadow-2xl shadow-[#00313C]/20 transition-transform duration-300 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col overflow-hidden border-r border-white/10 bg-[#00313C] px-4 py-5 text-white transition-transform duration-300 lg:translate-x-0"
     :class="mobileOpen ? 'translate-x-0' : '-translate-x-full'"
   >
 
@@ -583,7 +583,7 @@ const userRole = computed(() => {
            ===================================================== -->
 
       <div
-        class="mx-1 mb-7 rounded-3xl border border-white/10 bg-white/[0.07] p-3 shadow-xl shadow-black/10 backdrop-blur"
+        class="mx-1 mb-7 rounded-3xl border border-white/10 bg-white/[0.07] p-3 backdrop-blur"
       >
         <div class="flex items-center gap-3">
 
@@ -631,30 +631,18 @@ const userRole = computed(() => {
           :key="item.href"
           :to="item.href"
           class="group flex min-h-12 w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-bold transition-all duration-200"
-          :class="
-            isActive(item.href)
-              ? 'bg-white text-[#00313C] shadow-lg shadow-black/10'
-              : 'text-white/65 hover:bg-white/10 hover:text-white'
-          "
+          :class="isActive(item.href) ? 'bg-white text-[#00313C] ' : 'text-white/65 hover:bg-white/10 hover:text-white'"
         >
 
           <span
             class="grid h-9 w-9 shrink-0 place-items-center rounded-xl transition-all duration-200"
-            :class="
-              isActive(item.href)
-                ? 'bg-[#00313C] text-[#64CCC9]'
-                : 'bg-white/10 text-white/55 group-hover:bg-[#E40046]/10 group-hover:text-[#E40046]'
-            "
+            :class="isActive(item.href) ? 'bg-[#00313C] text-[#64CCC9]' : 'bg-white/10 text-white/55 group-hover:bg-[#E40046]/10 group-hover:text-[#E40046]'"
             v-html="icons[item.icon]"
           />
 
           <span
             class="min-w-0 truncate"
-            :class="
-              isActive(item.href)
-                ? 'text-[#00313C]'
-                : 'group-hover:text-white'
-            "
+            :class="isActive(item.href) ? 'text-[#00313C]' : 'group-hover:text-white'"
           >
             {{ item.label }}
           </span>

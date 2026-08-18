@@ -193,9 +193,9 @@ const goBack = () => {
       <div v-else-if="formulaire" class="space-y-6">
         <!-- Carte Titre et Description -->
         <div
-          class="bg-white rounded-lg shadow-sm border-t-[8px] border-[#CE0033] p-6 cursor-text"
+          class="bg-white rounded-lg border-t-[8px] border-[#CE0033] p-6 cursor-text"
           @click="activeFieldId = 'header'"
-          :class="activeFieldId === 'header' ? 'border-l-4 border-l-primary-500 border-r border-b border-gray-200' : 'border border-gray-200 hover:shadow-md transition-shadow'"
+          :class="activeFieldId === 'header' ? 'border-l-4 border-l-primary-500 border-r border-b border-gray-200' : 'border border-gray-200 transition-'"
         >
           <input
             type="text"
@@ -244,7 +244,7 @@ const goBack = () => {
         />
 
         <!-- Floating Toolbar -->
-        <div class="fixed top-32 right-[calc(50%-26rem)] hidden lg:flex flex-col bg-white border border-gray-200 shadow-md rounded-lg overflow-hidden z-30">
+        <div class="fixed top-32 right-[calc(50%-26rem)] hidden lg:flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden z-30">
           <button
             @click="addField"
             class="p-3 text-gray-500 hover:text-[#CE0033] hover:bg-gray-50 transition-colors"
@@ -258,7 +258,7 @@ const goBack = () => {
         <div class="lg:hidden fixed bottom-6 right-6 z-30">
           <button
             @click="addField"
-            class="p-4 bg-[#CE0033] text-white rounded-full shadow-lg hover:bg-[#a8002a] transition-colors"
+            class="p-4 bg-[#CE0033] text-white rounded-full hover:bg-[#a8002a] transition-colors"
           >
             <Plus class="w-6 h-6" />
           </button>

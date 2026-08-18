@@ -13,7 +13,7 @@ import Sidebar from './Sidebar.vue'
     <!-- Zone de contenu principale -->
     <main class="flex-1 md:ml-64 flex flex-col min-h-screen min-w-0 transition-all duration-200">
       <header
-        class="bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-xs h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20"
+        class="bg-white/90 backdrop-blur-md border-b border-gray-200/80 h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20"
       >
         <div class="flex items-center justify-between w-full min-w-0">
           <slot name="header">
