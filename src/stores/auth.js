@@ -86,7 +86,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       try {
         const response = await api.put('utilisateurs/mon-profil/', profileData)
-        
+
         // Update user state and local storage with new info
         this.user = {
           ...this.user,
@@ -94,7 +94,7 @@ export const useAuthStore = defineStore('auth', {
           profilComplet: true
         }
         localStorage.setItem('sourcing_user', JSON.stringify(this.user))
-        
+
         return true
       } catch (err) {
         this.error = parseBackendError(err)
