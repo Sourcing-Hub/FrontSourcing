@@ -76,7 +76,7 @@ const navigation = computed(() => {
      ADMINISTRATEUR
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'admin') {
+  if (role === 'Administrateur') {
     return [
       {
         label: 'Tableau de bord',
@@ -102,6 +102,21 @@ const navigation = computed(() => {
         label: 'Candidatures',
         icon: 'clipboard',
         href: '/candidatures',
+      },
+      {
+        label: 'Planification',
+        icon: 'calendar',
+        href: '/planification',
+      },
+      {
+        label: 'Convocations',
+        icon: 'file',
+        href: '/convocations',
+      },
+      {
+        label: 'Émargement',
+        icon: 'clipboard',
+        href: '/emargement',
       },
       {
         label: 'Utilisateurs',

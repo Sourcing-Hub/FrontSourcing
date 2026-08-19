@@ -248,7 +248,7 @@ router.beforeEach((to) => {
     return { name: 'dashboard' }
   }
 
-  // Vérification du profil pour les autres espaces
+  // Vérification du profil pour les autres espaces etc
   if (
     authStore.isAuthenticated &&
     to.meta.requiresAuth &&

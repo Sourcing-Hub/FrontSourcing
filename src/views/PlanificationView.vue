@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { CalendarDays, Edit3, Loader2, MapPin, Mic, MicOff, Plus, Search, Trash2, Users, X } from 'lucide-vue-next'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { CalendarDays, Edit3, Loader2, MapPin, Plus, Search, Trash2, Users, X } from 'lucide-vue-next'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { useAuthStore } from '../stores/auth'
 import { useCampagnesStore } from '../stores/campagnes'
@@ -21,12 +21,6 @@ const showForm = ref(false)
 const editingId = ref(null)
 const encadrants = ref([])
 const selectedDayIndex = ref(0)
-const voiceSupported = ref(false)
-const voiceListening = ref(false)
-const voiceTranscript = ref('')
-const voiceError = ref('')
-let speechRecognition = null
-let SpeechRecognitionApi = null
 
 const emptyPlanning = () => ({
   etape: '', date: '', heureDebut: '', heureFin: '', lieu: '', localisation: '', capacite: 1,
@@ -100,17 +94,11 @@ const canManage = computed(() =>
 )
 
 onMounted(async () => {
-  SpeechRecognitionApi = window.SpeechRecognition || window.webkitSpeechRecognition
-  voiceSupported.value = Boolean(SpeechRecognitionApi)
   const [, , , coaches] = await Promise.all([
     planningsStore.fetchPlannings(), campagnesStore.fetchCohortes(), campagnesStore.fetchFormations(), planningsStore.fetchEncadrants(),
   ])
   encadrants.value = coaches
 })
-onBeforeUnmount(() => {
-  speechRecognition?.abort()
-})
-
 const openCreate = () => {
   editingId.value = null
   const presetEtape = etapes.value.find((etape) => etape.id === selectedEtape.value)
@@ -172,72 +160,6 @@ const addSlot = (jour) => jour.creneaux.push({ heureDebut: '14:00', heureFin: '1
 const removeSlot = (jour, index) => jour.creneaux.splice(index, 1)
 const totalSlots = computed(() => configuration.jours.reduce((total, jour) => total + jour.creneaux.length, 0))
 const totalCapacity = computed(() => configuration.jours.reduce((total, jour) => total + jour.creneaux.reduce((sum, slot) => sum + Number(slot.capacite || 0), 0), 0))
-
-const parseVoiceTime = (value) => {
-  const normalized = value.replace('h', ':').replace(/\s/g, '')
-  const [hours, minutes = '00'] = normalized.split(':')
-  return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`
-}
-const parseVoiceDate = (text, fallback) => {
-  const date = new Date()
-  if (text.includes('apres-demain')) date.setDate(date.getDate() + 2)
-  else if (text.includes('demain')) date.setDate(date.getDate() + 1)
-  else if (!text.includes("aujourd'hui") && !text.includes('aujourd hui')) return fallback
-  return date.toISOString().slice(0, 10)
-}
-const applyVoiceCommand = (rawText) => {
-  if (!rawText || rawText.trim().length < 4 || /^[.\s]+$/.test(rawText)) {
-    voiceError.value = 'Aucune parole détectée. Maintenez le bouton pendant toute votre phrase, puis arrêtez l’enregistrement.'
-    return
-  }
-  const text = rawText.toLocaleLowerCase('fr-FR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  const timeMatches = text.match(/\b\d{1,2}(?:\s*h(?:\s*\d{1,2})?|:\d{2})?\b/g) || []
-  if (timeMatches.length < 2) {
-    voiceError.value = 'Je n’ai pas reconnu les horaires. Dites par exemple : « ajoute un créneau de 9h à 12h, capacité 20 ». '
-    return
-  }
-  const capacityMatch = text.match(/(?:capacite|places?)\s*(?:de|a|:)?\s*(\d+)/)
-  const locationMatch = rawText.match(/\b(?:a|à|dans|en)\s+([\wÀ-ÿ' -]{3,50}?)(?:\s+capacite|\s+places?|$)/i)
-  const date = parseVoiceDate(text, selectedDay.value?.date || new Date().toISOString().slice(0, 10))
-  const slot = {
-    heureDebut: parseVoiceTime(timeMatches[0]),
-    heureFin: parseVoiceTime(timeMatches[1]),
-    capacite: Number(capacityMatch?.[1] || 20),
-  }
-  if (locationMatch?.[1]) configuration.lieu = locationMatch[1].trim()
-  let dayIndex = configuration.jours.findIndex((jour) => jour.date === date)
-  if (dayIndex === -1) {
-    configuration.jours.push({ date, creneaux: [] })
-    dayIndex = configuration.jours.length - 1
-  }
-  configuration.jours[dayIndex].creneaux.push(slot)
-  selectedDayIndex.value = dayIndex
-  voiceError.value = ''
-}
-const startVoiceCommand = () => {
-  if (!voiceSupported.value) return
-  voiceError.value = ''
-  voiceTranscript.value = ''
-  speechRecognition = new SpeechRecognitionApi()
-  speechRecognition.lang = 'fr-FR'
-  speechRecognition.interimResults = false
-  speechRecognition.maxAlternatives = 1
-  speechRecognition.onresult = (event) => {
-    voiceTranscript.value = event.results[0][0].transcript
-    applyVoiceCommand(voiceTranscript.value)
-  }
-  speechRecognition.onerror = () => {
-    voiceError.value = 'La reconnaissance vocale n’a pas pu traiter votre commande.'
-    voiceListening.value = false
-  }
-  speechRecognition.onend = () => { voiceListening.value = false }
-  speechRecognition.start()
-  voiceListening.value = true
-}
-const stopVoiceCommand = () => {
-  speechRecognition?.stop()
-  voiceListening.value = false
-}
 
 const save = async () => {
   if (!editingId.value) {
@@ -410,9 +332,7 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
           </section>
           <div class="mt-5 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             <section v-if="selectedDay">
-              <div class="mb-3 flex flex-wrap items-center justify-between gap-2"><p class="section-title mb-0">Créneaux horaires <span class="capitalize">({{ formatDayName(selectedDay.date) }} {{ formatDayNumber(selectedDay.date) }})</span></p><div class="flex items-center gap-3"><button type="button" class="text-sm font-bold text-pink-600 hover:text-pink-700" @click="addSlot(selectedDay)">+ Créneau</button><button v-if="voiceSupported" type="button" class="voice-command-btn" :class="{ 'voice-command-btn-active': voiceListening }" :title="voiceListening ? 'Arrêter la commande vocale' : 'Ajouter un créneau par commande vocale'" @click="voiceListening ? stopVoiceCommand() : startVoiceCommand()"><MicOff v-if="voiceListening" class="mr-1.5 h-4 w-4" /><Mic v-else class="mr-1.5 h-4 w-4" />{{ voiceListening ? 'Écoute en cours…' : 'Commande vocale' }}</button></div></div>
-              <p v-if="voiceTranscript" class="mb-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">Entendu : « {{ voiceTranscript }} »</p>
-              <p v-if="voiceError" class="mb-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{{ voiceError }}</p>
+              <div class="mb-3 flex flex-wrap items-center justify-between gap-2"><p class="section-title mb-0">Créneaux horaires <span class="capitalize">({{ formatDayName(selectedDay.date) }} {{ formatDayNumber(selectedDay.date) }})</span></p><button type="button" class="text-sm font-bold text-pink-600 hover:text-pink-700" @click="addSlot(selectedDay)">+ Créneau</button></div>
               <div class="space-y-3">
                 <div v-for="(slot, slotIndex) in selectedDay.creneaux" :key="slotIndex" class="slot-row">
                   <div><label class="slot-label">Début</label><input v-model="slot.heureDebut" class="input-field" type="time" required /></div>
@@ -480,8 +400,6 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
 .day-add { @apply border-dashed text-[#00313C]; }
 .slot-row { @apply grid grid-cols-[1fr_18px_1fr_1fr_24px] items-end gap-2 rounded-xl border border-slate-200 bg-white p-3; }
 .slot-label { @apply mb-1 block text-xs font-semibold text-slate-500; }
-.voice-command-btn { @apply inline-flex items-center rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-xs font-bold text-pink-700 transition hover:bg-pink-100; }
-.voice-command-btn-active { @apply border-red-200 bg-red-50 text-red-700; }
 
 @media (max-width: 900px) {
   .planning-table { @apply rounded-xl; }
