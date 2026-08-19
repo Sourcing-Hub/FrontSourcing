@@ -57,12 +57,16 @@ function goHome() {
 
 const navigation = computed(() => {
   const role = authStore.user?.role
+  const normalizedRole = role
+    ?.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
 
   /* ─────────────────────────────────────────────────────────
      CANDIDAT
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Candidat') {
+  if (normalizedRole === 'Candidat') {
     return [
       {
         label: 'Mes candidatures',
@@ -76,7 +80,7 @@ const navigation = computed(() => {
      ADMINISTRATEUR
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'admin') {
+  if (normalizedRole === 'administrateur') {
     return [
       {
         label: 'Tableau de bord',
@@ -97,6 +101,31 @@ const navigation = computed(() => {
         label: 'Formulaires',
         icon: 'file',
         href: '/formulaires',
+      },
+      {
+        label: 'Questionnaires',
+        icon: 'clipboard',
+        href: '/questionnaires',
+      },
+      {
+        label: 'Candidats en entretien',
+        icon: 'users',
+        href: '/entretiens/candidats',
+      },
+      {
+        label: 'planification',
+        icon: '',
+        href: '/planification'
+      },
+      {
+        label: 'convocations',
+        icon: '',
+        href: '/convocations'
+      },
+      {
+        label: 'emargement',
+        icon: '',
+        href: '/emargement'
       },
       {
         label: 'Candidatures',
@@ -115,7 +144,7 @@ const navigation = computed(() => {
      ÉQUIPE PÉDAGOGIQUE
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Equipe Pédagogique') {
+  if (normalizedRole === 'equipe pedagogique') {
     return [
       {
         label: 'Tableau de bord',
@@ -131,6 +160,21 @@ const navigation = computed(() => {
         label: 'Campagnes',
         icon: 'calendar',
         href: '/campagnes',
+      },
+      // {
+      //   label: 'Mes entretiens',
+      //   icon: 'calendar',
+      //   href: '/evaluator/interviews',
+      // },
+      {
+        label: 'Questionnaires',
+        icon: 'clipboard',
+        href: '/questionnaires',
+      },
+      {
+        label: 'Candidats en entretien',
+        icon: 'users',
+        href: '/entretiens/candidats',
       },
       {
         label: 'Formulaires',
@@ -149,7 +193,7 @@ const navigation = computed(() => {
      ÉQUIPE GESTION DE PROJET
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Equipe Gestion de Projet') {
+  if (normalizedRole === 'equipe gestion de projet') {
     return [
       {
         label: 'Tableau de bord',
@@ -171,10 +215,31 @@ const navigation = computed(() => {
         icon: 'file',
         href: '/formulaires',
       },
+      // {
+      //   label: 'Mes candidats',
+      //   icon: 'users',
+      //   href: '/evaluator/candidates',
+      // },
+      
       {
         label: 'Candidatures',
         icon: 'clipboard',
         href: '/candidatures',
+      },
+      {
+        label: 'planification',
+        icon: 'calendar',
+        href: '/planification'
+      },
+      {
+        label: 'convocations',
+        icon: 'file',
+        href: '/convocations'
+      },
+      {
+        label: 'emargement',
+        icon: '',
+        href: '/emargement'
       },
     ]
   }
@@ -183,7 +248,7 @@ const navigation = computed(() => {
      ÉVALUATEUR
      ───────────────────────────────────────────────────────── */
 
-  if (role === 'Evaluateur') {
+  if (normalizedRole === 'evaluateur') {
     return [
       
       {
@@ -537,7 +602,7 @@ const userRole = computed(() => {
            PROFIL UTILISATEUR
            ===================================================== -->
 
-      <div
+      <!-- <div
         class="mx-1 mb-7 rounded-3xl border border-white/10 bg-white/[0.07] p-3 shadow-xl shadow-black/10 backdrop-blur"
       >
         <div class="flex items-center gap-3">
@@ -563,7 +628,7 @@ const userRole = computed(() => {
           </div>
 
         </div>
-      </div>
+      </div> -->
 
 
       <!-- =====================================================
@@ -571,15 +636,15 @@ const userRole = computed(() => {
            ===================================================== -->
 
       <nav
-        class="flex flex-1 flex-col gap-1 overflow-y-auto custom-scrollbar"
+        class="flex flex-1 flex-col gap-1  overflow-hidden"
         aria-label="Navigation principale"
       >
 
-        <p
+        <!-- <p
           class="px-3 pb-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#64CCC9]/70"
         >
           Navigation
-        </p>
+        </p> -->
 
         <button
           v-for="item in navigation"
@@ -633,17 +698,32 @@ const userRole = computed(() => {
         <button
           type="button"
           class="group flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-bold text-white/55 transition-all duration-200 hover:bg-white/10 hover:text-white"
-          
+          @click="router.push('/profil')"
         >
 
-          <span
-            class="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-white/50 transition group-hover:bg-[#64CCC9]/10 group-hover:text-[#64CCC9]"
-            v-html="icons.user"
-          />
+           <div class="flex items-center gap-3">
 
-          <span>
-            Mon profil
-          </span>
+          <div
+            class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-sm font-black text-[#00313C]"
+          >
+            {{ userInitials }}
+          </div>
+
+          <div class="min-w-0">
+            <strong
+              class="block truncate text-sm font-bold text-white"
+            >
+              {{ userName }}
+            </strong>
+
+            <span
+              class="block truncate text-xs font-medium text-white/55"
+            >
+              {{ userRole }}
+            </span>
+          </div>
+
+        </div>
 
         </button>
 

@@ -200,7 +200,7 @@ onMounted(loadInterviews)
         <!-- Badge -->
         <!-- Affiche une information courte ou décorative. -->
         <span
-          class="inline-flex rounded-full bg-[#64CCC9]/15 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#00313C] ring-1 ring-[#64CCC9]/30"
+          class="inline-flex rounded-full bg-[#00313C]/15 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#00313C] ring-1 ring-[#00313C]/30"
         >
           <!-- Affiche ce contenu textuel dans la vue évaluateur. -->
           ESPACE ÉVALUATEUR
@@ -246,7 +246,7 @@ onMounted(loadInterviews)
       <!-- TOTAL -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#64CCC9]/20 bg-white p-5 shadow-xl shadow-[#00313C]/10"
+        class="rounded-3xl border border-[#00313C]/20 bg-white p-5 shadow-xl shadow-[#00313C]/2"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
@@ -272,11 +272,11 @@ onMounted(loadInterviews)
       <!-- À VENIR -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/20"
+        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/2"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
-          class="text-sm font-black text-[#64CCC9]"
+          class="text-sm font-black text-[#00313C]"
         >
           <!-- Affiche ce contenu textuel dans la vue évaluateur. -->
           À venir
@@ -298,11 +298,11 @@ onMounted(loadInterviews)
       <!-- EN COURS -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#64CCC9]/30 bg-white p-5 shadow-xl shadow-[#00313C]/10"
+        class="rounded-3xl border border-[#00313C]/30 bg-white p-5 shadow-xl shadow-[#00313C]/2"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
-          class="text-sm font-black text-[#64CCC9]"
+          class="text-sm font-black text-[#00313C]"
         >
           <!-- Affiche ce contenu textuel dans la vue évaluateur. -->
           En cours
@@ -324,7 +324,7 @@ onMounted(loadInterviews)
       <!-- TERMINÉS -->
       <!-- Affiche une carte ou un bloc de contenu autonome. -->
       <article
-        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/10"
+        class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/2"
       >
         <!-- Affiche une information courte ou décorative. -->
         <span
@@ -337,7 +337,7 @@ onMounted(loadInterviews)
 
         <!-- Met en avant une valeur importante. -->
         <strong
-          class="mt-3 block text-4xl font-black text-[#64CCC9]"
+          class="mt-3 block text-4xl font-black text-[#00313C]"
         >
           <!-- Affiche une donnée dynamique dans l’interface. -->
           {{ stats.completed }}
@@ -355,7 +355,7 @@ onMounted(loadInterviews)
          ========================================================= -->
     <!-- Délimite une zone fonctionnelle de la page. -->
     <section
-      class="rounded-[2rem] border border-[#64CCC9]/20 bg-white/90 p-4 shadow-2xl shadow-[#00313C]/10 backdrop-blur lg:p-6"
+      class="rounded-[2rem] border border-[#00313C]/20 bg-white/90 p-4 shadow-2xl shadow-[#00313C]/2 backdrop-blur lg:p-6"
     >
 
       <!-- Titre -->
@@ -452,7 +452,7 @@ onMounted(loadInterviews)
         <!-- Structure un groupe d’éléments visuels. -->
         <div
           v-if="!filteredInterviews.length"
-          class="rounded-3xl border border-dashed border-[#64CCC9]/40 bg-[#64CCC9]/5 py-16 text-center text-sm font-bold text-[#00313C]/50"
+          class="rounded-3xl border border-dashed border-[#00313C]/40 bg-[#00313C]/5 py-16 text-center text-sm font-bold text-[#00313C]/50"
         >
           <!-- Affiche ce contenu textuel dans la vue évaluateur. -->
           Aucun entretien trouvé.

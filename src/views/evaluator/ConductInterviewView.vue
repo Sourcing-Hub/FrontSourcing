@@ -125,7 +125,7 @@ onMounted(loadData)
     <!--  Structure un groupe d’éléments visuels. -->
     <div
       v-if="loading"
-      class="rounded-3xl border border-[#64CCC9]/20 bg-white py-20 text-center text-sm font-bold text-[#00313C]/50 shadow-xl shadow-[#00313C]/10"
+      class="rounded-3xl border border-[#00313C]/20 bg-white py-20 text-center text-sm font-bold text-[#00313C]/50 shadow-xl shadow-[#00313C]/1"
     >
       <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
       Chargement...
@@ -196,7 +196,7 @@ onMounted(loadData)
         <!-- DATE -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="rounded-3xl border border-[#64CCC9]/20 bg-white p-5 shadow-xl shadow-[#00313C]/10"
+          class="rounded-3xl border border-[#00313C]/20 bg-white p-5 "
         >
           <!--  Affiche une information courte ou décorative. -->
           <span
@@ -222,11 +222,11 @@ onMounted(loadData)
         <!-- HORAIRE -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white shadow-xl shadow-[#00313C]/20"
+          class="rounded-3xl border border-[#00313C] bg-[#00313C] p-5 text-white "
         >
           <!--  Affiche une information courte ou décorative. -->
           <span
-            class="block text-xs font-black uppercase tracking-wide text-[#64CCC9]"
+            class="block text-xs font-black uppercase tracking-wide text-[#00313C]"
           >
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
             Horaire
@@ -252,7 +252,7 @@ onMounted(loadData)
         <!-- LIEU -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="rounded-3xl border border-[#64CCC9]/20 bg-white p-5 shadow-xl shadow-[#00313C]/10"
+          class="rounded-3xl border border-[#00313C]/20 bg-white p-5 "
         >
           <!--  Affiche une information courte ou décorative. -->
           <span
@@ -291,7 +291,7 @@ onMounted(loadData)
              ================================================= -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="self-start overflow-hidden rounded-[2rem] border border-[#64CCC9]/20 bg-white shadow-xl shadow-[#00313C]/10"
+          class="self-start overflow-hidden rounded-[2rem] border border-[#00313C]/20 bg-white "
         >
 
           <!-- HEADER PROFIL ROUGE -->
@@ -303,7 +303,7 @@ onMounted(loadData)
             <!-- Avatar -->
             <!--  Structure un groupe d’éléments visuels. -->
             <div
-              class="mx-auto grid h-20 w-20 place-items-center rounded-[1.7rem] bg-white text-3xl font-black text-[#E40046] shadow-xl shadow-[#00313C]/20"
+              class="mx-auto grid h-20 w-20 place-items-center rounded-[1.7rem] bg-white text-3xl font-black text-[#E40046] "
             >
               <!--  Affiche une donnée dynamique dans l’interface. -->
               {{
@@ -346,7 +346,7 @@ onMounted(loadData)
           <!--  Affiche un bouton d’action pour l’utilisateur. -->
           <button
             type="button"
-            class="m-5 h-12 w-[calc(100%-2.5rem)] rounded-2xl bg-[#E40046] text-sm font-black text-white shadow-lg shadow-[#E40046]/20 transition-all duration-200 hover:bg-[#00313C] hover:shadow-xl hover:shadow-[#00313C]/20 focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98]"
+            class="m-5 h-12 w-[calc(100%-2.5rem)] rounded-2xl bg-[#E40046] text-sm font-black text-white  transition-all duration-200 hover:bg-[#00313C] hover:shadow-xl hover:shadow-[#00313C]/1 focus:outline-none focus:ring-4 focus:ring-[#00313C]/30 active:scale-[0.98]"
           >
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
             Consulter le CV
@@ -362,13 +362,13 @@ onMounted(loadData)
              ================================================= -->
         <!--  Structure un groupe d’éléments visuels. -->
         <div
-          class="flex min-h-[360px] flex-col justify-center rounded-[2rem] border border-[#64CCC9]/20 bg-white p-6 shadow-xl shadow-[#00313C]/10"
+          class="flex min-h-[360px] flex-col justify-center rounded-[2rem] border border-[#00313C]/20 bg-white p-6 "
         >
 
           <!-- MESSAGE -->
           <!--  Structure un groupe d’éléments visuels. -->
           <div
-            class="rounded-3xl bg-[#64CCC9]/10 p-6 ring-1 ring-[#64CCC9]/20"
+            class="rounded-3xl bg-[#00313C]/10 p-6 ring-1 ring-[#00313C]/20"
           >
 
             <!--  Met en avant une valeur importante. -->
@@ -403,7 +403,7 @@ onMounted(loadData)
           <!--  Affiche un bouton d’action pour l’utilisateur. -->
           <button
             type="button"
-            class="mt-5 inline-flex h-12 w-fit items-center justify-center rounded-2xl bg-[#00313C] px-6 text-sm font-black text-white shadow-xl shadow-[#00313C]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] hover:shadow-2xl hover:shadow-[#E40046]/20 focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98]"
+            class="mt-5 inline-flex h-12 w-fit items-center justify-center rounded-2xl bg-[#00313C] px-6 text-sm font-black text-white  transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046]  focus:outline-none focus:ring-4 focus:ring-[#00313C]/30 active:scale-[0.98]"
             @click="startEvaluation"
           >
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
@@ -411,7 +411,7 @@ onMounted(loadData)
 
             <!--  Affiche une information courte ou décorative. -->
             <span
-              class="ml-2 text-[#64CCC9]"
+              class="ml-2 text-[#00313C]"
             >
               <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
               →

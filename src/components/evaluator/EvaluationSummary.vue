@@ -92,7 +92,7 @@ const comment = computed(() => {
 
 <template>
   <!--  Délimite une zone fonctionnelle de la page. -->
-  <section class="overflow-hidden rounded-3xl border border-white/70 bg-white/90 shadow-xl shadow-slate-200/50 backdrop-blur">
+  <section class="overflow-hidden rounded-3xl border border-white/70 bg-white/90  backdrop-blur">
 
     <!--  Structure un groupe d’éléments visuels. -->
     <div class="from-slate-950 via-indigo-950 to-slate-900 p-6 text-white">

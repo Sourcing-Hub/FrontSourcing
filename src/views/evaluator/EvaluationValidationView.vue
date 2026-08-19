@@ -354,281 +354,171 @@ onMounted(loadData)
 <style scoped>
 /*  Ouvre un sélecteur CSS à styliser. */
 .page {
-  /*  Définit une propriété visuelle pour cet élément. */
   min-height: 100vh;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   padding: 36px 42px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   background: #f6f8fb;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .header {
-  /*  Définit une propriété visuelle pour cet élément. */
   margin-bottom: 25px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .eyebrow {
-  /*  Définit une propriété visuelle pour cet élément. */
   color: #6372be;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-size: 9px;
-  /*  Définit une propriété visuelle pour cet élément. */
   font-weight: 800;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   letter-spacing: 0.12em;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 h1 {
-  /*  Définit une propriété visuelle pour cet élément. */
   margin: 8px 0 0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   color: #172033;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-size: 28px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .header p {
-  /*  Définit une propriété visuelle pour cet élément. */
   margin: 7px 0 0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   color: #7d8797;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-size: 11px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .validation-layout {
-  /*  Définit une propriété visuelle pour cet élément. */
   display: grid;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   grid-template-columns:
-    /*  Définit une propriété visuelle pour cet élément. */
     minmax(0, 1fr)
-    /*  Définit une propriété visuelle pour cet élément. */
     260px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   gap: 18px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Définit une propriété visuelle pour cet élément. */
 .card,
-/*  Ouvre un sélecteur CSS à styliser. */
 .actions {
-  /*  Définit une propriété visuelle pour cet élément. */
   padding: 22px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   border: 1px solid #e7ebf0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   border-radius: 16px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   background: #fff;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .check {
-  /*  Définit une propriété visuelle pour cet élément. */
   display: flex;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   align-items: center;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   gap: 13px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   padding-bottom: 20px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   margin-bottom: 20px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   border-bottom: 1px solid #edf0f4;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .icon {
-  /*  Définit une propriété visuelle pour cet élément. */
   width: 40px;
-  /*  Définit une propriété visuelle pour cet élément. */
   height: 40px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   display: flex;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   align-items: center;
-  /*  Définit une propriété visuelle pour cet élément. */
   justify-content: center;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   flex-shrink: 0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   border-radius: 50%;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   background: #eaf8f0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
-  color: #2d8a59;
+  color: #00313C;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-weight: 800;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .check strong {
-  /*  Définit une propriété visuelle pour cet élément. */
-  color: #344054;
+  color: #00313C;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-size: 12px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .check p {
-  /*  Définit une propriété visuelle pour cet élément. */
   margin: 5px 0 0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
-  color: #939baa;
+  color: #00313C;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-size: 9px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .actions {
-  /*  Définit une propriété visuelle pour cet élément. */
   align-self: start;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   display: flex;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   flex-direction: column;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   gap: 10px;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .actions button {
-  /*  Définit une propriété visuelle pour cet élément. */
   height: 42px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   border-radius: 9px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   font-size: 10px;
-  /*  Définit une propriété visuelle pour cet élément. */
   font-weight: 700;
-
-  /*  Définit une propriété visuelle pour cet élément. */
   cursor: pointer;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .secondary {
-  /*  Définit une propriété visuelle pour cet élément. */
-  border: 1px solid #dfe4eb;
+  border: 1px solid #00313C;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   background: white;
 
-  /*  Définit une propriété visuelle pour cet élément. */
-  color: #596477;
-/*  Ferme le bloc de styles courant. */
+  color: #00313C;
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .primary {
-  /*  Définit une propriété visuelle pour cet élément. */
   border: 0;
 
-  /*  Définit une propriété visuelle pour cet élément. */
-  background: #3046a7;
+  background: #00313C;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   color: white;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .primary:disabled {
-  /*  Définit une propriété visuelle pour cet élément. */
   opacity: 0.55;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   cursor: not-allowed;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Définit une propriété visuelle pour cet élément. */
 .loading,
-/*  Ouvre un sélecteur CSS à styliser. */
 .error {
-  /*  Définit une propriété visuelle pour cet élément. */
   padding: 60px;
 
-  /*  Définit une propriété visuelle pour cet élément. */
   text-align: center;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Ouvre un sélecteur CSS à styliser. */
 .error {
-  /*  Définit une propriété visuelle pour cet élément. */
   color: #a64d4d;
-/*  Ferme le bloc de styles courant. */
 }
 
-/*  Déclare une règle CSS spéciale. */
 @media (max-width: 800px) {
-  /*  Ouvre un sélecteur CSS à styliser. */
   .page {
-    /*  Définit une propriété visuelle pour cet élément. */
     padding: 25px 18px;
-  /*  Ferme le bloc de styles courant. */
   }
 
-  /*  Ouvre un sélecteur CSS à styliser. */
   .validation-layout {
-    /*  Définit une propriété visuelle pour cet élément. */
     grid-template-columns: 1fr;
-  /*  Ferme le bloc de styles courant. */
   }
-/*  Ferme le bloc de styles courant. */
 }
 </style>

@@ -132,7 +132,6 @@ onMounted(loadCandidate)
 </script>
 
 <template>
-  <!--  Définit le conteneur principal de la page évaluateur. -->
   <main
     class="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(100,204,201,0.14),transparent_30%),linear-gradient(180deg,#ffffff_0%,#f4fafa_100%)] px-5 py-20 lg:px-10 lg:py-10"
   >
@@ -140,13 +139,11 @@ onMounted(loadCandidate)
     <!-- =====================================================
          RETOUR
          ===================================================== -->
-    <!--  Affiche un bouton d’action pour l’utilisateur. -->
     <button
       type="button"
-      class="mb-6 inline-flex h-11 items-center rounded-2xl border border-[#64CCC9]/25 bg-white px-4 text-sm font-black text-[#00313C] shadow-lg shadow-[#00313C]/7 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#E40046]/30 hover:bg-[#E40046] hover:text-white hover:shadow-xl hover:shadow-[#E40046]/10 focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98]"
+      class="mb-6 inline-flex h-11 items-center rounded-2xl border border-[#00313C]/25 bg-white px-4 text-sm font-black text-[#00313C] shadow-lg shadow-[#00313C]/7 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#E40046]/30 hover:bg-[#E40046] hover:text-white hover:shadow-xl hover:shadow-[#E40046]/2 focus:outline-none focus:ring-4 focus:ring-[#00313C]/30 active:scale-[0.98]"
       @click="goBack"
     >
-      <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
       ← Mes candidats
     <!--  Ferme l’élément button. -->
     </button>
@@ -158,7 +155,7 @@ onMounted(loadCandidate)
     <!--  Structure un groupe d’éléments visuels. -->
     <div
       v-if="loading"
-      class="rounded-3xl border border-[#64CCC9]/20 bg-white py-20 text-center text-sm font-bold text-[#00313C]/50 shadow-xl shadow-[#00313C]/10"
+      class="rounded-3xl border border-[#00313C]/20 bg-white py-20 text-center text-sm font-bold text-[#00313C]/50 shadow-xl shadow-[#00313C]/2"
     >
       <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
       Chargement...
@@ -225,7 +222,7 @@ onMounted(loadCandidate)
            =================================================== -->
       <!--  Délimite une zone fonctionnelle de la page. -->
       <section
-        class="mt-6 rounded-[2rem] border border-[#64CCC9]/20 bg-white p-5 shadow-xl shadow-[#00313C]/7 backdrop-blur"
+        class="mt-6 rounded-[2rem] border border-[#00313C]/20 bg-white p-5 shadow-xl shadow-[#00313C]/3 backdrop-blur"
       >
 
         <!-- EN-TÊTE SECTION -->
@@ -260,7 +257,7 @@ onMounted(loadCandidate)
           <!-- NOMBRE -->
           <!--  Affiche une information courte ou décorative. -->
           <span
-            class="rounded-full bg-[#64CCC9]/15 px-3 py-1 text-sm font-black text-[#00313C]"
+            class="rounded-full bg-[#00313C]/15 px-3 py-1 text-sm font-black text-[#00313C]"
           >
             <!--  Affiche une donnée dynamique dans l’interface. -->
             {{ interviews.length }}
@@ -278,7 +275,7 @@ onMounted(loadCandidate)
         <article
           v-for="interview in interviews"
           :key="interview.id"
-          class="group flex flex-col gap-4 border-t border-[#64CCC9]/15 py-5 transition-colors duration-200 sm:flex-row sm:items-center sm:justify-between"
+          class="group flex flex-col gap-4 border-t border-[#00313C]/15 py-5 transition-colors duration-200 sm:flex-row sm:items-center sm:justify-between"
         >
 
           <!-- INFORMATIONS -->
@@ -302,7 +299,7 @@ onMounted(loadCandidate)
               {{ interview.date }}
 
               <!--  Affiche une information courte ou décorative. -->
-              <span class="mx-1 text-[#64CCC9]">
+              <span class="mx-1 text-[#00313C]">
                 <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
                 ·
               <!--  Ferme l’élément span. -->
@@ -312,7 +309,7 @@ onMounted(loadCandidate)
               {{ interview.startTime }}
 
               <!--  Affiche une information courte ou décorative. -->
-              <span class="mx-1 text-[#64CCC9]">
+              <span class="mx-1 text-[#00313C]">
                 <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
                 -
               <!--  Ferme l’élément span. -->
@@ -333,7 +330,7 @@ onMounted(loadCandidate)
           <!--  Affiche un bouton d’action pour l’utilisateur. -->
           <button
             type="button"
-            class="h-11 shrink-0 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white shadow-lg shadow-[#00313C]/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] hover:shadow-xl hover:shadow-[#E40046]/10 focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98]"
+            class="h-11 shrink-0 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white  transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98]"
             @click="startInterview(interview)"
           >
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
@@ -360,7 +357,7 @@ onMounted(loadCandidate)
         <!--  Structure un groupe d’éléments visuels. -->
         <div
           v-if="!interviews.length"
-          class="mt-4 rounded-3xl border border-dashed border-[#64CCC9]/30 bg-[#64CCC9]/5 px-5 py-12 text-center"
+          class="mt-4 rounded-3xl border border-dashed border-[#64CCC9]/30 bg-[#00313C]/5 px-5 py-12 text-center"
         >
 
           <!--  Affiche un paragraphe de texte. -->

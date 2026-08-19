@@ -1,121 +1,83 @@
 <script setup>
-// Prépare un import groupé depuis une dépendance.
 import {
-  // Ajoute cette valeur à la structure ou à la liste en cours.
   computed,
-  // Ajoute cette valeur à la structure ou à la liste en cours.
   onMounted,
-  // Ajoute cette valeur à la structure ou à la liste en cours.
   ref,
-// Ferme la liste d'import et précise le module source.
 } from 'vue'
 
-// Prépare un import groupé depuis une dépendance.
 import { useRouter } from 'vue-router'
 
-// Importe CandidateInfoCard utilisé dans la partie évaluateur.
-import CandidateInfoCard from '@/components/evaluator/CandidatInfoCard.vue'
+import CandidatInterviewCard from '@/components/evaluator/CandidateInterviewCard.vue'
 
-// Prépare un import groupé depuis une dépendance.
-import { fetchMyCandidates } from '@/services/evaluator'
+import {
+  fetchMyCandidates,
+} from '@/services/evaluator'
 
-// Déclare router pour stocker une donnée ou un calcul de la vue.
 const router = useRouter()
 
-// Déclare candidates pour stocker une donnée ou un calcul de la vue.
 const candidates = ref([])
-// Déclare search pour stocker une donnée ou un calcul de la vue.
 const search = ref('')
 
-// Déclare loading pour stocker une donnée ou un calcul de la vue.
 const loading = ref(true)
-// Déclare error pour stocker une donnée ou un calcul de la vue.
 const error = ref('')
 
-// Déclare filteredCandidates pour stocker une donnée ou un calcul de la vue.
 const filteredCandidates = computed(() => {
-  // Déclare query pour stocker une donnée ou un calcul de la vue.
-  const query =
-    // Met à jour ou lit la valeur réactive utilisée par Vue.
-    search.value
-      // Exécute cette ligne de logique propre à la partie évaluateur.
-      .trim()
-      // Exécute cette ligne de logique propre à la partie évaluateur.
-      .toLowerCase()
+  const query = search.value
+    .trim()
+    .toLowerCase()
 
-  // Vérifie cette condition avant de continuer.
   if (!query) {
-    // Retourne le résultat attendu par le reste du code.
     return candidates.value
-  // Ferme le bloc de configuration ou de traitement.
   }
 
-  // Retourne le résultat attendu par le reste du code.
-  return candidates.value.filter(
-    // Exécute cette ligne de logique propre à la partie évaluateur.
-    (candidate) => {
-      // Déclare name pour stocker une donnée ou un calcul de la vue.
-      const name =
-        // Exécute cette ligne de logique propre à la partie évaluateur.
-        `${candidate.firstName} ${candidate.lastName}`.toLowerCase()
+  return candidates.value.filter((candidate) => {
+    const name =
+      `${candidate.firstName || ''} ${candidate.lastName || ''}`
+        .trim()
+        .toLowerCase()
 
-      // Retourne le résultat attendu par le reste du code.
-      return name.includes(query)
-    // Ajoute cette valeur à la structure ou à la liste en cours.
-    },
-  // Exécute cette ligne de logique propre à la partie évaluateur.
-  )
-// Ferme le bloc de configuration ou de traitement.
+    return name.includes(query)
+  })
 })
 
-// Déclare la fonction loadCandidates pour isoler un traitement évaluateur.
 async function loadCandidates() {
-  // Met à jour ou lit la valeur réactive utilisée par Vue.
   loading.value = true
-  // Met à jour ou lit la valeur réactive utilisée par Vue.
   error.value = ''
 
-  // Démarre un bloc qui tente une action pouvant échouer.
   try {
-    // Met à jour ou lit la valeur réactive utilisée par Vue.
     candidates.value =
-      // Attend la réponse d'une action asynchrone avant de continuer.
       await fetchMyCandidates()
-  // Gère l'erreur si le traitement précédent échoue.
-  } catch {
-    // Met à jour ou lit la valeur réactive utilisée par Vue.
+  } catch (err) {
+    console.error(
+      'Erreur chargement candidats :',
+      err
+    )
+
     error.value =
-      // Exécute cette ligne de logique propre à la partie évaluateur.
+      err?.response?.data?.detail ||
       'Impossible de charger les candidats.'
-  // Exécute ce bloc dans tous les cas après l'action.
   } finally {
-    // Met à jour ou lit la valeur réactive utilisée par Vue.
     loading.value = false
-  // Ferme le bloc de configuration ou de traitement.
   }
-// Ferme le bloc de configuration ou de traitement.
 }
 
-// Déclare la fonction openCandidate pour isoler un traitement évaluateur.
 function openCandidate(candidate) {
-  // Redirige l'utilisateur vers la page evaluator correspondante.
+  if (!candidate?.id) {
+    console.error(
+      'ID candidat manquant :',
+      candidate
+    )
+    return
+  }
+
   router.push({
-    // Ajoute cette valeur à la structure ou à la liste en cours.
     name: 'evaluator-candidate-detail',
-    // Exécute cette ligne de logique propre à la partie évaluateur.
     params: {
-      // Ajoute cette valeur à la structure ou à la liste en cours.
       candidateId: candidate.id,
-    // Ajoute cette valeur à la structure ou à la liste en cours.
     },
-  // Ferme le bloc de configuration ou de traitement.
   })
-// Ferme le bloc de configuration ou de traitement.
 }
 
-
-
-// Lance ce traitement au montage du composant.
 onMounted(loadCandidates)
 </script>
 
@@ -149,7 +111,7 @@ onMounted(loadCandidates)
     </header>
 
     <!-- Structure un groupe d’éléments visuels. -->
-    <div class="mb-5 flex h-14 max-w-2xl items-center gap-3 rounded-3xl border border-white/70 bg-white/90 px-5 shadow-xl shadow-slate-200/70 backdrop-blur ring-indigo-500/10 transition focus-within:border-indigo-300 focus-within:ring-4">
+    <div class="mb-5 flex h-14 max-w-2xl items-center gap-3 rounded-3xl border border-white/70 bg-white/90 px-5 shadow-xl shadow-slate-200/20 backdrop-blur ring-indigo-500/10 transition focus-within:border-indigo-300 focus-within:ring-4">
       <!-- Affiche une information courte ou décorative. -->
       <span class="text-xl text-slate-400">⌕</span>
 
@@ -176,7 +138,7 @@ onMounted(loadCandidates)
     <!-- Structure un groupe d’éléments visuels. -->
     <div
       v-if="loading"
-      class="rounded-3xl border border-white/70 bg-white/80 py-20 text-center text-sm font-bold text-slate-400 shadow-xl shadow-slate-200/70"
+      class="rounded-3xl border border-white/70 bg-white/80 py-20 text-center text-sm font-bold text-slate-400 shadow-xl shadow-slate-200/10"
     >
       <!-- Affiche ce contenu textuel dans la vue évaluateur. -->
       Chargement des candidats...
@@ -188,16 +150,11 @@ onMounted(loadCandidates)
       class="flex flex-col gap-3"
     >
       <!-- Affiche ou configure l’élément CandidateInfoCard. -->
-      <CandidateInfoCard
+      <CandidatInterviewCard
         v-for="candidate in filteredCandidates"
         :key="candidate.id"
         :candidate="candidate"
-        class="cursor-pointer transition hover:-translate-y-0.5"
-        role="button"
-        tabindex="0"
         @click="openCandidate(candidate)"
-        @keydown.enter="openCandidate(candidate)"
-        @keydown.space.prevent="openCandidate(candidate)"
       />
 
       <!-- Structure un groupe d’éléments visuels. -->

@@ -84,42 +84,7 @@ const technicalQuestions = [
 // QUESTIONS MOTIVATION
 // ============================================================
 
-//  Déclare motivationQuestions pour stocker une donnée ou un calcul de la vue.
-const motivationQuestions = [
-  //  Ouvre un bloc de configuration ou de données.
-  {
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    id: 'motivation-1',
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    question: 'Pourquoi souhaitez-vous intégrer cette formation ?',
-  //  Ajoute cette valeur à la structure ou à la liste en cours.
-  },
-  //  Ouvre un bloc de configuration ou de données.
-  {
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    id: 'motivation-2',
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    question: 'Quels sont vos objectifs professionnels ?',
-  //  Ajoute cette valeur à la structure ou à la liste en cours.
-  },
-  //  Ouvre un bloc de configuration ou de données.
-  {
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    id: 'motivation-3',
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    question: 'Qu’attendez-vous de cette formation ?',
-  //  Ajoute cette valeur à la structure ou à la liste en cours.
-  },
-  //  Ouvre un bloc de configuration ou de données.
-  {
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    id: 'motivation-4',
-    //  Ajoute cette valeur à la structure ou à la liste en cours.
-    question: 'Comment comptez-vous vous investir dans la formation ?',
-  //  Ajoute cette valeur à la structure ou à la liste en cours.
-  },
-//  Exécute cette ligne de logique propre à la partie évaluateur.
-]
+
 
 // ============================================================
 // QUESTIONS SELON LE TYPE D'ENTRETIEN
@@ -294,17 +259,11 @@ function updateScore(
 
 //  Déclare la fonction updateComment pour isoler un traitement évaluateur.
 function updateComment(
-  //  Ajoute cette valeur à la structure ou à la liste en cours.
   questionId,
-  //  Ajoute cette valeur à la structure ou à la liste en cours.
   value,
-//  Exécute cette ligne de logique propre à la partie évaluateur.
 ) {
-  //  Exécute cette ligne de logique propre à la partie évaluateur.
   form.questions[questionId].comment =
-    //  Exécute cette ligne de logique propre à la partie évaluateur.
     value
-//  Ferme le bloc de configuration ou de traitement.
 }
 
 // ============================================================
@@ -313,24 +272,15 @@ function updateComment(
 
 //  Déclare la fonction validateForm pour isoler un traitement évaluateur.
 function validateForm() {
-  //  Met à jour ou lit la valeur réactive utilisée par Vue.
   for (const question of questions.value) {
-    //  Déclare answer pour stocker une donnée ou un calcul de la vue.
     const answer =
-      //  Exécute cette ligne de logique propre à la partie évaluateur.
       form.questions[question.id]
 
-    //  Vérifie cette condition avant de continuer.
     if (
-      //  Exécute cette ligne de logique propre à la partie évaluateur.
       answer.score === null ||
-      //  Exécute cette ligne de logique propre à la partie évaluateur.
       answer.score === ''
-    //  Exécute cette ligne de logique propre à la partie évaluateur.
     ) {
-      //  Retourne le résultat attendu par le reste du code.
       return `Veuillez attribuer une note à la question : "${question.question}"`
-    //  Ferme le bloc de configuration ou de traitement.
     }
 
     //  Vérifie cette condition avant de continuer.
@@ -468,7 +418,7 @@ function submit() {
           index
         ) in questions"
         :key="question.id"
-        class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+        class="overflow-hidden rounded-3xl border border-slate-200 bg-white "
       >
 
         <!-- Question -->
@@ -775,7 +725,7 @@ function submit() {
       <!--  Affiche un bouton d’action pour l’utilisateur. -->
       <button
         type="submit"
-        class="inline-flex h-12 items-center justify-center rounded-2xl bg-indigo-600 px-7 text-sm font-black text-white shadow-lg shadow-indigo-500/15 transition hover:-translate-y-0.5 hover:bg-slate-950 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 active:scale-[0.98]"
+        class="inline-flex h-12 items-center justify-center rounded-2xl bg-indigo-600 px-7 text-sm font-black text-white  transition hover:-translate-y-0.5 hover:bg-slate-950 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 active:scale-[0.98]"
       >
         <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
         Enregistrer l'évaluation →

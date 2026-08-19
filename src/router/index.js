@@ -80,6 +80,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/questionnaires',
+      name: 'questionnaires',
+      component: () => import('../views/QuestionnairesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/entretiens/candidats',
+      name: 'entretiens-candidats',
+      component: () => import('../views/CandidatsEntretiensView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/formulaires/:id/edit',
       name: 'formulaire-editor',
       component: () => import('../views/FormBuilderView.vue'),
@@ -168,9 +180,8 @@ const router = createRouter({
 
     {
       path: '/evaluator/interviews/:interviewId/evaluation',
-      name: 'evaluator-evaluation',
-      component: EvaluationView,
-      meta: { requiresAuth: true },
+      name:  'evaluator-evaluation',
+      component: () => import('../views/evaluator/EvaluationView.vue'),
     },
 
     {
@@ -196,7 +207,7 @@ router.beforeEach((to) => {
   // Utilisateur déjà authentifié
   if (to.name === 'login' && authStore.isAuthenticated) {
     // Evaluateur → espace évaluateur
-    if (authStore.user?.role === 'Evaluateur') {
+    if (authStore.user?.role === 'evaluateur') {
       return { name: 'evaluator-interviews' }
     }
 
@@ -212,7 +223,7 @@ router.beforeEach((to) => {
   if (
     authStore.isAuthenticated &&
     isEvaluatorRoute &&
-    authStore.user?.role !== 'Evaluateur'
+    authStore.user?.role !== 'evaluateur'
   ) {
     return { name: 'dashboard' }
   }
