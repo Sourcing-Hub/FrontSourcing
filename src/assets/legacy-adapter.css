@@ -1,0 +1,219 @@
+:root {
+  /* legacy bridge tokens: mapped to project theme without changing component variables */
+  --color-bg: #f4f7f9;
+  --color-bg-soft: #edf3f6;
+  --color-white: #ffffff;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #7a8699;
+  --color-border: #dfe6ee;
+  --color-border-strong: #c9d6e2;
+  --color-navy-700: #0f3c4b;
+  --color-navy-800: #0a2d3d;
+  --color-navy-900: #00313c;
+  --color-pink-50: #fdf1f5;
+  --color-pink-600: #ce0033;
+  --color-success-bg: #ebfdf5;
+  --color-success-text: #0f766e;
+  --color-inactive-bg: #f3f6f9;
+  --color-inactive-text: #4b5563;
+
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 28px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 8px 24px rgba(15, 38, 52, 0.08);
+  --shadow-modal: 0 22px 60px rgba(0, 49, 60, 0.18);
+
+  --transition-fast: 150ms ease-out;
+}
+
+/* Bridge spécifique pour les composants de tests et de modales legacy */
+.tests-view,
+.tests-table,
+.filter-bar,
+.status-badge,
+.modal-overlay,
+.modal,
+.modal__header,
+.modal__body,
+.modal__footer,
+.form-field,
+.form-field__select,
+.form-field__with-icon,
+.dropzone {
+  font-family: Inter, 'Segoe UI', sans-serif;
+}
+
+.tests-table {
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.tests-table thead tr {
+  background-color: var(--color-pink-600);
+}
+
+.tests-table th,
+.tests-table td {
+  color: var(--color-text-primary);
+}
+
+.tests-table th {
+  color: var(--color-white);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.04em;
+}
+
+.tests-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tests-table__file-icon {
+  background-color: var(--color-pink-50);
+  color: var(--color-pink-600);
+}
+
+.tests-table__muted {
+  color: var(--color-text-secondary);
+}
+
+.tests-table__action:hover {
+  background-color: var(--color-bg);
+  color: var(--color-navy-900);
+}
+
+.tests-table__action--publish:hover {
+  background-color: var(--color-pink-50);
+  color: var(--color-pink-600);
+}
+
+.filter-bar__search,
+.filter-bar__select {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.filter-bar__search input,
+.filter-bar__select select,
+.form-field input[type='text'],
+.form-field input[type='url'],
+.form-field input[type='date'],
+.form-field textarea,
+.form-field select,
+.form-field__with-icon input {
+  color: var(--color-text-primary);
+  background-color: var(--color-white);
+}
+
+.filter-bar__search input::placeholder,
+.dropzone__hint,
+.tests-table__empty {
+  color: var(--color-text-muted);
+}
+
+.status-badge {
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+}
+
+.status-badge--actif {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.status-badge--inactif {
+  background-color: var(--color-inactive-bg);
+  color: var(--color-inactive-text);
+}
+
+.status-badge--nouveau {
+  background-color: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.modal-overlay {
+  background-color: rgba(11, 43, 58, 0.45);
+}
+
+.modal {
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+}
+
+.modal__header,
+.modal__body,
+.modal__footer {
+  background-color: var(--color-white);
+}
+
+.modal__header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal__header h2,
+.form-field label,
+.dropzone {
+  color: var(--color-text-primary);
+}
+
+.modal__close,
+.form-field__caret,
+.form-field__with-icon {
+  color: var(--color-text-secondary);
+}
+
+.modal__close:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.form-field input[type='date'],
+.form-field input[type='text'],
+.form-field input[type='url'],
+.form-field textarea,
+.form-field select,
+.form-field__select select,
+.form-field__with-icon {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  border-color: var(--color-navy-700);
+  outline: none;
+}
+
+.dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg);
+}
+
+.dropzone:hover,
+.dropzone--active {
+  border-color: var(--color-navy-700);
+  background-color: var(--color-pink-50);
+}
+
+.dropzone__file {
+  color: var(--color-pink-600);
+}
+
+.modal__footer {
+  border-top: 1px solid var(--color-border);
+}
