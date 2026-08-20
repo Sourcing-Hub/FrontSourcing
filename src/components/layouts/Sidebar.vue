@@ -104,6 +104,11 @@ const navigation = computed(() => {
         href: '/planification',
       },
       {
+         label: 'Tests',
+         icon: 'clipboard', 
+         href: '/tests' 
+      },
+      {
         label: 'Convocations',
         icon: 'clipboard',
         href: '/convocations',
@@ -156,6 +161,11 @@ const navigation = computed(() => {
         label: 'Planification',
         icon: 'calendar',
         href: '/planification',
+      },
+      {
+         label: 'Tests',
+         icon: 'clipboard', 
+         href: '/tests' 
       },
       {
         label: 'Convocations',
@@ -582,7 +592,7 @@ const userRole = computed(() => {
            PROFIL UTILISATEUR
            ===================================================== -->
 
-      <div
+      <!-- <div
         class="mx-1 mb-7 rounded-3xl border border-white/10 bg-white/[0.07] p-3 shadow-xl shadow-black/10 backdrop-blur"
       >
         <div class="flex items-center gap-3">
@@ -608,7 +618,7 @@ const userRole = computed(() => {
           </div>
 
         </div>
-      </div>
+      </div> -->
 
 
       <!-- =====================================================

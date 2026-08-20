@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
-
 import MyInterviewsView from '../views/evaluator/MyInterviewsView.vue'
 import MyCandidatesView from '../views/evaluator/MyCandidatesView.vue'
 import CandidateDetailView from '../views/evaluator/CandidateDetailView.vue'
 import ConductInterviewView from '../views/evaluator/ConductInterviewView.vue'
 import EvaluationView from '../views/evaluator/EvaluationView.vue'
 import EvaluationValidationView from '../views/evaluator/EvaluationValidationView.vue'
+import TestsManagementView from '../views/test/TestsManagementView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -203,6 +203,14 @@ const router = createRouter({
       name: 'evaluator-evaluation-validation',
       component: EvaluationValidationView,
       meta: { requiresAuth: true },
+    },
+
+
+    {
+      path: '/tests',
+      name: 'tests',
+      component: TestsManagementView,
+      meta: { requiresAuth: true }
     },
 
     // ============================================================
