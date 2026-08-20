@@ -43,8 +43,13 @@ function logout() {
 }
 
 function goHome() {
-  if (authStore.user?.role === 'Evaluateur') {
-    router.push('/evaluator/interviews')
+  const normalizedRole = authStore.user?.role
+    ?.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
+  if (normalizedRole === 'evaluateur') {
+    router.push('/evaluator/candidates')
     return
   }
 
@@ -107,24 +112,20 @@ const navigation = computed(() => {
         icon: 'clipboard',
         href: '/questionnaires',
       },
-      {
-        label: 'Candidats en entretien',
-        icon: 'users',
-        href: '/entretiens/candidats',
-      },
+      
       {
         label: 'planification',
-        icon: '',
+        icon: 'planification',
         href: '/planification'
       },
       {
         label: 'convocations',
-        icon: '',
+        icon: 'convocations',
         href: '/convocations'
       },
       {
         label: 'emargement',
-        icon: '',
+        icon: 'emargement',
         href: '/emargement'
       },
       {
@@ -228,17 +229,17 @@ const navigation = computed(() => {
       },
       {
         label: 'planification',
-        icon: 'calendar',
+        icon: 'planification',
         href: '/planification'
       },
       {
         label: 'convocations',
-        icon: 'file',
+        icon: 'convocations',
         href: '/convocations'
       },
       {
         label: 'emargement',
-        icon: '',
+        icon: 'emargement',
         href: '/emargement'
       },
     ]
@@ -250,12 +251,6 @@ const navigation = computed(() => {
 
   if (normalizedRole === 'evaluateur') {
     return [
-      
-      {
-        label: 'Mes entretiens',
-        icon: 'calendar',
-        href: '/evaluator/interviews',
-      },
       {
         label: 'Mes candidats',
         icon: 'users',
@@ -461,6 +456,77 @@ const icons = {
       />
     </svg>
   `,
+  planification: `
+  <svg viewBox="0 0 24 24" fill="none">
+    <rect
+      x="3"
+      y="4.5"
+      width="18"
+      height="16"
+      rx="2"
+      stroke="currentColor"
+      stroke-width="1.7"
+    />
+    <path
+      d="M3 9h18M8 3v4M16 3v4"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+    />
+    <path
+      d="M8 13h2M14 13h2M8 17h2M14 17h2"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+    />
+  </svg>
+`,
+convocations: `
+  <svg viewBox="0 0 24 24" fill="none">
+    <rect
+      x="3"
+      y="5"
+      width="18"
+      height="14"
+      rx="2"
+      stroke="currentColor"
+      stroke-width="1.7"
+    />
+    <path
+      d="M3.5 7L12 13l8.5-6"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`,
+emargement: `
+  <svg viewBox="0 0 24 24" fill="none">
+    <rect
+      x="5"
+      y="3"
+      width="14"
+      height="18"
+      rx="2"
+      stroke="currentColor"
+      stroke-width="1.7"
+    />
+    <path
+      d="M8 8h8M8 12h4"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+    />
+    <path
+      d="M8 16l2 2 5-5"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`,
 }
 
 /* ============================================================

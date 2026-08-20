@@ -73,7 +73,7 @@ defineProps({
               class="truncate text-2xl font-black tracking-tight text-white sm:text-3xl"
             >
               <!--  Affiche une donnée dynamique dans l’interface. -->
-              {{ candidate.firstName }}
+              {{ candidate.firstName }} 
               <!--  Affiche une donnée dynamique dans l’interface. -->
               {{ candidate.lastName }}
             <!--  Ferme l’élément h2. -->

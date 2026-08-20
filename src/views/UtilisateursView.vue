@@ -155,7 +155,7 @@ const handleDeleteUser = async (user) => {
                 'whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm'
               ]"
             >
-              Équipe Pédagogique
+              equipe pedagogique
             </button>
             <button
               @click="currentTab = 'GESTION'"

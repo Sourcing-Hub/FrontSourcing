@@ -105,10 +105,14 @@ async function loadCandidate() {
 
 //  Déclare la fonction startInterview pour isoler un traitement évaluateur.
 function startInterview(interview) {
+  if (interview.status === 'completed') {
+    return
+  }
+
   //  Redirige l'utilisateur vers la page evaluator correspondante.
   router.push({
     //  Ajoute cette valeur à la structure ou à la liste en cours.
-    name: 'evaluator-conduct-interview',
+    name: 'evaluator-evaluation',
     //  Exécute cette ligne de logique propre à la partie évaluateur.
     params: {
       //  Ajoute cette valeur à la structure ou à la liste en cours.
@@ -330,11 +334,12 @@ onMounted(loadCandidate)
           <!--  Affiche un bouton d’action pour l’utilisateur. -->
           <button
             type="button"
-            class="h-11 shrink-0 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white  transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98]"
+            :disabled="interview.status === 'completed'"
+            class="h-11 shrink-0 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] focus:outline-none focus:ring-4 focus:ring-[#64CCC9]/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 disabled:hover:translate-y-0"
             @click="startInterview(interview)"
           >
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
-            Réaliser l'entretien
+            {{ interview.status === 'completed' ? 'Entretien terminé' : "Réaliser l'entretien" }}
 
             <!--  Affiche une information courte ou décorative. -->
             <span

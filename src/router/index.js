@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
 
-import MyInterviewsView from '../views/evaluator/MyInterviewsView.vue'
 import MyCandidatesView from '../views/evaluator/MyCandidatesView.vue'
 import CandidateDetailView from '../views/evaluator/CandidateDetailView.vue'
 import ConductInterviewView from '../views/evaluator/ConductInterviewView.vue'
@@ -92,6 +91,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/entretiens/candidats/:candidatureId',
+      name: 'entretiens-candidat-detail',
+      component: () => import('../views/CandidatEntretienDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/formulaires/:id/edit',
       name: 'formulaire-editor',
       component: () => import('../views/FormBuilderView.vue'),
@@ -153,7 +158,9 @@ const router = createRouter({
     {
       path: '/evaluator/interviews',
       name: 'evaluator-interviews',
-      component: MyInterviewsView,
+      redirect: {
+        name: 'evaluator-candidates',
+      },
       meta: { requiresAuth: true },
     },
 
@@ -198,6 +205,10 @@ const router = createRouter({
  */
 router.beforeEach((to) => {
   const authStore = useAuthStore()
+  const normalizedRole = authStore.user?.role
+    ?.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
 
   // Utilisateur non authentifié
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
@@ -207,8 +218,8 @@ router.beforeEach((to) => {
   // Utilisateur déjà authentifié
   if (to.name === 'login' && authStore.isAuthenticated) {
     // Evaluateur → espace évaluateur
-    if (authStore.user?.role === 'evaluateur') {
-      return { name: 'evaluator-interviews' }
+    if (normalizedRole === 'evaluateur') {
+      return { name: 'evaluator-candidates' }
     }
 
     // Autres rôles → dashboard
@@ -223,7 +234,7 @@ router.beforeEach((to) => {
   if (
     authStore.isAuthenticated &&
     isEvaluatorRoute &&
-    authStore.user?.role !== 'evaluateur'
+    normalizedRole !== 'evaluateur'
   ) {
     return { name: 'dashboard' }
   }

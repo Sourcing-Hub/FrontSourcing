@@ -57,6 +57,12 @@ function getCandidateName(candidate) {
 
 // Commentaire: Déclare la fonction normalizeCandidate pour isoler un traitement évaluateur.
 function normalizeCandidate(candidate = {}) {
+  const campagne =
+    candidate.campagne ||
+    candidate.campagne_details ||
+    candidate.campaign ||
+    {}
+
   return {
     ...candidate,
     id: normalizeId(candidate.id),
@@ -84,6 +90,17 @@ function normalizeCandidate(candidate = {}) {
       candidate.promotion_nom ||
       candidate.cohorte_nom ||
       candidate.promotion ||
+      '',
+    campagneId: normalizeId(
+      candidate.campagne_id ||
+      candidate.campagneId ||
+      campagne.id,
+    ),
+    campagneName:
+      candidate.campagne_nom ||
+      candidate.campagneName ||
+      campagne.nom ||
+      campagne.name ||
       '',
     profileScore:
       candidate.profileScore ||
@@ -191,6 +208,14 @@ function normalizeInterview(interview = {}) {
     interview.candidat_info ||
     {}
 
+  const campagne =
+    interview.campagne ||
+    interview.campagne_details ||
+    interview.campaign ||
+    candidate.campagne ||
+    candidate.campagne_details ||
+    {}
+
   const date =
     interview.date ||
     interview.date_entretien ||
@@ -221,6 +246,29 @@ function normalizeInterview(interview = {}) {
       interview.candidateName ||
       interview.candidat_nom ||
       getCandidateName(candidate),
+    candidateEmail:
+      interview.candidateEmail ||
+      interview.candidat_email ||
+      interview.CandidatEmail ||
+      candidate.email ||
+      '',
+    CandidatEmail:
+      interview.CandidatEmail ||
+      interview.candidateEmail ||
+      interview.candidat_email ||
+      candidate.email ||
+      '',
+    campagneId: normalizeId(
+      interview.campagne_id ||
+      interview.campagneId ||
+      campagne.id,
+    ),
+    campagneName:
+      interview.campagne_nom ||
+      interview.campagneName ||
+      campagne.nom ||
+      campagne.name ||
+      '',
     type,
     typeLabel:
       interview.typeLabel ||

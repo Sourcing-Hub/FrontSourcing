@@ -117,6 +117,10 @@ defineEmits(['open'])
           <!--  Ferme l’élément span. -->
           </span>
 
+          <span>
+            {{ interview.CandidatEmail }}
+          </span>
+
           <!--  Affiche une information courte ou décorative. -->
           <span>
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
@@ -136,11 +140,12 @@ defineEmits(['open'])
     <!--  Affiche un bouton d’action pour l’utilisateur. -->
     <button
       type="button"
-      class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white  transition hover:bg-[#E40046]  focus:outline-none focus:ring-4 focus:ring-[#00313C]/40 active:scale-[0.98]"
+      :disabled="interview.status === 'completed'"
+      class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#00313C] px-5 text-sm font-black text-white transition hover:bg-[#E40046] focus:outline-none focus:ring-4 focus:ring-[#00313C]/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 disabled:hover:translate-y-0"
       @click="$emit('open', interview)"
     >
       <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
-      Effectuer l'entretien
+      {{ interview.status === 'completed' ? 'Entretien terminé' : "Effectuer l'entretien" }}
 
       <!--  Affiche une information courte ou décorative. -->
       <span

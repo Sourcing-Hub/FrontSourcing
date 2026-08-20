@@ -59,5 +59,37 @@ export async function fetchInterviewCandidates(params = {}) {
     technique: candidate.technique || {},
     motivation: candidate.motivation || {},
     final: candidate.final || {},
+    moyenneGenerale: candidate.moyenneGenerale ?? null,
+    canDecide: Boolean(candidate.canDecide),
+    decision: candidate.decision || null,
   }))
+}
+
+export async function fetchInterviewCandidateDetail(candidatureId) {
+  const response = await api.get(`evaluations/entretiens/candidats/${candidatureId}/`)
+  const candidate = response.data || {}
+  return {
+    ...candidate,
+    id: String(candidate.id || ''),
+    candidatureId: String(candidate.candidatureId || candidate.id || ''),
+    candidateId: String(candidate.candidateId || ''),
+    nom: candidate.nom || '',
+    prenom: candidate.prenom || '',
+    nomFamille: candidate.nomFamille || '',
+    email: candidate.email || '',
+    telephone: candidate.telephone || '',
+    formation: candidate.formation || '',
+    cohorte: candidate.cohorte || '',
+    technique: candidate.technique || {},
+    motivation: candidate.motivation || {},
+    final: candidate.final || {},
+    moyenneGenerale: candidate.moyenneGenerale ?? null,
+    canDecide: Boolean(candidate.canDecide),
+    decision: candidate.decision || null,
+  }
+}
+
+export async function saveCandidatureDecision(candidatureId, payload) {
+  const response = await api.post(`evaluations/candidatures/${candidatureId}/decision/`, payload)
+  return response.data
 }

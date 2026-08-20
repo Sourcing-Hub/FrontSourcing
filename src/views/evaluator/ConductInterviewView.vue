@@ -92,6 +92,10 @@ async function loadData() {
 
 //  Déclare la fonction startEvaluation pour isoler un traitement évaluateur.
 function startEvaluation() {
+  if (interview.value?.status === 'completed') {
+    return
+  }
+
   //  Redirige l'utilisateur vers la page evaluator correspondante.
   router.push({
     //  Ajoute cette valeur à la structure ou à la liste en cours.
@@ -403,11 +407,12 @@ onMounted(loadData)
           <!--  Affiche un bouton d’action pour l’utilisateur. -->
           <button
             type="button"
-            class="mt-5 inline-flex h-12 w-fit items-center justify-center rounded-2xl bg-[#00313C] px-6 text-sm font-black text-white  transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046]  focus:outline-none focus:ring-4 focus:ring-[#00313C]/30 active:scale-[0.98]"
+            :disabled="interview.status === 'completed'"
+            class="mt-5 inline-flex h-12 w-fit items-center justify-center rounded-2xl bg-[#00313C] px-6 text-sm font-black text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#E40046] focus:outline-none focus:ring-4 focus:ring-[#00313C]/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 disabled:hover:translate-y-0"
             @click="startEvaluation"
           >
             <!--  Affiche ce contenu textuel dans la vue évaluateur. -->
-            Commencer l'évaluation
+            {{ interview.status === 'completed' ? 'Entretien terminé' : "Commencer l'évaluation" }}
 
             <!--  Affiche une information courte ou décorative. -->
             <span
