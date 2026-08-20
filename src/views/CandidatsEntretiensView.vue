@@ -98,7 +98,7 @@ onMounted(loadCandidates)
     </div>
 
     <section class="mb-6 grid gap-4 md:grid-cols-4">
-      <article class="stat-card"><span>Total</span><strong>{{ stats.total }}</strong></article>
+      <article class="stat-card bg-[#00313C]"><span>Total</span><strong>{{ stats.total }}</strong></article>
       <article class="stat-card"><span>Décision possible</span><strong>{{ stats.evaluables }}</strong></article>
       <article class="stat-card"><span>Admis</span><strong>{{ stats.admis }}</strong></article>
       <article class="stat-card"><span>Refusés</span><strong>{{ stats.refuses }}</strong></article>

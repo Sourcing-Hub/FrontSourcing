@@ -90,6 +90,10 @@ export async function fetchInterviewCandidateDetail(candidatureId) {
 }
 
 export async function saveCandidatureDecision(candidatureId, payload) {
-  const response = await api.post(`evaluations/candidatures/${candidatureId}/decision/`, payload)
+  const response = await api.post(
+    `evaluations/candidatures/${candidatureId}/decision/`,
+    payload
+  )
+
   return response.data
 }
