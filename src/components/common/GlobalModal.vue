@@ -16,7 +16,7 @@ const store = useModalStore()
     v-if="store.isOpen" 
     class="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto"
   >
-    <!-- Background backdrop -->
+    <!-- Background backdrop ajout -->
     <div 
       class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" 
       @click="store.cancel"

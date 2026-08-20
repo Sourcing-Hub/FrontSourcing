@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
-import { CalendarDays, Edit3, Loader2, MapPin, Plus, Search, Trash2, Users, X } from 'lucide-vue-next'
+import { CalendarDays, Edit3, Loader2, MapPin, Mic, Plus, Search, Square, Trash2, Users, X } from 'lucide-vue-next'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import { useAuthStore } from '../stores/auth'
 import { useCampagnesStore } from '../stores/campagnes'
@@ -21,6 +21,9 @@ const showForm = ref(false)
 const editingId = ref(null)
 const encadrants = ref([])
 const selectedDayIndex = ref(0)
+const voiceText = ref('')
+const isListening = ref(false)
+let speechRecognition = null
 
 const emptyPlanning = () => ({
   etape: '', date: '', heureDebut: '', heureFin: '', lieu: '', localisation: '', capacite: 1,
@@ -160,6 +163,34 @@ const addSlot = (jour) => jour.creneaux.push({ heureDebut: '14:00', heureFin: '1
 const removeSlot = (jour, index) => jour.creneaux.splice(index, 1)
 const totalSlots = computed(() => configuration.jours.reduce((total, jour) => total + jour.creneaux.length, 0))
 const totalCapacity = computed(() => configuration.jours.reduce((total, jour) => total + jour.creneaux.reduce((sum, slot) => sum + Number(slot.capacite || 0), 0), 0))
+
+const startVoiceInput = async () => {
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
+  if (!Recognition) {
+    await modalStore.showAlert('La reconnaissance vocale n’est pas disponible dans ce navigateur. Saisissez votre commande ci-dessous.', 'Micro indisponible', 'warning')
+    return
+  }
+  speechRecognition = new Recognition()
+  speechRecognition.lang = 'fr-FR'
+  speechRecognition.interimResults = false
+  speechRecognition.continuous = false
+  speechRecognition.onresult = (event) => { voiceText.value = event.results[0][0].transcript }
+  speechRecognition.onend = () => { isListening.value = false }
+  speechRecognition.onerror = () => { isListening.value = false }
+  speechRecognition.start()
+  isListening.value = true
+}
+const stopVoiceInput = () => speechRecognition?.stop()
+const fillFormFromVoiceText = async () => {
+  if (!voiceText.value.trim() || !configuration.etape) return
+  const result = await planningsStore.parsePlanningText(voiceText.value, configuration.etape, configuration.lieu, configuration.localisation)
+  if (result) {
+    Object.assign(configuration, result.configuration)
+    selectedDayIndex.value = 0
+    await modalStore.showAlert('Les champs ont été préremplis. Vérifiez-les puis cliquez sur « Enregistrer la configuration ».', 'Assistant vocal', 'success')
+  }
+}
+
 
 const save = async () => {
   if (!editingId.value) {
@@ -319,6 +350,12 @@ const getPlanningStatus = (date) => date >= new Date().toISOString().slice(0, 10
             </div>
             <p v-if="!configuration.cohorte" class="mt-2 text-xs text-slate-500">Sélectionnez d'abord une cohorte pour choisir le type de créneau.</p>
             <p v-else-if="!configuration.etape" class="mt-2 text-xs text-amber-700">Sélectionnez un type d'étape pour continuer.</p>
+          </section>
+          <section class="mb-6 rounded-xl border border-primary-100 bg-primary-50/40 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-3"><div><p class="font-bold text-[#00313C]">Créer par commande vocale</p><p class="mt-1 text-sm text-slate-600">Le navigateur transcrit votre voix, puis l’assistant prépare le créneau.</p></div><button v-if="!isListening" type="button" class="btn-secondary" @click="startVoiceInput"><Mic class="mr-2 h-4 w-4" />Parler</button><button v-else type="button" class="btn-secondary border-red-200 text-red-700" @click="stopVoiceInput"><Square class="mr-2 h-4 w-4 fill-current" />Arrêter</button></div>
+            <textarea v-model="voiceText" class="input-field mt-3 min-h-20" placeholder="Ex. Entretien technique le 25 août de 14 h à 16 h, 10 candidats, salle A à Dakar." />
+            <p v-if="planningsStore.error" class="mt-2 text-sm font-medium text-red-600">{{ planningsStore.error }}</p>
+            <div class="mt-3 flex justify-end"><button type="button" class="btn-primary" :disabled="planningsStore.loading || !configuration.etape || !voiceText.trim()" @click="fillFormFromVoiceText"><Loader2 v-if="planningsStore.loading" class="mr-2 h-4 w-4 animate-spin" />Préremplir le formulaire</button></div>
           </section>
           <section>
             <p class="section-title">Sélection des jours</p>

@@ -33,6 +33,19 @@ export const usePlanningsStore = defineStore('plannings', {
         this.loading = false
       }
     },
+    async parsePlanningText(texte, etape, lieu = '', localisation = '') {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.post('assistant/text/', { texte, etape, lieu, localisation })
+        return response.data
+      } catch (err) {
+        this.error = parseBackendError(err)
+        return null
+      } finally {
+        this.loading = false
+      }
+    },
     async fetchEncadrants() {
       try {
         const response = await api.get('evaluations/plannings/encadrants/')
