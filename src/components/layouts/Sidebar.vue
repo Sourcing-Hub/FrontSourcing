@@ -53,7 +53,7 @@ function goHome() {
     return
   }
 
-  router.push('/')
+  router.push('/dashboard')
 }
 
 /* ============================================================
@@ -90,7 +90,7 @@ const navigation = computed(() => {
       {
         label: 'Tableau de bord',
         icon: 'dashboard',
-        href: '/',
+        href: '/dashboard',
       },
       {
         label: 'Formations',
@@ -154,7 +154,7 @@ const navigation = computed(() => {
       {
         label: 'Tableau de bord',
         icon: 'dashboard',
-        href: '/',
+        href: '/dashboard',
       },
       {
         label: 'Formations',
@@ -203,7 +203,7 @@ const navigation = computed(() => {
       {
         label: 'Tableau de bord',
         icon: 'dashboard',
-        href: '/',
+        href: '/dashboard',
       },
       {
         label: 'Formations',
@@ -270,7 +270,7 @@ const navigation = computed(() => {
     {
       label: 'Tableau de bord',
       icon: 'dashboard',
-      href: '/',
+      href: '/dashboard',
     },
   ]
 })
@@ -543,8 +543,8 @@ emargement: `
    ============================================================ */
 
 function isActive(href) {
-  if (href === '/') {
-    return route.path === '/'
+  if (href === '/dashboard' || href === '/') {
+    return route.path === '/dashboard' || route.path === '/'
   }
 
   return route.path === href || route.path.startsWith(`${href}/`)

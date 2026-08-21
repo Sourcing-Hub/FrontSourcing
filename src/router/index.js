@@ -34,10 +34,10 @@ const router = createRouter({
       name: 'reinit-mdp-confirmer',
       component: () => import('../views/ReinitialisationPasswordView.vue'),
       meta: { requiresAuth: false },
-      meta: { requiresAuth: false },
     },
     {
-      path: '/',
+      path: '/dashboard',
+      alias: '/',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
       meta: { requiresAuth: true },

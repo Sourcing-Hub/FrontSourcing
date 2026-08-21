@@ -10,7 +10,7 @@ export const sourcingChatService = {
    * @returns {Promise<{response: string, provider?: string, warning?: string}>}
    */
   async sendMessage(question) {
-    const res = await api.post('/sourcingchat/chat/', { question })
+    const res = await api.post('sourcingchat/chat/', { question })
     return res.data
   },
 
@@ -19,7 +19,7 @@ export const sourcingChatService = {
    * @returns {Promise<{suggestions: string[]}>}
    */
   async getSuggestions() {
-    const res = await api.get('/sourcingchat/suggestions/')
+    const res = await api.get('sourcingchat/suggestions/')
     return res.data
   },
 }

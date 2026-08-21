@@ -58,23 +58,31 @@ function saveMessages() {
   }
 }
 
+// Fonction de suppression de tout emoji pour garantir une interface 100% sobre
+function removeEmojis(str) {
+  if (!str) return ''
+  return str.replace(
+    /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+    ''
+  )
+}
+
 // Chargement des suggestions dynamiques selon le rôle
 async function fetchSuggestions() {
   if (!isUserConnected.value) return
   try {
     const data = await sourcingChatService.getSuggestions()
     if (data.suggestions && data.suggestions.length) {
-      suggestions.value = data.suggestions
+      suggestions.value = data.suggestions.map(removeEmojis)
     }
   } catch (e) {
-    // Utilise les suggestions par défaut en cas d'indisponibilité
+    // Utilise les suggestions par défaut
   }
 }
 
 onMounted(() => {
   loadSavedMessages()
   fetchSuggestions()
-  // Écoute des événements d'ouverture depuis la sidebar ou la navbar
   window.addEventListener('open-sourcingchat', toggleOpen)
   window.addEventListener('open-copilot', toggleOpen)
 })
@@ -105,10 +113,11 @@ function scrollToBottom() {
   }
 }
 
-// Rendu Markdown enrichi en HTML
+// Rendu Markdown enrichi en HTML avec couleurs contrastées garanties (aucun texte blanc sur fond clair)
 function renderMarkdown(text) {
   if (!text) return ''
-  let html = text
+  let cleanText = removeEmojis(text)
+  let html = cleanText
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -116,31 +125,31 @@ function renderMarkdown(text) {
   // Blocs de code
   html = html.replace(
     /```([\s\S]*?)```/g,
-    '<pre class="bg-[#012530] text-emerald-300 p-3 rounded-xl text-xs overflow-x-auto my-2 border border-white/10 font-mono"><code>$1</code></pre>'
+    '<pre class="bg-[#01313E] text-emerald-300 p-3 rounded-xl text-xs overflow-x-auto my-2 border border-slate-300 font-mono"><code>$1</code></pre>'
   )
 
   // Code inline
   html = html.replace(
     /`([^`]+)`/g,
-    '<code class="bg-gray-200 dark:bg-gray-800 text-[#E30046] px-1.5 py-0.5 rounded text-xs font-mono">$1</code>'
+    '<code class="bg-slate-200 text-[#E30046] px-1.5 py-0.5 rounded text-xs font-mono font-semibold">$1</code>'
   )
 
   // Titres Markdown
-  html = html.replace(/^### (.*$)/gim, '<h4 class="font-bold text-sm text-[#01313E] dark:text-white mt-3 mb-1">$1</h4>')
+  html = html.replace(/^### (.*$)/gim, '<h4 class="font-bold text-sm text-[#01313E] mt-3 mb-1">$1</h4>')
   html = html.replace(
     /^## (.*$)/gim,
-    '<h3 class="font-bold text-base text-[#01313E] dark:text-white mt-3 mb-1.5 border-b border-gray-200 pb-1">$1</h3>'
+    '<h3 class="font-bold text-base text-[#01313E] mt-3 mb-1.5 border-b border-slate-200 pb-1">$1</h3>'
   )
-  html = html.replace(/^# (.*$)/gim, '<h2 class="font-black text-lg text-[#01313E] dark:text-white mt-3 mb-2">$1</h2>')
+  html = html.replace(/^# (.*$)/gim, '<h2 class="font-black text-lg text-[#01313E] mt-3 mb-2">$1</h2>')
 
   // Gras & Italique
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#01313E] dark:text-white">$1</strong>')
-  html = html.replace(/\*(.*?)\*/g, '<em class="italic text-gray-700 dark:text-gray-300">$1</em>')
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[#01313E]">$1</strong>')
+  html = html.replace(/\*(.*?)\*/g, '<em class="italic text-slate-700">$1</em>')
 
   // Puces de listes
   html = html.replace(
     /^\s*[-*]\s+(.*$)/gim,
-    '<li class="ml-4 list-disc text-sm text-gray-700 dark:text-gray-200 leading-relaxed">$1</li>'
+    '<li class="ml-4 list-disc text-sm text-slate-800 leading-relaxed">$1</li>'
   )
 
   // Tableaux Markdown (| col | col |)
@@ -162,16 +171,16 @@ function renderMarkdown(text) {
       if (!inTable) {
         inTable = true
         tableHtml =
-          '<div class="overflow-x-auto my-3"><table class="w-full text-xs text-left border-collapse rounded-lg overflow-hidden">'
+          '<div class="overflow-x-auto my-3"><table class="w-full text-xs text-left border-collapse rounded-lg overflow-hidden border border-slate-200">'
         tableHtml += '<thead class="bg-[#01313E] text-white"><tr>'
         cells.forEach((c) => {
-          tableHtml += `<th class="p-2 border border-gray-200">${c}</th>`
+          tableHtml += `<th class="p-2.5 border border-slate-600 font-bold">${c}</th>`
         })
         tableHtml += '</tr></thead><tbody>'
       } else {
-        tableHtml += '<tr class="border-b border-gray-100 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">'
+        tableHtml += '<tr class="border-b border-slate-200 bg-white hover:bg-slate-50">'
         cells.forEach((c) => {
-          tableHtml += `<td class="p-2 border border-gray-100 dark:border-gray-700">${c}</td>`
+          tableHtml += `<td class="p-2 border border-slate-200 text-slate-800 font-medium">${c}</td>`
         })
         tableHtml += '</tr>'
       }
@@ -202,7 +211,7 @@ async function handleSend(textToSend) {
   const userMsg = {
     id: Date.now(),
     role: 'user',
-    content: text,
+    content: removeEmojis(text),
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
@@ -217,9 +226,9 @@ async function handleSend(textToSend) {
     const assistantMsg = {
       id: Date.now() + 1,
       role: 'assistant',
-      content: res.response || 'Réponse indisponible pour le moment.',
+      content: removeEmojis(res.response || 'Réponse indisponible pour le moment.'),
       provider: res.provider,
-      warning: res.warning,
+      warning: removeEmojis(res.warning || ''),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
     messages.value.push(assistantMsg)
@@ -230,7 +239,7 @@ async function handleSend(textToSend) {
       id: Date.now() + 1,
       role: 'assistant',
       content:
-        'Désolé, une erreur de communication est survenue avec le serveur SourcingHub. Veuillez réessayer dans quelques instants.',
+        'Une erreur de communication est survenue avec le serveur SourcingHub. Veuillez réessayer dans quelques instants.',
       isError: true,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     })
@@ -260,7 +269,7 @@ function handleKeydown(e) {
       v-if="!isOpen"
       type="button"
       @click="toggleOpen"
-      class="group relative flex items-center gap-2.5 rounded-full bg-[#01313E] px-4 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-[#024456] active:scale-95"
+      class="group relative flex items-center gap-2.5 rounded-full bg-[#01313E] px-4 py-3 text-white transition-all duration-300 hover:scale-105 hover:bg-[#024456] active:scale-95 shadow-lg"
       aria-label="Ouvrir SourcingChat"
     >
       <!-- Icône avec badge -->
@@ -287,7 +296,7 @@ function handleKeydown(e) {
     >
       <div
         v-if="isOpen"
-        class="flex flex-col overflow-hidden rounded-3xl bg-white border border-gray-200/80 transition-all duration-300 shadow-2xl"
+        class="flex flex-col overflow-hidden rounded-3xl bg-white border border-slate-300 transition-all duration-300 shadow-2xl"
         :class="[
           isExpanded ? 'fixed inset-4 sm:inset-10 z-50' : 'w-[92vw] sm:w-[420px] h-[580px] max-h-[85vh]'
         ]"
@@ -348,7 +357,7 @@ function handleKeydown(e) {
         <!-- ── CORPS DE LA CONVERSATION ──────────────────── -->
         <div
           ref="messagesContainer"
-          class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar text-sm"
+          class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar text-sm bg-slate-50/50"
         >
           <!-- Message d'accueil initial si vide -->
           <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full text-center p-4">
@@ -356,15 +365,15 @@ function handleKeydown(e) {
               <Bot class="h-7 w-7 text-[#01313E]" />
             </div>
             <h4 class="text-base font-extrabold text-[#01313E] mb-1">
-              Bienvenue sur SourcingChat !
+              Bienvenue sur SourcingChat
             </h4>
-            <p class="text-xs text-gray-500 max-w-xs mb-5">
-              Posez-moi vos questions sur les campagnes, candidatures, sessions d'évaluation ou statistiques en temps réel.
+            <p class="text-xs text-slate-600 max-w-xs mb-5">
+              Posez vos questions sur les campagnes, candidatures, sessions d'évaluation ou statistiques en direct.
             </p>
 
             <!-- Suggestions rapides -->
             <div class="w-full space-y-2">
-              <p class="text-[10px] font-black uppercase tracking-wider text-gray-400 text-left px-1">
+              <p class="text-[10px] font-black uppercase tracking-wider text-slate-400 text-left px-1">
                 Questions fréquentes
               </p>
               <div class="grid grid-cols-1 gap-1.5">
@@ -373,7 +382,7 @@ function handleKeydown(e) {
                   :key="i"
                   type="button"
                   @click="handleSend(suggestion)"
-                  class="flex items-center gap-2 w-full text-left rounded-2xl bg-white p-2.5 text-xs font-semibold text-[#01313E] border border-gray-200/90 transition hover:border-[#E30046] hover:bg-[#E30046]/5 hover:text-[#E30046]"
+                  class="flex items-center gap-2 w-full text-left rounded-2xl bg-white p-2.5 text-xs font-semibold text-[#01313E] border border-slate-200 transition hover:border-[#E30046] hover:bg-[#E30046]/5 hover:text-[#E30046] shadow-sm"
                 >
                   <Sparkles class="h-3.5 w-3.5 text-[#E30046] shrink-0" />
                   <span class="truncate">{{ suggestion }}</span>
@@ -391,12 +400,12 @@ function handleKeydown(e) {
               :class="msg.role === 'user' ? 'items-end' : 'items-start'"
             >
               <div
-                class="flex items-end gap-2 max-w-[88%]"
+                class="flex items-end gap-2 max-w-[90%]"
                 :class="msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'"
               >
                 <!-- Avatar -->
                 <div
-                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-[11px] font-bold"
+                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-[11px] font-bold shadow-sm"
                   :class="msg.role === 'user' ? 'bg-[#01313E] text-white' : 'bg-[#E30046] text-white'"
                 >
                   <User v-if="msg.role === 'user'" class="h-3.5 w-3.5" />
@@ -405,38 +414,40 @@ function handleKeydown(e) {
 
                 <!-- Bulle de message -->
                 <div
-                  class="rounded-2xl px-4 py-3"
+                  class="rounded-2xl px-4 py-3 shadow-sm transition-all"
                   :class="[
                     msg.role === 'user'
                       ? 'bg-[#01313E] text-white rounded-br-none'
-                      : 'bg-white text-gray-800 border border-gray-200/90 rounded-bl-none'
+                      : msg.isError
+                        ? 'bg-rose-50 text-rose-900 border border-rose-200 rounded-bl-none'
+                        : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
                   ]"
                 >
                   <!-- Contenu User -->
-                  <p v-if="msg.role === 'user'" class="whitespace-pre-wrap leading-relaxed text-sm font-medium">
+                  <p v-if="msg.role === 'user'" class="whitespace-pre-wrap leading-relaxed text-sm font-medium text-white">
                     {{ msg.content }}
                   </p>
 
                   <!-- Contenu Assistant (Markdown) -->
                   <div
                     v-else
-                    class="markdown-body leading-relaxed text-sm"
+                    class="markdown-body leading-relaxed text-sm text-slate-800"
                     v-html="renderMarkdown(msg.content)"
                   ></div>
 
                   <!-- Avertissement éventuel -->
                   <p
                     v-if="msg.warning"
-                    class="mt-2 text-[11px] text-amber-700 bg-amber-50 rounded-lg p-1.5 border border-amber-200 flex items-center gap-1"
+                    class="mt-2 text-[11px] text-amber-800 bg-amber-50 rounded-lg p-1.5 border border-amber-200 flex items-center gap-1 font-medium"
                   >
-                    <AlertCircle class="h-3.5 w-3.5 shrink-0" />
+                    <AlertCircle class="h-3.5 w-3.5 shrink-0 text-amber-600" />
                     <span>{{ msg.warning }}</span>
                   </p>
 
                   <!-- Timestamp -->
                   <div
-                    class="mt-1 text-[10px] text-right font-medium"
-                    :class="msg.role === 'user' ? 'text-white/50' : 'text-gray-400'"
+                    class="mt-1.5 text-[10px] text-right font-medium"
+                    :class="msg.role === 'user' ? 'text-white/60' : 'text-slate-400'"
                   >
                     {{ msg.timestamp }}
                   </div>
@@ -446,23 +457,23 @@ function handleKeydown(e) {
 
             <!-- Indicateur de chargement / écriture -->
             <div v-if="isLoading" class="flex items-end gap-2 items-start">
-              <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#E30046] text-white">
+              <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#E30046] text-white shadow-sm">
                 <Sparkles class="h-3.5 w-3.5" />
               </div>
-              <div class="rounded-2xl rounded-bl-none bg-white px-4 py-3 border border-gray-200/90 flex items-center gap-2">
+              <div class="rounded-2xl rounded-bl-none bg-white px-4 py-3 border border-slate-200 flex items-center gap-2 shadow-sm">
                 <div class="flex gap-1">
                   <span class="h-2 w-2 rounded-full bg-[#E30046] animate-bounce"></span>
                   <span class="h-2 w-2 rounded-full bg-[#E30046] animate-bounce [animation-delay:0.2s]"></span>
                   <span class="h-2 w-2 rounded-full bg-[#E30046] animate-bounce [animation-delay:0.4s]"></span>
                 </div>
-                <span class="text-xs text-gray-500 font-medium ml-1">Analyse des données en direct...</span>
+                <span class="text-xs text-slate-600 font-medium ml-1">Analyse des donnees en direct...</span>
               </div>
             </div>
           </template>
         </div>
 
         <!-- ── PIED DE SAISIE ───────────────────────────── -->
-        <div class="bg-white p-3 border-t border-gray-200">
+        <div class="bg-white p-3 border-t border-slate-200">
           <form @submit.prevent="handleSend()" class="relative flex items-center gap-2">
             <textarea
               ref="inputField"
@@ -471,20 +482,20 @@ function handleKeydown(e) {
               placeholder="Posez votre question à SourcingChat..."
               @keydown="handleKeydown"
               :disabled="isLoading"
-              class="w-full resize-none rounded-2xl border border-gray-300 bg-gray-50/70 px-4 py-3 pr-12 text-xs sm:text-sm text-gray-800 placeholder-gray-400 focus:border-[#01313E] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#01313E]/10 transition disabled:opacity-50"
+              class="w-full resize-none rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-12 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:border-[#01313E] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#01313E]/10 transition disabled:opacity-50"
             ></textarea>
             <button
               type="submit"
               :disabled="!userInput.trim() || isLoading"
-              class="absolute right-2 flex h-9 w-9 items-center justify-center rounded-xl bg-[#E30046] text-white transition-all hover:bg-[#c4003c] disabled:opacity-30 disabled:hover:bg-[#E30046] active:scale-95"
+              class="absolute right-2 flex h-9 w-9 items-center justify-center rounded-xl bg-[#E30046] text-white transition-all hover:bg-[#c4003c] disabled:opacity-30 disabled:hover:bg-[#E30046] active:scale-95 shadow-sm"
               aria-label="Envoyer"
             >
               <Send class="h-4 w-4" />
             </button>
           </form>
-          <div class="mt-2 flex items-center justify-between px-1 text-[10px] text-gray-400">
-            <span>Appuyez sur <strong>Entrée ↵</strong> pour envoyer</span>
-            <span class="font-semibold text-[#01313E]">SourcingChat • SourcingHub</span>
+          <div class="mt-2 flex items-center justify-between px-1 text-[10px] text-slate-400">
+            <span>Appuyez sur <strong class="text-slate-600">Entrée</strong> pour envoyer</span>
+            <span class="font-semibold text-[#01313E]">SourcingChat - SourcingHub</span>
           </div>
         </div>
       </div>
@@ -503,8 +514,12 @@ function handleKeydown(e) {
   background: rgba(1, 49, 62, 0.15);
   border-radius: 999px;
 }
+:deep(.markdown-body) {
+  color: #1e293b !important;
+}
 :deep(.markdown-body p) {
   margin-bottom: 0.5rem;
+  color: #1e293b !important;
 }
 :deep(.markdown-body p:last-child) {
   margin-bottom: 0;
@@ -512,5 +527,19 @@ function handleKeydown(e) {
 :deep(.markdown-body ul) {
   margin-top: 0.25rem;
   margin-bottom: 0.5rem;
+  color: #1e293b !important;
+}
+:deep(.markdown-body li) {
+  color: #1e293b !important;
+}
+:deep(.markdown-body strong) {
+  color: #01313e !important;
+  font-weight: 700;
+}
+:deep(.markdown-body h2),
+:deep(.markdown-body h3),
+:deep(.markdown-body h4) {
+  color: #01313e !important;
+  font-weight: 800;
 }
 </style>
