@@ -1,1 +1,321 @@
-<script setup> /** * Vue de consultation et gestion du profil utilisateur et sécurité (Design Flat épuré sans ombres). */ import { ref, computed, onMounted } from'vue' import { useRouter } from'vue-router' import { useAuthStore } from'../stores/auth' import DashboardLayout from'../components/layouts/DashboardLayout.vue' import { User, Shield, Key, Mail, Phone, Calendar, CheckCircle2, AlertCircle, Eye, EyeOff, Loader2, Sparkles, ShieldCheck, Award, Lock, ArrowRight, Info } from'lucide-vue-next' const router = useRouter() const authStore = useAuthStore() const activeTab = ref('general') //'general' |'security' |'permissions' const pageLoading = ref(false) const formData = ref({ prenom:'', nom:'', telephone:'', sexe:'HOMME', }) const passwordData = ref({ ancien_mot_de_passe:'', nouveau_mot_de_passe:'', confirmation:'' }) const showOldPassword = ref(false) const showNewPassword = ref(false) const showConfirmPassword = ref(false) const isProfileSuccess = ref(false) const isPasswordSuccess = ref(false) const profileError = ref('') const passwordError = ref('') const passwordLoading = ref(false) const userInitials = computed(() => { const p = formData.value.prenom || authStore.user?.prenom ||'' const n = formData.value.nom || authStore.user?.nom ||'' if (p || n) { return `${p.charAt(0)}${n.charAt(0)}`.toUpperCase() } const email = authStore.user?.email ||'U' return email.charAt(0).toUpperCase() }) const fullName = computed(() => { const p = formData.value.prenom || authStore.user?.prenom ||'' const n = formData.value.nom || authStore.user?.nom ||'' if (p || n) return `${p} ${n}`.trim() return authStore.user?.email?.split('@')[0] ||'Utilisateur' }) const userRole = computed(() => { return authStore.user?.role || authStore.user?.role_nom ||'Utilisateur' }) const userEmail = computed(() => { return authStore.user?.email ||'' }) const formattedJoinDate = computed(() => { const dateStr = authStore.user?.dateCreation if (!dateStr) return'Récemment' try { const d = new Date(dateStr) if (isNaN(d.getTime())) return'Récemment' return new Intl.DateTimeFormat('fr-FR', { day:'numeric', month:'long', year:'numeric' }).format(d) } catch { return'Récemment' } }) // Password validation checks const hasMinLength = computed(() => passwordData.value.nouveau_mot_de_passe.length >= 8) const hasNumber = computed(() => /\d/.test(passwordData.value.nouveau_mot_de_passe)) const hasUppercase = computed(() => /[A-Z]/.test(passwordData.value.nouveau_mot_de_passe)) const passwordsMatch = computed(() => { return ( passwordData.value.nouveau_mot_de_passe && passwordData.value.confirmation && passwordData.value.nouveau_mot_de_passe === passwordData.value.confirmation ) }) const passwordStrengthScore = computed(() => { let score = 0 if (hasMinLength.value) score += 1 if (hasNumber.value) score += 1 if (hasUppercase.value) score += 1 if (passwordData.value.nouveau_mot_de_passe.length >= 12) score += 1 return score }) const passwordStrengthLabel = computed(() => { if (!passwordData.value.nouveau_mot_de_passe) return'' if (passwordStrengthScore.value <= 1) return'Faible' if (passwordStrengthScore.value <= 2) return'Moyen' if (passwordStrengthScore.value <= 3) return'Bon' return'Très robuste' }) const passwordStrengthColor = computed(() => { if (passwordStrengthScore.value <= 1) return'bg-[#E30046]' if (passwordStrengthScore.value <= 2) return'bg-[#01313E]' if (passwordStrengthScore.value <= 3) return'bg-[#01313E]' return'bg-[#01313E]' }) const roleDescription = computed(() => { switch (userRole.value) { case'Administrateur': return'Accès complet et gestion globale de la plateforme, des formations, des campagnes, des utilisateurs et du paramétrage.' case'Equipe Pédagogique': case'Équipe Pédagogique': case'Equipe Pedagogique': return'Gestion des formations, des formulaires de candidature, des sessions de planification et du suivi pédagogique.' case'Equipe Gestion de Projet': case'Équipe Gestion de Projet': return'Supervision des campagnes de sourcing, des convocations des candidats et coordination logistique.' case'Evaluateur': case'Évaluateur': return'Conduite des entretiens de sélection, évaluation des candidats et notation selon les grilles définies.' case'Candidat': return'Consultation et suivi de ses candidatures, réception des convocations et confirmation de présence.' default: return'Membre utilisateur de la plateforme Sourcing Connect.' } }) const syncFormFromUser = () => { if (authStore.user) { formData.value = { prenom: authStore.user.prenom || authStore.user.first_name ||'', nom: authStore.user.nom || authStore.user.last_name ||'', telephone: authStore.user.telephone ||'', sexe: authStore.user.sexe ||'HOMME', } } } onMounted(async () => { syncFormFromUser() pageLoading.value = true await authStore.fetchProfile() syncFormFromUser() pageLoading.value = false }) const submitProfile = async () => { profileError.value ='' isProfileSuccess.value = false const success = await authStore.updateProfile(formData.value) if (success) { isProfileSuccess.value = true setTimeout(() => { if (!authStore.user?.profilComplet) { router.push('/dashboard') } else { isProfileSuccess.value = false } }, 3000) } else { profileError.value = authStore.error ||'Impossible de mettre à jour le profil.' } } const submitPasswordChange = async () => { passwordError.value ='' isPasswordSuccess.value = false if (passwordData.value.nouveau_mot_de_passe !== passwordData.value.confirmation) { passwordError.value ='Les deux nouveaux mots de passe ne correspondent pas.' return } if (passwordData.value.nouveau_mot_de_passe.length < 8) { passwordError.value ='Le nouveau mot de passe doit contenir au moins 8 caractères.' return } passwordLoading.value = true const success = await authStore.changePassword( passwordData.value.ancien_mot_de_passe, passwordData.value.nouveau_mot_de_passe, passwordData.value.confirmation ) passwordLoading.value = false if (success) { isPasswordSuccess.value = true passwordData.value = { ancien_mot_de_passe:'', nouveau_mot_de_passe:'', confirmation:'' } setTimeout(() => { isPasswordSuccess.value = false }, 4000) } else { passwordError.value = authStore.error ||'Impossible de modifier le mot de passe.' } } </script> <template> <!-- ONBOARDING PREMIER ACCÈS (Si profil candidat non complet) --> <div v-if="!authStore.user?.profilComplet"class="min-h-screen bg-[#001D24] flex items-center justify-center p-4 sm:p-6"> <div class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/15 bg-[#01313E] p-8 text-white"> <div class="space-y-6"> <div class="flex items-center gap-3"> <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#01313E] text-[#01313E]"> <Sparkles class="h-6 w-6"/> </div> <div> <h1 class="text-xl font-extrabold text-white">Finalisez votre profil</h1> <p class="text-xs text-white/70">Quelques détails pour activer votre compte</p> </div> </div> <div v-if="profileError"class="flex items-center gap-3 rounded-xl border border-[#E30046]/40 bg-[#E30046]/10 p-3.5 text-xs text-[#E30046]"> <AlertCircle class="h-4 w-4 shrink-0 text-[#E30046]"/> <span>{{ profileError }}</span> </div> <form @submit.prevent="submitProfile"class="space-y-4"> <div class="grid grid-cols-2 gap-3"> <div> <label class="mb-1.5 block text-xs font-bold text-white/80">Prénom</label> <input type="text" v-model="formData.prenom" required placeholder="Votre prénom" class="w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder-white/40 focus:border-[#01313E] focus:outline-none" /> </div> <div> <label class="mb-1.5 block text-xs font-bold text-white/80">Nom</label> <input type="text" v-model="formData.nom" required placeholder="Votre nom" class="w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder-white/40 focus:border-[#01313E] focus:outline-none" /> </div> </div> <div> <label class="mb-1.5 block text-xs font-bold text-white/80">Numéro de téléphone</label> <input type="tel" v-model="formData.telephone" required placeholder="Ex: 77 123 45 67" class="w-full rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder-white/40 focus:border-[#01313E] focus:outline-none" /> </div> <div> <label class="mb-1.5 block text-xs font-bold text-white/80">Genre / Sexe</label> <div class="grid grid-cols-2 gap-3"> <button type="button" @click="formData.sexe ='HOMME'" class="flex items-center justify-center rounded-xl border py-2.5 text-xs font-bold transition-colors" :class="formData.sexe ==='HOMME' ?'border-[#01313E] bg-[#01313E]/20 text-[#01313E]' :'border-white/15 bg-white/5 text-white/70 hover:bg-white/10'" > Homme </button> <button type="button" @click="formData.sexe ='FEMME'" class="flex items-center justify-center rounded-xl border py-2.5 text-xs font-bold transition-colors" :class="formData.sexe ==='FEMME' ?'border-[#01313E] bg-[#01313E]/20 text-[#01313E]' :'border-white/15 bg-white/5 text-white/70 hover:bg-white/10'" > Femme </button> </div> </div> <button type="submit" :disabled="authStore.loading" class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#E30046] py-3 text-sm font-bold text-white transition-colors hover:bg-[#c2003b] disabled:opacity-50" > <Loader2 v-if="authStore.loading"class="h-4 w-4 animate-spin"/> <span>Enregistrer et continuer</span> <ArrowRight v-if="!authStore.loading"class="h-4 w-4"/> </button> </form> </div> </div> </div> <!-- INTERFACE PROFIL STANDARD (Dans DashboardLayout - Sans ombres) --> <DashboardLayout v-else> <div class="mx-auto max-w-5xl space-y-6 pb-12"> <!-- HERO BANNER PROFIL --> <div class="rounded-2xl border border-white/15 bg-[#01313E] p-6 text-white sm:p-8"> <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"> <div class="flex items-center gap-5"> <!-- Grand Avatar avec Initiales & Badge en ligne --> <div class="relative"> <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/20 bg-white text-2xl font-black text-[#01313E]"> {{ userInitials }} </div> <span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#01313E] bg-[#01313E]"title="En ligne"></span> </div> <div class="space-y-1"> <div class="flex flex-wrap items-center gap-2.5"> <h1 class="text-2xl font-extrabold tracking-tight text-white">{{ fullName }}</h1> <span class="inline-flex items-center gap-1 rounded-full border border-[#01313E]/50 bg-[#01313E]/15 px-3 py-0.5 text-xs font-bold text-[#01313E]"> <Award class="h-3 w-3"/> {{ userRole }} </span> </div> <p class="flex items-center gap-1.5 text-xs font-medium text-white/70"> <Mail class="h-3.5 w-3.5 text-white/50"/> {{ userEmail }} </p> </div> </div> <!-- Métadonnées & Statut --> <div class="flex flex-wrap items-center gap-3 border-t border-white/10 pt-4 sm:border-t-0 sm:pt-0"> <div class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-center"> <span class="block text-[10px] font-bold uppercase tracking-wider text-white/50">Statut</span> <span class="inline-flex items-center gap-1 text-xs font-bold text-[#01313E]"> <span class="h-1.5 w-1.5 rounded-full bg-[#01313E]"></span> Actif </span> </div> <div class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-center"> <span class="block text-[10px] font-bold uppercase tracking-wider text-white/50">Membre depuis</span> <span class="text-xs font-bold text-white">{{ formattedJoinDate }}</span> </div> </div> </div> <!-- ONGLETS DE NAVIGATION DU PROFIL --> <div class="mt-8 flex flex-wrap gap-2 border-t border-white/10 pt-4"> <button type="button" @click="activeTab ='general'" class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-colors" :class="activeTab ==='general' ?'bg-white text-[#01313E]' :'border border-transparent text-white/70 hover:bg-white/10 hover:text-white'" > <User class="h-3.5 w-3.5"/> Informations personnelles </button> <button type="button" @click="activeTab ='security'" class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-colors" :class="activeTab ==='security' ?'bg-white text-[#01313E]' :'border border-transparent text-white/70 hover:bg-white/10 hover:text-white'" > <Shield class="h-3.5 w-3.5"/> Sécurité & Mot de passe </button> <button type="button" @click="activeTab ='permissions'" class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-colors" :class="activeTab ==='permissions' ?'bg-white text-[#01313E]' :'border border-transparent text-white/70 hover:bg-white/10 hover:text-white'" > <ShieldCheck class="h-3.5 w-3.5"/> Rôle & Permissions </button> </div> </div> <!-- CONTENU DES ONGLETS --> <!-- 1. ONGLET INFORMATIONS PERSONNELLES --> <div v-if="activeTab ==='general'"class="space-y-6"> <div class="rounded-2xl border border-[#01313E]/10 bg-white p-6 sm:p-8"> <div class="mb-6 flex items-center justify-between border-b border-[#01313E]/10 pb-4"> <div> <h2 class="text-base font-bold text-[#01313E]">Coordonnées & Informations Générales</h2> <p class="text-xs text-[#01313E]/60">Mettez à jour vos informations de contact et votre identité.</p> </div> <span class="rounded-xl border border-[#01313E]/10 bg-white p-2 text-[#01313E]/80"> <User class="h-5 w-5"/> </span> </div> <!-- Alertes de statut --> <div v-if="isProfileSuccess"class="mb-6 flex items-center gap-3 rounded-xl border border-[#01313E] bg-white p-4 text-xs font-bold text-[#01313E]"> <CheckCircle2 class="h-5 w-5 shrink-0 text-[#01313E]"/> <span>Vos informations ont été enregistrées avec succès.</span> </div> <div v-if="profileError"class="mb-6 flex items-center gap-3 rounded-xl border border-[#E30046] bg-white p-4 text-xs font-bold text-[#E30046]"> <AlertCircle class="h-5 w-5 shrink-0 text-[#E30046]"/> <span>{{ profileError }}</span> </div> <form @submit.prevent="submitProfile"class="space-y-5"> <!-- Email (Lecture seule) --> <div> <label class="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-[#01313E]"> <Mail class="h-3.5 w-3.5 text-[#01313E]/60"/> Adresse Email (Identifiant de connexion) </label> <div class="relative"> <input type="email" :value="userEmail" disabled class="w-full rounded-xl border border-[#01313E]/10 bg-white px-4 py-3 text-sm font-medium text-[#01313E]/60 cursor-not-allowed" /> <span class="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg border border-[#01313E]/10 bg-white px-2 py-0.5 text-[10px] font-bold text-[#01313E]/80"> Lecture seule </span> </div> <p class="mt-1 text-[11px] text-[#01313E]/60">L'email sert d'identifiant unique et ne peut pas être modifié.</p> </div> <!-- Prénom et Nom --> <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"> <div> <label class="mb-1.5 block text-xs font-bold text-[#01313E]">Prénom</label> <input type="text" v-model="formData.prenom" required placeholder="Ex: Amadou" class="w-full rounded-xl border border-[#01313E]/10 bg-white px-4 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" /> </div> <div> <label class="mb-1.5 block text-xs font-bold text-[#01313E]">Nom de famille</label> <input type="text" v-model="formData.nom" required placeholder="Ex: Diallo" class="w-full rounded-xl border border-[#01313E]/10 bg-white px-4 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" /> </div> </div> <!-- Téléphone et Sexe --> <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"> <div> <label class="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-[#01313E]"> <Phone class="h-3.5 w-3.5 text-[#01313E]/60"/> Numéro de téléphone </label> <input type="tel" v-model="formData.telephone" required placeholder="Ex: +221 77 000 00 00" class="w-full rounded-xl border border-[#01313E]/10 bg-white px-4 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" /> </div> <div> <label class="mb-1.5 block text-xs font-bold text-[#01313E]">Genre / Sexe</label> <select v-model="formData.sexe" class="w-full rounded-xl border border-[#01313E]/10 bg-white px-4 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" > <option value="HOMME">Homme</option> <option value="FEMME">Femme</option> </select> </div> </div> <!-- Action Enregistrer --> <div class="flex items-center justify-end border-t border-[#01313E]/10 pt-5"> <button type="submit" :disabled="authStore.loading" class="inline-flex items-center gap-2 rounded-xl bg-[#01313E] px-6 py-3 text-xs font-bold text-white transition-colors hover:bg-[#00252E] disabled:opacity-50" > <Loader2 v-if="authStore.loading"class="h-4 w-4 animate-spin"/> <span>Enregistrer les modifications</span> </button> </div> </form> </div> </div> <!-- 2. ONGLET SÉCURITÉ & MOT DE PASSE --> <div v-if="activeTab ==='security'"class="space-y-6"> <div class="rounded-2xl border border-[#01313E]/10 bg-white p-6 sm:p-8"> <div class="mb-6 flex items-center justify-between border-b border-[#01313E]/10 pb-4"> <div> <h2 class="text-base font-bold text-[#01313E]">Sécurité du Compte & Mot de Passe</h2> <p class="text-xs text-[#01313E]/60">Mettez à jour votre mot de passe régulièrement pour sécuriser vos accès.</p> </div> <span class="rounded-xl border border-[#01313E] bg-white p-2 text-[#01313E]"> <Lock class="h-5 w-5"/> </span> </div> <div v-if="isPasswordSuccess"class="mb-6 flex items-center gap-3 rounded-xl border border-[#01313E] bg-white p-4 text-xs font-bold text-[#01313E]"> <CheckCircle2 class="h-5 w-5 shrink-0 text-[#01313E]"/> <span>Votre mot de passe a été modifié avec succès !</span> </div> <div v-if="passwordError"class="mb-6 flex items-center gap-3 rounded-xl border border-[#E30046] bg-white p-4 text-xs font-bold text-[#E30046]"> <AlertCircle class="h-5 w-5 shrink-0 text-[#E30046]"/> <span>{{ passwordError }}</span> </div> <form @submit.prevent="submitPasswordChange"class="space-y-5"> <!-- Ancien mot de passe --> <div> <label class="mb-1.5 block text-xs font-bold text-[#01313E]">Mot de passe actuel</label> <div class="relative"> <input :type="showOldPassword ?'text' :'password'" v-model="passwordData.ancien_mot_de_passe" required placeholder="••••••••••••" class="w-full rounded-xl border border-[#01313E]/10 bg-white pl-4 pr-11 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" /> <button type="button" @click="showOldPassword = !showOldPassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-[#01313E]/60 hover:bg-white hover:text-[#01313E]/80" > <EyeOff v-if="showOldPassword"class="h-4 w-4"/> <Eye v-else class="h-4 w-4"/> </button> </div> </div> <!-- Nouveau mot de passe & Confirmation --> <div class="grid grid-cols-1 gap-4 sm:grid-cols-2"> <div> <label class="mb-1.5 block text-xs font-bold text-[#01313E]">Nouveau mot de passe</label> <div class="relative"> <input :type="showNewPassword ?'text' :'password'" v-model="passwordData.nouveau_mot_de_passe" required placeholder="Min. 8 caractères" class="w-full rounded-xl border border-[#01313E]/10 bg-white pl-4 pr-11 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" /> <button type="button" @click="showNewPassword = !showNewPassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-[#01313E]/60 hover:bg-white hover:text-[#01313E]/80" > <EyeOff v-if="showNewPassword"class="h-4 w-4"/> <Eye v-else class="h-4 w-4"/> </button> </div> </div> <div> <label class="mb-1.5 block text-xs font-bold text-[#01313E]">Confirmer le mot de passe</label> <div class="relative"> <input :type="showConfirmPassword ?'text' :'password'" v-model="passwordData.confirmation" required placeholder="Répétez le nouveau mot de passe" class="w-full rounded-xl border border-[#01313E]/10 bg-white pl-4 pr-11 py-3 text-sm text-[#01313E] focus:border-[#01313E] focus:outline-none" /> <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-[#01313E]/60 hover:bg-white hover:text-[#01313E]/80" > <EyeOff v-if="showConfirmPassword"class="h-4 w-4"/> <Eye v-else class="h-4 w-4"/> </button> </div> </div> </div> <!-- Jauge & Règles du mot de passe --> <div v-if="passwordData.nouveau_mot_de_passe"class="rounded-xl border border-[#01313E]/10 bg-white p-4 space-y-3"> <div class="flex items-center justify-between text-xs font-bold"> <span class="text-[#01313E]/80">Robustesse du mot de passe</span> <span :class="passwordStrengthScore >= 3 ?'text-[#01313E]' :'text-[#01313E]'">{{ passwordStrengthLabel }}</span> </div> <div class="h-2 w-full overflow-hidden rounded-full bg-white"> <div class="h-full transition-all duration-300" :class="passwordStrengthColor" :style="{ width: `${(passwordStrengthScore / 4) * 100}%` }" ></div> </div> <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]"> <div class="flex items-center gap-1.5":class="hasMinLength ?'text-[#01313E] font-bold' :'text-[#01313E]/60'"> <CheckCircle2 class="h-3.5 w-3.5"/> Au moins 8 caractères </div> <div class="flex items-center gap-1.5":class="hasNumber ?'text-[#01313E] font-bold' :'text-[#01313E]/60'"> <CheckCircle2 class="h-3.5 w-3.5"/> Au moins 1 chiffre </div> <div class="flex items-center gap-1.5":class="passwordsMatch ?'text-[#01313E] font-bold' :'text-[#01313E]/60'"> <CheckCircle2 class="h-3.5 w-3.5"/> Mots de passe identiques </div> </div> </div> <div class="flex items-center justify-end border-t border-[#01313E]/10 pt-5"> <button type="submit" :disabled="passwordLoading" class="inline-flex items-center gap-2 rounded-xl bg-[#E30046] px-6 py-3 text-xs font-bold text-white transition-colors hover:bg-[#c2003b] disabled:opacity-50" > <Loader2 v-if="passwordLoading"class="h-4 w-4 animate-spin"/> <span>Mettre à jour le mot de passe</span> </button> </div> </form> </div> </div> <!-- 3. ONGLET RÔLE & PERMISSIONS --> <div v-if="activeTab ==='permissions'"class="space-y-6"> <div class="grid grid-cols-1 gap-6 sm:grid-cols-3"> <!-- Carte Rôle --> <div class="sm:col-span-2 rounded-2xl border border-[#01313E]/10 bg-white p-6 sm:p-8 space-y-4"> <div class="flex items-center gap-3 border-b border-[#01313E]/10 pb-4"> <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E30046] text-[#01313E]"> <Award class="h-5 w-5"/> </span> <div> <h2 class="text-base font-bold text-[#01313E]">Rôle Actuel : {{ userRole }}</h2> <p class="text-xs text-[#01313E]/60">Niveau de privilège et responsabilités</p> </div> </div> <p class="text-sm leading-relaxed text-[#01313E]/80"> {{ roleDescription }} </p> <div class="rounded-xl border border-[#01313E]/10 bg-white p-4"> <h3 class="text-xs font-bold text-[#01313E] mb-2 flex items-center gap-1.5"> <Info class="h-4 w-4 text-[#01313E]/60"/> Droits d'administration et de gestion </h3> <p class="text-xs text-[#01313E]/60 leading-normal"> Les autorisations d'accès aux modules (Campagnes, Planification, Convocations, Émargement, Formulaires) sont gouvernées par votre rôle dans l'organisation. </p> </div> </div> <!-- Carte Fiche Utilisateur --> <div class="rounded-2xl border border-[#01313E]/10 bg-white p-6 space-y-4"> <h3 class="text-xs font-bold uppercase tracking-wider text-[#01313E]/60">Détails du compte</h3> <div class="space-y-3 text-xs"> <div> <span class="text-[#01313E]/60 block">ID Utilisateur</span> <span class="font-mono font-bold text-[#01313E]/80 truncate block">{{ authStore.user?.id ||'—' }}</span> </div> <div class="border-t border-[#01313E]/10 pt-2"> <span class="text-[#01313E]/60 block">Statut du compte</span> <span class="font-bold text-[#01313E] inline-flex items-center gap-1 mt-0.5"> <CheckCircle2 class="h-3.5 w-3.5 text-[#01313E]"/> Vérifié et Actif </span> </div> <div class="border-t border-[#01313E]/10 pt-2"> <span class="text-[#01313E]/60 block">Date d'inscription</span> <span class="font-bold text-[#01313E]/80 block mt-0.5">{{ formattedJoinDate }}</span> </div> </div> </div> </div> </div> </div> </DashboardLayout> </template> 
+<script setup>
+/**
+ * Vue de consultation et mise à jour du profil utilisateur (nom, prénom, téléphone, sexe)
+ * et gestion du changement de mot de passe.
+ */
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+import DashboardLayout from '../components/layouts/DashboardLayout.vue'
+import { Loader2, ShieldAlert, CheckCircle, Key, Eye, EyeOff } from 'lucide-vue-next'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const formData = ref({
+  prenom: authStore.user?.prenom || '',
+  nom: authStore.user?.nom || '',
+  telephone: authStore.user?.telephone || '',
+  sexe: authStore.user?.sexe || 'HOMME',
+  profilComplet: true
+})
+
+const passwordData = ref({
+  ancien_mot_de_passe: '',
+  nouveau_mot_de_passe: '',
+  confirmation: ''
+})
+
+const showOldPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+const isProfileSuccess = ref(false)
+const isPasswordSuccess = ref(false)
+const passwordError = ref('')
+const passwordLoading = ref(false)
+
+const submitProfile = async () => {
+  const success = await authStore.updateProfile(formData.value)
+  if (success) {
+    isProfileSuccess.value = true
+    setTimeout(() => {
+      if (!authStore.user?.profilComplet) {
+        router.push('/dashboard')
+      } else {
+        isProfileSuccess.value = false
+      }
+    }, 2000)
+  }
+}
+
+const submitPasswordChange = async () => {
+  passwordError.value = ''
+  isPasswordSuccess.value = false
+
+  if (passwordData.value.nouveau_mot_de_passe !== passwordData.value.confirmation) {
+    passwordError.value = "Les deux mots de passe ne correspondent pas."
+    return
+  }
+
+  if (passwordData.value.nouveau_mot_de_passe.length < 8) {
+    passwordError.value = "Le nouveau mot de passe doit contenir au moins 8 caractères."
+    return
+  }
+
+  passwordLoading.value = true
+  const success = await authStore.changePassword(
+    passwordData.value.ancien_mot_de_passe,
+    passwordData.value.nouveau_mot_de_passe,
+    passwordData.value.confirmation
+  )
+
+  passwordLoading.value = false
+
+  if (success) {
+    isPasswordSuccess.value = true
+    passwordData.value = { ancien_mot_de_passe: '', nouveau_mot_de_passe: '', confirmation: '' }
+    setTimeout(() => { isPasswordSuccess.value = false }, 4000)
+  } else {
+    passwordError.value = authStore.error || "Impossible de modifier le mot de passe."
+  }
+}
+</script>
+
+<template>
+  <!-- Si profil non complet, on affiche sans sidebar pour focaliser l'attention -->
+  <div v-if="!authStore.user?.profilComplet" class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+      <div class="flex justify-center mb-6">
+        <img src="/images/logo.png" alt="Logo" class="h-16 w-auto" onerror="this.style.display='none'" />
+      </div>
+      <h2 class="text-center text-3xl font-extrabold text-gray-900">
+        Compléter votre profil
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Avant d'accéder à la plateforme, nous avons besoin de quelques informations.
+      </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div class="bg-white py-8 px-4 sm:rounded-xl sm:px-10 border border-gray-100">
+        <form @submit.prevent="submitProfile" class="space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Prénom</label>
+              <input type="text" v-model="formData.prenom" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Nom</label>
+              <input type="text" v-model="formData.nom" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Téléphone</label>
+            <input type="tel" v-model="formData.telephone" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#CE0033] focus:border-[#CE0033] sm:text-sm" />
+          </div>
+          <div>
+            <button type="submit" :disabled="authStore.loading" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none transition-colors disabled:opacity-50">
+              <Loader2 v-if="authStore.loading" class="w-4 h-4 mr-2 animate-spin" />
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Si profil complet, on affiche dans le DashboardLayout -->
+  <DashboardLayout v-else>
+    <div class="max-w-4xl mx-auto space-y-8">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Mon Profil</h1>
+        <p class="text-sm text-gray-600 mt-1">Gérez vos informations personnelles et votre sécurité.</p>
+      </div>
+
+      <!-- Carte 1 : Informations Personnelles -->
+      <div class="bg-white rounded-2xl -xs border border-gray-200/80 overflow-hidden">
+        <div class="p-6 sm:p-8 space-y-6">
+          <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Informations Personnelles</h2>
+          
+          <div v-if="isProfileSuccess" class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex items-center text-emerald-800 text-xs font-semibold gap-2">
+            <CheckCircle class="w-4 h-4 text-emerald-600" />
+            <span>Profil mis à jour avec succès.</span>
+          </div>
+
+          <form @submit.prevent="submitProfile" class="space-y-5">
+            <div v-if="authStore.error && !passwordError" class="bg-red-50 border border-red-200 p-3 rounded-xl flex items-center text-red-700 text-xs gap-2">
+              <ShieldAlert class="w-4 h-4 text-red-500" />
+              <span>{{ authStore.error }}</span>
+            </div>
+
+            <!-- Email en lecture seule -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Adresse Email</label>
+              <input
+                type="email"
+                :value="authStore.user?.email"
+                disabled
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-500 cursor-not-allowed"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Prénom</label>
+                <input
+                  type="text"
+                  v-model="formData.prenom"
+                  required
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Nom</label>
+                <input
+                  type="text"
+                  v-model="formData.nom"
+                  required
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Téléphone</label>
+                <input
+                  type="tel"
+                  v-model="formData.telephone"
+                  required
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Sexe</label>
+                <select
+                  v-model="formData.sexe"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                >
+                  <option value="HOMME">Homme</option>
+                  <option value="FEMME">Femme</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 flex justify-end">
+              <button
+                type="submit"
+                :disabled="authStore.loading"
+                class="px-5 py-2.5 bg-[#CE0033] hover:bg-[#a8002a] text-white text-xs font-bold rounded-xl -xs transition-colors flex items-center gap-2"
+              >
+                <Loader2 v-if="authStore.loading" class="w-4 h-4 animate-spin" />
+                Enregistrer le profil
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Carte 2 : Changement de Mot de Passe -->
+      <div class="bg-white rounded-2xl -xs border border-gray-200/80 overflow-hidden">
+        <div class="p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-2.5 border-b border-gray-100 pb-3">
+            <Key class="w-5 h-5 text-[#002B35]" />
+            <h2 class="text-lg font-bold text-gray-900">Sécurité & Mot de Passe</h2>
+          </div>
+
+          <div v-if="isPasswordSuccess" class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex items-center text-emerald-800 text-xs font-bold gap-2">
+            <CheckCircle class="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>Votre mot de passe a été modifié avec succès !</span>
+          </div>
+
+          <div v-if="passwordError" class="bg-red-50 border border-red-200 p-4 rounded-xl flex items-center text-red-700 text-xs font-medium gap-2">
+            <ShieldAlert class="w-4 h-4 text-red-500 flex-shrink-0" />
+            <span>{{ passwordError }}</span>
+          </div>
+
+          <form @submit.prevent="submitPasswordChange" class="space-y-4">
+            <!-- Ancien mot de passe -->
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Ancien mot de passe</label>
+              <div class="relative">
+                <input
+                  :type="showOldPassword ? 'text' : 'password'"
+                  v-model="passwordData.ancien_mot_de_passe"
+                  required
+                  placeholder="••••••••"
+                  class="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                />
+                <button
+                  type="button"
+                  @click="showOldPassword = !showOldPassword"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                >
+                  <EyeOff v-if="showOldPassword" class="w-4 h-4" />
+                  <Eye v-else class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Nouveau mot de passe -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Nouveau mot de passe</label>
+                <div class="relative">
+                  <input
+                    :type="showNewPassword ? 'text' : 'password'"
+                    v-model="passwordData.nouveau_mot_de_passe"
+                    required
+                    placeholder="Au moins 8 caractères"
+                    class="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                  />
+                  <button
+                    type="button"
+                    @click="showNewPassword = !showNewPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  >
+                    <EyeOff v-if="showNewPassword" class="w-4 h-4" />
+                    <Eye v-else class="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Confirmer le nouveau mot de passe</label>
+                <div class="relative">
+                  <input
+                    :type="showConfirmPassword ? 'text' : 'password'"
+                    v-model="passwordData.confirmation"
+                    required
+                    placeholder="Répétez le nouveau mot de passe"
+                    class="w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CE0033]/20 focus:border-[#CE0033]"
+                  />
+                  <button
+                    type="button"
+                    @click="showConfirmPassword = !showConfirmPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  >
+                    <EyeOff v-if="showConfirmPassword" class="w-4 h-4" />
+                    <Eye v-else class="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 flex justify-end">
+              <button
+                type="submit"
+                :disabled="passwordLoading"
+                class="px-5 py-2.5 bg-[#002B35] hover:bg-[#001D24] text-white text-xs font-bold rounded-xl -xs transition-colors flex items-center gap-2"
+              >
+                <Loader2 v-if="passwordLoading" class="w-4 h-4 animate-spin" />
+                Changer le mot de passe
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </DashboardLayout>
+</template>

@@ -1,4 +1,30 @@
 <script setup>
+/**
+ * Layout principal englobant le Sidebar et la zone de contenu principale des dashboards.
+ */
 import Sidebar from './Sidebar.vue'
-</script> <template> <div class="min-h-screen bg-[#f8fafc] flex overflow-x-hidden" style="background-color:#f5f7f8"> <Sidebar /> <!-- Main area --> <main class="flex-1 lg:ml-[272px] flex flex-col min-h-screen min-w-0"> <!-- Top bar --> <header class="sticky top-0 z-20 h-16 flex items-center justify-between px-5 sm:px-8 bg-white/95 border-b border-[#01313E]/8" > <div class="flex items-center gap-4 min-w-0 flex-1"> <!-- Red accent line on left --> <div class="hidden sm:block w-1 h-6 bg-[#E30046] rounded-full flex-shrink-0"></div> <slot name="header"> <h2 class="text-lg font-extrabold text-[#01313E] tracking-tight truncate"> SourcingHub </h2> </slot> </div> <!-- Right actions slot --> <div class="flex items-center gap-2 ml-4"> <slot name="header-actions" /> </div> </header> <!-- Content --> <div class="flex-1 p-4 sm:p-6 lg:p-8 min-w-0"> <slot /> </div> </main> </div>
+</script>
+
+<template>
+  <div class="min-h-screen bg-gray-50 flex overflow-x-hidden">
+    <!-- Sidebar Modularisé -->
+    <Sidebar />
+
+    <!-- Zone de contenu principale -->
+    <main class="flex-1 md:ml-64 flex flex-col min-h-screen min-w-0 transition-all duration-200">
+      <header
+        class="bg-white/90 border-b border-gray-200/80 -xs h-16 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-20"
+      >
+        <div class="flex items-center justify-between w-full min-w-0">
+          <slot name="header">
+            <h2 class="text-lg font-semibold text-gray-900 truncate">Bienvenue</h2>
+          </slot>
+        </div>
+      </header>
+
+      <div class="p-4 sm:p-6 lg:p-8 flex-1 overflow-y-auto min-w-0">
+        <slot></slot>
+      </div>
+    </main>
+  </div>
 </template>
