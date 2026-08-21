@@ -6,9 +6,7 @@ import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import api from '../services/api'
 import { useModalStore } from '../stores/modal'
 import { parseBackendError } from '../utils/errorHandler'
-import { demoDetails, demoSessions, refreshDemoSessionCounts } from '../mocks/emargement'
-
-const modalStore = useModalStore()
+import { demoDetails, demoSessions, refreshDemoSessionCounts } from '../mocks/emargement' const modalStore = useModalStore()
 const sessions = ref([])
 const selectedSessionId = ref('')
 const detail = ref(null)
@@ -26,227 +24,33 @@ const scanError = ref('')
 const scanValue = ref('')
 const scannedCandidate = ref(null)
 const video = ref(null)
-let scannerControls = null
-
-const selectedSession = computed(() => sessions.value.find((session) => session.id === selectedSessionId.value))
-const filteredAssignments = computed(() => {
-  const query = search.value.trim().toLocaleLowerCase('fr')
-  return (detail.value?.affectations || []).filter((item) => !query || `${item.nom} ${item.numero} ${item.email}`.toLocaleLowerCase('fr').includes(query))
+let scannerControls = null const selectedSession = computed(() => sessions.value.find(s => s.id === selectedSessionId.value))
+const filteredAssignments = computed(() => { const query = search.value.trim().toLocaleLowerCase('fr') return (detail.value?.affectations || []).filter(item => !query || `${item.nom} ${item.numero} ${item.email}`.toLocaleLowerCase('fr').includes(query))
 })
-const getInitials = (name) => {
-  if (!name) return '?'
-  return name.trim().split(/\s+/).map((n) => n[0]).slice(0, 2).join('').toUpperCase() || '?'
+const getInitials = name => { if (!name) return '?' return name.trim().split(/\s+/).map(n => n[0]).slice(0, 2).join('').toUpperCase() || '?'
 }
-const formatDate = (value) => {
-  if (!value) return ''
-  try {
-    const d = new Date(String(value).includes('T') ? value : `${value}T12:00:00`)
-    if (isNaN(d.getTime())) return String(value)
-    return new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d)
-  } catch {
-    return String(value)
-  }
+const formatDate = value => { if (!value) return '' try { const d = new Date(String(value).includes('T') ? value : `${value}T12:00:00`) if (isNaN(d.getTime())) return String(value) return new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d) } catch { return String(value) }
 }
-const formatTime = (value) => value ? String(value).slice(0, 5) : ''
-const sessionLabel = (session) => {
-  if (!session) return ''
-  const cohorte = session.cohorteNom || ''
-  const etape = session.etapeNom || ''
-  const dateStr = formatDate(session.date)
-  const timeStr = formatTime(session.heureDebut)
-  return `${cohorte} — ${etape} · ${dateStr} · ${timeStr}`
+const formatTime = value => value ? String(value).slice(0, 5) : ''
+const sessionLabel = session => { if (!session) return '' return `${session.cohorteNom || ''} — ${session.etapeNom || ''} · ${formatDate(session.date)} · ${formatTime(session.heureDebut)}`
 }
-const presenceLabel = (status) => status === 'PRESENT' ? 'Présent' : status === 'ABSENT' ? 'Absent' : 'À pointer'
-
-const extractToken = (value) => {
-  const trimmed = value.trim()
-  const matched = trimmed.match(/scan-emargement\/([0-9a-f-]{36})/i)
-  return matched?.[1] || trimmed
+const presenceLabel = status => status === 'PRESENT' ? 'Présent' : status === 'ABSENT' ? 'Absent' : 'À pointer'
+const extractToken = value => { const trimmed = value.trim() const matched = trimmed.match(/scan-emargement\/([0-9a-f-]{36})/i) return matched?.[1] || trimmed
+} const stopCamera = () => { scannerControls?.stop(); scannerControls = null; scannerActive.value = false }
+const openScanner = () => { scanOpen.value = true; scanError.value = ''; scannedCandidate.value = null; scanValue.value = '' }
+const closeScanner = () => { stopCamera(); scanOpen.value = false } const findDemoCandidate = value => { const query = value.trim().toLocaleLowerCase('fr') return detail.value?.affectations.find(a => [a.numero, a.email, a.nom].some(f => f.toLocaleLowerCase('fr').includes(query)))
+} const readConvocation = async (value = scanValue.value) => { const rawValue = value?.trim() if (!rawValue) return scanLoading.value = true; scanError.value = ''; scannedCandidate.value = null; stopCamera() try { if (demoMode.value) { const a = findDemoCandidate(rawValue) if (!a) throw new Error('Convocation introuvable pour cette session.') scannedCandidate.value = { ...a, session: detail.value.session, token: a.id } } else { const token = extractToken(rawValue) const { data } = await api.get(`evaluations/emargement/qr/${token}/`) if (data.session?.id && data.session.id !== selectedSessionId.value) throw new Error('Cette convocation ne correspond pas à la session sélectionnée.') scannedCandidate.value = { ...data, token } } } catch (err) { scanError.value = err.response?.data?.detail || err.message || 'Convocation invalide ou introuvable.' } finally { scanLoading.value = false }
+} const validateScannedPresence = async () => { if (!scannedCandidate.value) return scanSaving.value = true; scanError.value = '' try { if (demoMode.value) { const a = detail.value.affectations.find(i => i.id === scannedCandidate.value.id) a.statutPresence = 'PRESENT' refreshDemoSessionCounts(selectedSession.value, detail.value.affectations) scannedCandidate.value.statutPresence = 'PRESENT' } else { const { data } = await api.post(`evaluations/emargement/qr/${scannedCandidate.value.token}/`) scannedCandidate.value = { ...scannedCandidate.value, ...data } const idx = detail.value?.affectations.findIndex(i => i.id === data.id) if (idx >= 0) detail.value.affectations[idx] = data await loadSessions() } } catch (err) { scanError.value = err.response?.data?.detail || 'Impossible de valider la présence.' } finally { scanSaving.value = false }
+} const startCamera = async () => { if (!navigator.mediaDevices?.getUserMedia) { scanError.value = 'Accès caméra non disponible.'; return } scanError.value = '' try { await nextTick() const reader = new BrowserQRCodeReader() scannerActive.value = true scannerControls = await reader.decodeFromConstraints( { video: { facingMode: { ideal: 'environment' } }, audio: false }, video.value, async result => { if (!result || !scannerActive.value) return; const v = result.getText(); if (!v) return; scanValue.value = v; await readConvocation(v) }) } catch (err) { stopCamera() scanError.value = err?.name === 'NotAllowedError' ? 'Permission caméra refusée. Autorisez-la dans le navigateur.' : 'Impossible d\'accéder à la caméra. Saisissez le code manuellement.' }
+} const loadSessions = async () => { loading.value = true; error.value = '' try { const { data } = await api.get('evaluations/emargement/sessions/') sessions.value = data || []; demoMode.value = false if (!selectedSessionId.value && sessions.value.length) selectedSessionId.value = sessions.value[0].id if (selectedSessionId.value) await loadDetail() } catch (err) { error.value = parseBackendError(err) } finally { loading.value = false }
 }
-
-const stopCamera = () => {
-  scannerControls?.stop()
-  scannerControls = null
-  scannerActive.value = false
+const loadDetail = async () => { if (!selectedSessionId.value) { detail.value = null; return } loading.value = true try { const { data } = await api.get(`evaluations/emargement/sessions/${selectedSessionId.value}/`) detail.value = data } catch (err) { error.value = parseBackendError(err) } finally { loading.value = false }
 }
-
-const openScanner = () => {
-  scanOpen.value = true
-  scanError.value = ''
-  scannedCandidate.value = null
-  scanValue.value = ''
+const markPresence = async (assignment, statutPresence) => { savingId.value = assignment.id try { if (demoMode.value) { assignment.statutPresence = statutPresence; refreshDemoSessionCounts(selectedSession.value, detail.value.affectations); return } const { data } = await api.patch(`evaluations/emargement/affectations/${assignment.id}/presence/`, { statutPresence }) const idx = detail.value.affectations.findIndex(i => i.id === assignment.id) detail.value.affectations[idx] = data await loadSessions() } catch (err) { await modalStore.showAlert(parseBackendError(err), 'Erreur', 'danger') } finally { savingId.value = '' }
 }
-
-const closeScanner = () => {
-  stopCamera()
-  scanOpen.value = false
-}
-
-const findDemoCandidate = (value) => {
-  const query = value.trim().toLocaleLowerCase('fr')
-  return detail.value?.affectations.find((assignment) => [assignment.numero, assignment.email, assignment.nom].some((field) => field.toLocaleLowerCase('fr').includes(query)))
-}
-
-const readConvocation = async (value = scanValue.value) => {
-  const rawValue = value?.trim()
-  if (!rawValue) return
-  scanLoading.value = true
-  scanError.value = ''
-  scannedCandidate.value = null
-  stopCamera()
-  try {
-    if (demoMode.value) {
-      const assignment = findDemoCandidate(rawValue)
-      if (!assignment) throw new Error('Convocation introuvable pour cette session.')
-      scannedCandidate.value = { ...assignment, session: detail.value.session, token: assignment.id }
-    } else {
-      const token = extractToken(rawValue)
-      const { data } = await api.get(`evaluations/emargement/qr/${token}/`)
-      if (data.session?.id && data.session.id !== selectedSessionId.value) throw new Error('Cette convocation ne correspond pas à la session sélectionnée.')
-      scannedCandidate.value = { ...data, token }
-    }
-  } catch (err) { scanError.value = err.response?.data?.detail || err.message || 'Convocation invalide ou introuvable.' } finally { scanLoading.value = false }
-}
-
-const validateScannedPresence = async () => {
-  if (!scannedCandidate.value) return
-  scanSaving.value = true
-  scanError.value = ''
-  try {
-    if (demoMode.value) {
-      const assignment = detail.value.affectations.find((item) => item.id === scannedCandidate.value.id)
-      assignment.statutPresence = 'PRESENT'
-      refreshDemoSessionCounts(selectedSession.value, detail.value.affectations)
-      scannedCandidate.value.statutPresence = 'PRESENT'
-    } else {
-      const { data } = await api.post(`evaluations/emargement/qr/${scannedCandidate.value.token}/`)
-      scannedCandidate.value = { ...scannedCandidate.value, ...data }
-      const index = detail.value?.affectations.findIndex((item) => item.id === data.id)
-      if (index >= 0) detail.value.affectations[index] = data
-      await loadSessions()
-    }
-  } catch (err) { scanError.value = err.response?.data?.detail || 'Impossible de valider la présence.' } finally { scanSaving.value = false }
-}
-
-const startCamera = async () => {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    scanError.value = 'L’accès caméra n’est pas disponible sur cet appareil. Collez le lien ou saisissez le code de la convocation.'
-    return
-  }
-  scanError.value = ''
-  try {
-    await nextTick()
-    const reader = new BrowserQRCodeReader()
-    scannerActive.value = true
-    scannerControls = await reader.decodeFromConstraints(
-      { video: { facingMode: { ideal: 'environment' } }, audio: false },
-      video.value,
-      async (result) => {
-        if (!result || !scannerActive.value) return
-        const value = result.getText()
-        if (!value) return
-        scanValue.value = value
-        await readConvocation(value)
-      },
-    )
-  } catch (err) {
-    stopCamera()
-    scanError.value = err?.name === 'NotAllowedError'
-      ? 'L’autorisation d’utiliser la caméra a été refusée. Autorisez-la dans le navigateur puis réessayez.'
-      : 'Impossible d’accéder à la caméra. Vérifiez l’autorisation puis réessayez, ou saisissez le code.'
-  }
-}
-
-const loadSessions = async () => {
-  loading.value = true
-  error.value = ''
-  try {
-    const { data } = await api.get('evaluations/emargement/sessions/')
-    sessions.value = data || []
-    demoMode.value = false
-    if (!selectedSessionId.value && sessions.value.length) {
-      selectedSessionId.value = sessions.value[0].id
-    }
-    if (selectedSessionId.value) {
-      await loadDetail()
-    }
-  } catch (err) {
-    error.value = parseBackendError(err)
-  } finally {
-    loading.value = false
-  }
-}
-const loadDetail = async () => {
-  if (!selectedSessionId.value) {
-    detail.value = null
-    return
-  }
-  loading.value = true
-  try {
-    const { data } = await api.get(`evaluations/emargement/sessions/${selectedSessionId.value}/`)
-    detail.value = data
-  } catch (err) {
-    error.value = parseBackendError(err)
-  } finally {
-    loading.value = false
-  }
-}
-const markPresence = async (assignment, statutPresence) => {
-  savingId.value = assignment.id
-  try {
-    if (demoMode.value) {
-      assignment.statutPresence = statutPresence
-      refreshDemoSessionCounts(selectedSession.value, detail.value.affectations)
-      return
-    }
-    const { data } = await api.patch(`evaluations/emargement/affectations/${assignment.id}/presence/`, { statutPresence })
-    const index = detail.value.affectations.findIndex((item) => item.id === assignment.id)
-    detail.value.affectations[index] = data
-    await loadSessions()
-  } catch (err) { await modalStore.showAlert(parseBackendError(err), 'Erreur', 'danger') } finally { savingId.value = '' }
-}
-const closeSession = async () => {
-  const awaiting = selectedSession.value?.enAttente || 0
-  const confirmed = await modalStore.showConfirm(
-    `${awaiting} candidat(s) non pointé(s) seront marqués absents et leur parcours sera clôturé. Les présents recevront un lien de confirmation.`,
-    'Clôturer l’émargement', { confirmText: 'Clôturer la session', variant: 'danger' },
-  )
-  if (!confirmed) return
-  closing.value = true
-  try {
-    const { data } = await api.post(`evaluations/emargement/sessions/${selectedSessionId.value}/cloturer/`)
-    await modalStore.showAlert(`${data.absents} absence(s) traitée(s) et ${data.confirmationsEnvoyees} confirmation(s) envoyée(s).`, 'Session clôturée', 'success')
-    await loadSessions()
-  } catch (err) { await modalStore.showAlert(parseBackendError(err), 'Erreur', 'danger') } finally { closing.value = false }
+const closeSession = async () => { const awaiting = selectedSession.value?.enAttente || 0 const confirmed = await modalStore.showConfirm( `${awaiting} candidat(s) non pointé(s) seront marqués absents.`, 'Clôturer l\'émargement', { confirmText: 'Clôturer la session', variant: 'danger' }) if (!confirmed) return closing.value = true try { const { data } = await api.post(`evaluations/emargement/sessions/${selectedSessionId.value}/cloturer/`) await modalStore.showAlert(`${data.absents} absence(s) traitée(s) et ${data.confirmationsEnvoyees} confirmation(s) envoyée(s).`, 'Session clôturée', 'success') await loadSessions() } catch (err) { await modalStore.showAlert(parseBackendError(err), 'Erreur', 'danger') } finally { closing.value = false }
 }
 onMounted(loadSessions)
 onBeforeUnmount(stopCamera)
-</script>
-
-<template>
-  <DashboardLayout>
-    <template #header><div><h2 class="text-xl font-semibold text-gray-900">Émargement</h2><p class="text-sm text-slate-500">Pointez les présences, puis clôturez chaque session.</p></div></template>
-    <div v-if="demoMode" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Données de démonstration chargées pour tester l’émargement. Les changements restent locaux.</div>
-    <div v-if="error" class="mb-5 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">{{ error }}</div>
-    <section class="mb-5 rounded-2xl border border-slate-100 bg-white p-5"><label class="mb-1.5 block text-xs font-bold text-[#00313C]">Session à émarger</label><select v-model="selectedSessionId" class="input-field" @change="loadDetail"><option value="">Sélectionnez une session</option><option v-for="session in sessions" :key="session.id" :value="session.id">{{ sessionLabel(session) }}</option></select><p v-if="!sessions.length && !loading" class="mt-3 text-sm text-slate-500">Aucune session avec des candidats convoqués.</p></section>
-    <div v-if="loading && !detail" class="flex h-56 items-center justify-center"><Loader2 class="h-8 w-8 animate-spin text-primary-600" /></div>
-    <template v-else-if="detail">
-      <section class="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-primary-50 p-5"><div><p class="text-xs font-bold uppercase tracking-wide text-primary-700">{{ detail.session.cohorteNom }}</p><h3 class="mt-1 font-bold text-[#00313C]">{{ detail.session.etapeNom }}</h3><p class="mt-1 text-sm text-slate-600"><CalendarDays class="mr-1 inline h-4 w-4" />{{ formatDate(detail.session.date) }} · {{ formatTime(detail.session.heureDebut) }} – {{ formatTime(detail.session.heureFin) }}</p></div><div class="flex items-center gap-5"><div class="flex gap-4 text-center text-sm"><span><b class="block text-lg text-emerald-700">{{ selectedSession?.presents || 0 }}</b>Présents</span><span><b class="block text-lg text-red-600">{{ selectedSession?.absents || 0 }}</b>Absents</span><span><b class="block text-lg text-amber-600">{{ selectedSession?.enAttente || 0 }}</b>À pointer</span></div><button class="scan-button" @click="openScanner"><ScanLine class="h-4 w-4" />Scanner une convocation</button></div></section>
-      <section class="overflow-hidden rounded-2xl border border-slate-100 bg-white"><div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><h3 class="font-bold text-[#00313C]">Candidats convoqués</h3><label class="relative"><Search class="absolute left-3 top-2.5 h-4 w-4 text-slate-400" /><input v-model="search" class="input-field h-9 pl-9" placeholder="Rechercher…" /></label></div><div class="max-h-[480px] overflow-y-auto"><div v-for="assignment in filteredAssignments" :key="assignment.id" class="flex flex-wrap items-center gap-3 border-b border-slate-50 px-5 py-3 last:border-0"><span class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-primary-700">{{ getInitials(assignment.nom) }}</span><div class="min-w-48 flex-1"><p class="text-sm font-bold text-[#00313C]">{{ assignment.nom }}</p><p class="text-xs text-slate-500">{{ assignment.numero }} · {{ assignment.email }}</p></div><span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="assignment.statutPresence === 'PRESENT' ? 'bg-emerald-50 text-emerald-700' : assignment.statutPresence === 'ABSENT' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'">{{ assignment.statutPresence === 'PRESENT' ? 'Présent' : assignment.statutPresence === 'ABSENT' ? 'Absent' : 'À pointer' }}</span><div class="flex gap-2"><button class="presence-btn presence-btn-ok" :disabled="savingId === assignment.id" @click="markPresence(assignment, 'PRESENT')"><UserCheck class="mr-1 h-4 w-4" />Présent</button><button class="presence-btn presence-btn-no" :disabled="savingId === assignment.id" @click="markPresence(assignment, 'ABSENT')"><UserX class="mr-1 h-4 w-4" />Absent</button></div></div></div><div class="flex justify-end border-t border-slate-100 bg-slate-50 p-4"><button class="btn-primary bg-red-600 hover:bg-red-700" :disabled="closing" @click="closeSession"><Loader2 v-if="closing" class="mr-2 h-4 w-4 animate-spin" />Clôturer l’émargement</button></div></section>
-    </template>
-    <div v-if="scanOpen" class="scan-overlay" role="dialog" aria-modal="true" aria-labelledby="scan-title" @click.self="closeScanner">
-      <section class="scan-dialog">
-        <div class="flex items-start justify-between gap-4"><div><div class="flex items-center gap-2 text-primary-700"><ClipboardCheck class="h-5 w-5" /><h3 id="scan-title" class="font-bold">Scanner une convocation</h3></div><p class="mt-1 text-sm text-slate-500">Scannez le QR code, ou collez le lien de la convocation.</p></div><button class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Fermer" @click="closeScanner"><X class="h-5 w-5" /></button></div>
-        <div v-if="!scannedCandidate" class="mt-5 space-y-4"><div class="camera-preview"><video ref="video" muted playsinline></video><div v-if="!scannerActive" class="camera-placeholder"><Camera class="h-8 w-8" /><span>Prêt à scanner votre QR code</span></div></div><button class="btn-secondary w-full justify-center" :disabled="scannerActive" @click="startCamera"><Camera class="mr-2 h-4 w-4" />{{ scannerActive ? 'Caméra active…' : 'Ouvrir la caméra' }}</button><div class="relative flex items-center py-1"><span class="h-px flex-1 bg-slate-200"></span><span class="px-3 text-xs text-slate-400">ou</span><span class="h-px flex-1 bg-slate-200"></span></div><form class="flex gap-2" @submit.prevent="readConvocation()"><input v-model="scanValue" class="input-field min-w-0 flex-1" placeholder="Lien ou code de convocation" autofocus /><button class="btn-primary shrink-0" :disabled="scanLoading || !scanValue.trim()"><Loader2 v-if="scanLoading" class="h-4 w-4 animate-spin" /><span v-else>Lire</span></button></form></div>
-        <div v-else class="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-4"><div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">{{ getInitials(scannedCandidate.nom) }}</span><div class="min-w-0 flex-1"><p class="font-bold text-[#00313C]">{{ scannedCandidate.nom }}</p><p class="truncate text-sm text-slate-500">{{ scannedCandidate.numero }} · {{ scannedCandidate.email }}</p><p class="mt-2 text-xs font-semibold text-slate-600">{{ scannedCandidate.session?.etapeNom }} · {{ scannedCandidate.session?.date }}</p></div><span class="rounded-full px-2.5 py-1 text-xs font-bold" :class="scannedCandidate.statutPresence === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">{{ presenceLabel(scannedCandidate.statutPresence) }}</span></div><div class="mt-4 flex flex-wrap justify-end gap-2"><button class="btn-secondary" :disabled="scanSaving" @click="scannedCandidate = null">Scanner un autre</button><button class="scan-button" :disabled="scanSaving || scannedCandidate.statutPresence === 'PRESENT'" @click="validateScannedPresence"><Loader2 v-if="scanSaving" class="h-4 w-4 animate-spin" /><CheckCircle2 v-else class="h-4 w-4" />{{ scannedCandidate.statutPresence === 'PRESENT' ? 'Présence déjà validée' : 'Valider la présence' }}</button></div></div>
-        <p v-if="scanError" class="mt-4 flex gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700"><AlertCircle class="mt-0.5 h-4 w-4 shrink-0" />{{ scanError }}</p>
-      </section>
-    </div>
-  </DashboardLayout>
+</script> <template> <DashboardLayout> <template #header> <div class="flex items-center gap-3"> <div class="w-7 h-7 rounded-lg bg-[#E30046] flex items-center justify-center flex-shrink-0"> <ClipboardCheck class="w-3.5 h-3.5 text-white" /> </div> <div> <h2 class="text-lg font-extrabold text-[#01313E] leading-tight">Émargement</h2> </div> </div> </template> <!-- Banners --> <div v-if="demoMode" class="mb-5 flex items-center gap-3 rounded-2xl border border-[#01313E]/20 bg-[#01313E]/[.03] px-5 py-3.5 text-sm text-[#01313E] font-medium animate-fade-in"> Données de démonstration — les changements restent locaux. </div> <div v-if="error" class="mb-5 flex items-center gap-3 rounded-2xl border border-[#E30046]/30 bg-[#E30046]/[.04] px-5 py-3.5 text-sm text-[#E30046] font-medium animate-fade-in"> {{ error }} </div> <!-- ── SESSION SELECTOR ─────────────────────────── --> <section class="mb-6 rounded-3xl border border-[#01313E]/10 bg-white p-5 animate-fade-in"> <label class="form-label">Session à émarger</label> <select v-model="selectedSessionId" class="input-field max-w-2xl" @change="loadDetail"> <option value="">Sélectionnez une session</option> <option v-for="s in sessions" :key="s.id" :value="s.id">{{ sessionLabel(s) }}</option> </select> <p v-if="!sessions.length && !loading" class="mt-3 text-sm text-[#01313E]/50"> Aucune session avec des candidats convoqués. </p> </section> <!-- Loading --> <div v-if="loading && !detail" class="flex h-52 items-center justify-center"> <Loader2 class="h-8 w-8 animate-spin text-[#E30046]" /> </div> <template v-else-if="detail"> <!-- ── SESSION STATS BANNER ────────────────────── --> <section class="relative mb-6 overflow-hidden rounded-3xl bg-[#01313E] p-6 animate-fade-in"> <div class="absolute right-0 top-0 w-48 h-48 bg-[#E30046] rounded-full opacity-[.12] translate-x-1/3 -translate-y-1/3"></div> <div class="absolute inset-0 opacity-[.03]" style="background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:18px 18px;"></div> <div class="relative z-10 flex flex-wrap items-center justify-between gap-5"> <div> <p class="text-[10px] font-black uppercase tracking-[.2em] text-[#E30046] mb-1"> {{ detail.session.cohorteNom }} </p> <h3 class="text-xl font-extrabold text-white tracking-tight">{{ detail.session.etapeNom }}</h3> <p class="mt-1.5 text-sm text-white/50 flex items-center gap-1.5"> <CalendarDays class="h-4 w-4 flex-shrink-0" /> {{ formatDate(detail.session.date) }} · {{ formatTime(detail.session.heureDebut) }} – {{ formatTime(detail.session.heureFin) }} </p> </div> <div class="flex items-center gap-3"> <!-- Stats --> <div class="flex gap-3"> <div class="rounded-2xl border border-white/10 bg-white/[.07] px-4 py-3 text-center"> <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-0.5">Présents</p> <p class="text-2xl font-black text-white">{{ selectedSession?.presents || 0 }}</p> </div> <div class="rounded-2xl border border-[#E30046]/30 bg-[#E30046]/15 px-4 py-3 text-center"> <p class="text-[10px] font-bold uppercase tracking-widest text-[#E30046]/70 mb-0.5">Absents</p> <p class="text-2xl font-black text-[#E30046]">{{ selectedSession?.absents || 0 }}</p> </div> <div class="rounded-2xl border border-white/10 bg-white/[.07] px-4 py-3 text-center"> <p class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-0.5">À pointer</p> <p class="text-2xl font-black text-white">{{ selectedSession?.enAttente || 0 }}</p> </div> </div> <!-- Scan button --> <button @click="openScanner" class="flex items-center gap-2 rounded-2xl bg-[#E30046] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#C7003D] active:scale-95"> <ScanLine class="h-4 w-4" /> Scanner </button> </div> </div> </section> <!-- ── CANDIDATES TABLE ──────────────────────── --> <section class="card overflow-hidden animate-fade-in stagger-1"> <!-- Table header --> <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#01313E]/8 p-5"> <h3 class="font-extrabold text-[#01313E]">Candidats convoqués</h3> <label class="relative"> <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#01313E]/35 pointer-events-none" /> <input v-model="search" class="input-field h-9 pl-9 text-xs w-56" placeholder="Rechercher…" /> </label> </div> <!-- Rows --> <div class="max-h-[480px] overflow-y-auto divide-y divide-[#01313E]/6"> <div v-for="a in filteredAssignments" :key="a.id" class="flex flex-wrap items-center gap-3 px-5 py-3.5 transition hover:bg-[#01313E]/[.015]" > <!-- Avatar --> <div class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black" :class="a.statutPresence === 'PRESENT' ? 'bg-[#01313E] text-white' : a.statutPresence === 'ABSENT' ? 'bg-[#E30046] text-white' : 'bg-[#01313E]/10 text-[#01313E]'"> {{ getInitials(a.nom) }} </div> <!-- Info --> <div class="flex-1 min-w-[180px]"> <p class="text-sm font-bold text-[#01313E]">{{ a.nom }}</p> <p class="text-xs text-[#01313E]/50">{{ a.numero }} · {{ a.email }}</p> </div> <!-- Status badge --> <span class="badge" :class="a.statutPresence === 'PRESENT' ? 'badge-dark' : a.statutPresence === 'ABSENT' ? 'badge-red' : 'badge-subtle'"> {{ a.statutPresence === 'PRESENT' ? 'Présent' : a.statutPresence === 'ABSENT' ? 'Absent' : 'À pointer' }} </span> <!-- Actions --> <div class="flex gap-2 ml-auto"> <button class="flex items-center gap-1.5 rounded-xl border border-[#01313E]/20 bg-white px-3 py-1.5 text-xs font-bold text-[#01313E] transition hover:bg-[#01313E] hover:text-white hover:border-[#01313E] disabled:opacity-40 disabled:pointer-events-none" :disabled="savingId === a.id" @click="markPresence(a, 'PRESENT')"> <UserCheck class="h-3.5 w-3.5" /> Présent </button> <button class="flex items-center gap-1.5 rounded-xl border border-[#E30046]/30 bg-white px-3 py-1.5 text-xs font-bold text-[#E30046] transition hover:bg-[#E30046] hover:text-white hover:border-[#E30046] disabled:opacity-40 disabled:pointer-events-none" :disabled="savingId === a.id" @click="markPresence(a, 'ABSENT')"> <UserX class="h-3.5 w-3.5" /> Absent </button> </div> </div> <p v-if="!filteredAssignments.length" class="px-5 py-12 text-center text-sm text-[#01313E]/50"> Aucun résultat pour votre recherche. </p> </div> <!-- Close session footer --> <div class="flex justify-end border-t border-[#01313E]/8 bg-[#01313E]/[.015] px-5 py-4"> <button class="btn-danger px-5 py-2.5 text-sm" :disabled="closing" @click="closeSession"> <Loader2 v-if="closing" class="h-4 w-4 animate-spin" /> Clôturer l'émargement </button> </div> </section> </template> <!-- ════════════════════════════════════════════════ SCAN DIALOG ════════════════════════════════════════════════ --> <Transition enter-active-class="transition duration-200" enter-="opacity-0" enter-="opacity-100" leave-active-class="transition duration-150" leave-="opacity-100" leave-="opacity-0"> <div v-if="scanOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#01313E]/50 p-4" role="dialog" aria-modal="true" aria-labelledby="scan-title" @click.self="closeScanner"> <div class="w-full max-w-lg rounded-3xl bg-white border border-[#01313E]/10 overflow-hidden animate-fade-in"> <!-- Dialog header --> <div class="flex items-center justify-between border-b border-[#01313E]/8 px-6 py-4"> <div class="flex items-center gap-3"> <div class="w-8 h-8 rounded-xl bg-[#E30046] flex items-center justify-center flex-shrink-0"> <ScanLine class="h-4 w-4 text-white" /> </div> <div> <h3 id="scan-title" class="text-sm font-extrabold text-[#01313E]">Scanner une convocation</h3> <p class="text-xs text-[#01313E]/50">Scannez le QR code ou collez le lien.</p> </div> </div> <button @click="closeScanner" class="w-8 h-8 grid place-items-center rounded-lg text-[#01313E]/40 hover:bg-[#01313E]/6 hover:text-[#01313E] transition" aria-label="Fermer"> <X class="h-4 w-4" /> </button> </div> <div class="p-6 space-y-4"> <!-- Camera / Result --> <div v-if="!scannedCandidate" class="space-y-4"> <!-- Camera preview --> <div class="relative aspect-video overflow-hidden rounded-2xl bg-[#01313E]"> <video ref="video" muted playsinline class="h-full w-full object-cover"></video> <div v-if="!scannerActive" class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white/50 text-sm"> <Camera class="h-8 w-8 opacity-50" /> <span>Prêt à scanner votre QR code</span> </div> <!-- Corner guides --> <div class="absolute inset-0 pointer-events-none"> <div class="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#E30046] rounded-tl-lg"></div> <div class="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#E30046] rounded-tr-lg"></div> <div class="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#E30046] rounded-bl-lg"></div> <div class="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#E30046] rounded-br-lg"></div> </div> </div> <button class="btn-secondary w-full py-2.5 text-sm" :disabled="scannerActive" @click="startCamera"> <Camera class="h-4 w-4" /> {{ scannerActive ? 'Caméra active…' : 'Ouvrir la caméra' }} </button> <!-- Divider --> <div class="relative flex items-center"> <span class="h-px flex-1 bg-[#01313E]/8"></span> <span class="px-3 text-[11px] text-[#01313E]/40 font-semibold uppercase tracking-wider">ou</span> <span class="h-px flex-1 bg-[#01313E]/8"></span> </div> <!-- Manual input --> <form class="flex gap-2" @submit.prevent="readConvocation()"> <input v-model="scanValue" class="input-field flex-1 text-sm" autofocus placeholder="Coller le lien ou le code de convocation" /> <button class="btn-primary px-4 py-2.5 text-sm flex-shrink-0" :disabled="scanLoading || !scanValue.trim()"> <Loader2 v-if="scanLoading" class="h-4 w-4 animate-spin" /> <span v-else>Lire</span> </button> </form> </div> <!-- Scanned candidate card --> <div v-else class="rounded-2xl border border-[#01313E]/10 bg-[#01313E]/[.02] p-4 space-y-4"> <div class="flex items-start gap-3"> <div class="flex-shrink-0 w-11 h-11 rounded-2xl bg-[#E30046] flex items-center justify-center text-white font-black text-sm"> {{ getInitials(scannedCandidate.nom) }} </div> <div class="flex-1 min-w-0"> <p class="font-extrabold text-[#01313E]">{{ scannedCandidate.nom }}</p> <p class="text-xs text-[#01313E]/50 truncate">{{ scannedCandidate.numero }} · {{ scannedCandidate.email }}</p> <p class="mt-1.5 text-xs font-semibold text-[#01313E]/70"> {{ scannedCandidate.session?.etapeNom }} · {{ scannedCandidate.session?.date }} </p> </div> <span class="badge flex-shrink-0" :class="scannedCandidate.statutPresence === 'PRESENT' ? 'badge-dark' : 'badge-outline-dark'"> {{ presenceLabel(scannedCandidate.statutPresence) }} </span> </div> <div class="flex flex-wrap justify-end gap-2 pt-2"> <button class="btn-secondary text-xs px-4 py-2" :disabled="scanSaving" @click="scannedCandidate = null"> Scanner un autre </button> <button class="btn-primary text-xs px-4 py-2" :disabled="scanSaving || scannedCandidate.statutPresence === 'PRESENT'" @click="validateScannedPresence"> <Loader2 v-if="scanSaving" class="h-3.5 w-3.5 animate-spin" /> <CheckCircle2 v-else class="h-3.5 w-3.5" /> {{ scannedCandidate.statutPresence === 'PRESENT' ? 'Présence déjà validée' : 'Valider la présence' }} </button> </div> </div> <!-- Scan error --> <div v-if="scanError" class="flex items-start gap-2 rounded-xl border border-[#E30046]/30 bg-[#E30046]/[.04] px-4 py-3 text-sm text-[#E30046]"> <AlertCircle class="mt-0.5 h-4 w-4 flex-shrink-0" /> {{ scanError }} </div> </div> </div> </div> </Transition> </DashboardLayout>
 </template>
-
-<style scoped>
-.presence-btn { @apply inline-flex items-center rounded-lg border px-2.5 py-1.5 text-xs font-bold transition disabled:opacity-50; }.presence-btn-ok { @apply border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100; }.presence-btn-no { @apply border-red-200 bg-red-50 text-red-700 hover:bg-red-100; }
-.scan-button { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary-700 px-3 py-2 text-xs font-bold text-white transition hover:bg-primary-800 disabled:cursor-not-allowed disabled:opacity-50; }
-.scan-overlay { @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4; }.scan-dialog { @apply w-full max-w-lg rounded-2xl bg-white p-5; }.camera-preview { @apply relative flex aspect-video overflow-hidden rounded-xl bg-slate-900; }.camera-preview video { @apply h-full w-full object-cover; }.camera-placeholder { @apply absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm text-slate-300; }
-</style>
