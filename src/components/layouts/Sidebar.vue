@@ -702,7 +702,7 @@ const userRole = computed(() => {
            ===================================================== -->
 
       <nav
-        class="flex flex-1 flex-col gap-1 overflow-hidden"
+        class="flex flex-1 flex-col gap-1 overflow-y-auto custom-scrollbar pr-1"
         aria-label="Navigation principale"
       >
 
