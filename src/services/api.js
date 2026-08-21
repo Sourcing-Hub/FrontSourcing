@@ -1,5 +1,8 @@
 import axios from 'axios'
 
+/**
+ * Instance Axios pré-configurée avec injection automatique du Bearer Token.
+ */
 const api = axios.create({
   baseURL: 'http://127.0.0.1:8000/api/',
   headers: {

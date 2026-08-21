@@ -161,7 +161,7 @@ const submitApplication = async () => {
         <Loader2 class="w-10 h-10 animate-spin text-[#CE0033]" />
       </div>
 
-      <div v-else-if="submitSuccess" class="bg-white rounded-xl shadow-lg border-t-8 border-emerald-500 p-8 text-center animate-fade-in">
+      <div v-else-if="submitSuccess" class="bg-white rounded-xl border-t-8 border-emerald-500 p-8 text-center animate-fade-in">
         <CheckCircle class="w-16 h-16 text-emerald-500 mx-auto mb-6" />
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Candidature Soumise !</h2>
         <p class="text-sm text-gray-600 mb-6">
@@ -193,7 +193,7 @@ const submitApplication = async () => {
 
       <div v-else class="space-y-6 animate-fade-in">
         <!-- Infos campagne -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <div class="bg-white rounded-xl border border-gray-100 p-8">
           <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ campaignDetails?.nom }}</h2>
           <p class="text-sm text-gray-600 mb-4">{{ campaignDetails?.description }}</p>
           <div class="text-xs text-gray-500 flex justify-between pt-4 border-t border-gray-100">
@@ -215,7 +215,7 @@ const submitApplication = async () => {
           <div 
             v-for="champ in champs" 
             :key="champ.id"
-            class="bg-white rounded-xl shadow-sm border border-gray-100 p-8"
+            class="bg-white rounded-xl border border-gray-100 p-8"
           >
             <div class="mb-4">
               <label class="text-base font-semibold text-gray-900">
@@ -292,7 +292,7 @@ const submitApplication = async () => {
             <button
               type="submit"
               :disabled="store.loading"
-              class="flex justify-center items-center py-3 px-8 border border-transparent rounded-lg shadow-lg text-sm font-semibold text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none transition-colors disabled:opacity-50"
+              class="flex justify-center items-center py-3 px-8 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#CE0033] hover:bg-[#a8002a] focus:outline-none transition-colors disabled:opacity-50"
             >
               <Loader2 v-if="store.loading" class="w-4 h-4 mr-2 animate-spin" />
               Soumettre ma candidature

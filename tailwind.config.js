@@ -8,17 +8,24 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#CE0033',
-          50: '#FDECEE',
-          100: '#FBD9DD',
-          200: '#F6B3BC',
-          300: '#F08C9A',
-          400: '#EA6679',
-          500: '#E44057',
-          600: '#CE0033',
-          700: '#9C0027',
-          800: '#69001A',
-          900: '#37000E',
+           DEFAULT: '#E30046',
+           50: '#FFF1F4',
+           100: '#FFE0E8',
+           200: '#FFC6D5',
+           300: '#FF9DB5',
+           400: '#FF6490',
+           500: '#E30046',
+           600: '#C7003D',
+           700: '#A50033',
+           800: '#8A002A',
+           900: '#6E0022',
+         },
+        simplon: {
+          dark: '#01313E',
+          teal: '#01313E',
+          red: '#E30046',
+          'dark-hover': '#01222B',
+          white: '#FFFFFF',
         }
       },
       fontFamily: {

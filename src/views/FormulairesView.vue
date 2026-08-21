@@ -73,7 +73,7 @@ const formatDate = (dateStr) => {
         <!-- Carte "Nouveau formulaire" -->
         <button
           @click="createNewForm"
-          class="flex flex-col items-center justify-center w-48 h-36 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-primary-500 hover:shadow-md transition-all group"
+          class="flex flex-col items-center justify-center w-48 h-36 bg-white border border-gray-200 rounded-lg hover:border-primary-500 transition-all group"
         >
           <div class="w-12 h-12 flex items-center justify-center rounded-full bg-primary-50 text-primary-600 group-hover:bg-primary-100 mb-3">
             <Plus v-if="!store.loading" class="w-6 h-6" />
@@ -95,7 +95,7 @@ const formatDate = (dateStr) => {
         <div
           v-for="form in store.formulaires"
           :key="form.id"
-          class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col"
+          class="bg-white border border-gray-200 rounded-lg transition-all group overflow-hidden flex flex-col"
         >
           <!-- Aperçu / Image (simulé par un fond coloré pour ressembler à GForms) -->
           <div

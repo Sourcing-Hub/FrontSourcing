@@ -1,0 +1,52 @@
+// Données locales utilisées uniquement lorsque l'API d'émargement est indisponible.
+export const demoSessions = [
+  {
+    id: 'demo-session-1',
+    cohorteNom: 'Développeur Web - Promo 2026',
+    etapeNom: "Réunion d'information",
+    date: '2026-08-20',
+    heureDebut: '09:00:00',
+    heureFin: '12:00:00',
+    presents: 1,
+    absents: 1,
+    enAttente: 3,
+  },
+  {
+    id: 'demo-session-2',
+    cohorteNom: 'Data & IA - Promo 2026',
+    etapeNom: 'Entretien Tech & Motivation',
+    date: '2026-08-21',
+    heureDebut: '14:00:00',
+    heureFin: '17:00:00',
+    presents: 0,
+    absents: 0,
+    enAttente: 3,
+  },
+]
+
+export const demoDetails = {
+  'demo-session-1': {
+    session: demoSessions[0],
+    affectations: [
+      { id: 'demo-assignment-1', nom: 'Awa Diop', numero: 'CND-2026-001', email: 'awa.diop@example.com', statutPresence: 'PRESENT' },
+      { id: 'demo-assignment-2', nom: 'Moussa Ndiaye', numero: 'CND-2026-002', email: 'moussa.ndiaye@example.com', statutPresence: 'ABSENT' },
+      { id: 'demo-assignment-3', nom: 'Fatou Fall', numero: 'CND-2026-003', email: 'fatou.fall@example.com', statutPresence: 'EN_ATTENTE' },
+      { id: 'demo-assignment-4', nom: 'Ibrahima Sow', numero: 'CND-2026-004', email: 'ibrahima.sow@example.com', statutPresence: 'EN_ATTENTE' },
+      { id: 'demo-assignment-5', nom: 'Mariama Ba', numero: 'CND-2026-005', email: 'mariama.ba@example.com', statutPresence: 'EN_ATTENTE' },
+    ],
+  },
+  'demo-session-2': {
+    session: demoSessions[1],
+    affectations: [
+      { id: 'demo-assignment-6', nom: 'Cheikh Gueye', numero: 'CND-2026-006', email: 'cheikh.gueye@example.com', statutPresence: 'EN_ATTENTE' },
+      { id: 'demo-assignment-7', nom: 'Ndeye Mbaye', numero: 'CND-2026-007', email: 'ndeye.mbaye@example.com', statutPresence: 'EN_ATTENTE' },
+      { id: 'demo-assignment-8', nom: 'Saliou Cissé', numero: 'CND-2026-008', email: 'saliou.cisse@example.com', statutPresence: 'EN_ATTENTE' },
+    ],
+  },
+}
+
+export const refreshDemoSessionCounts = (session, affectations) => {
+  session.presents = affectations.filter((item) => item.statutPresence === 'PRESENT').length
+  session.absents = affectations.filter((item) => item.statutPresence === 'ABSENT').length
+  session.enAttente = affectations.filter((item) => item.statutPresence === 'EN_ATTENTE').length
+}

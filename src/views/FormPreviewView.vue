@@ -52,7 +52,7 @@ const champs = computed(() => store.currentFormulaire?.champs || [])
 
       <div v-else-if="formulaire" class="space-y-6">
         <!-- En-tête du formulaire -->
-        <div class="bg-white rounded-lg shadow-sm border-t-[8px] border-[#CE0033] p-8">
+        <div class="bg-white rounded-lg border-t-[8px] border-[#CE0033] p-8">
           <h1 class="text-3xl font-normal text-gray-900 mb-4">{{ formulaire.titre }}</h1>
           <p class="text-sm text-gray-600 whitespace-pre-wrap">{{ formulaire.description }}</p>
           
@@ -75,7 +75,7 @@ const champs = computed(() => store.currentFormulaire?.champs || [])
         <div 
           v-for="champ in champs" 
           :key="champ.id"
-          class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+          class="bg-white rounded-lg border border-gray-200 p-6"
         >
           <div class="mb-4">
             <label class="text-base font-medium text-gray-900 break-words">
@@ -144,7 +144,7 @@ const champs = computed(() => store.currentFormulaire?.champs || [])
         </div>
 
         <div class="flex justify-between items-center py-4">
-          <button type="button" :disabled="formulaire.campagne && !formulaire.campagne_est_ouverte" class="bg-[#CE0033] hover:bg-[#a8002a] text-white font-medium py-2 px-6 rounded-md transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="button" :disabled="formulaire.campagne && !formulaire.campagne_est_ouverte" class="bg-[#CE0033] hover:bg-[#a8002a] text-white font-medium py-2 px-6 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Envoyer
           </button>
           <span class="text-xs text-gray-400">Ceci est un aperçu.</span>

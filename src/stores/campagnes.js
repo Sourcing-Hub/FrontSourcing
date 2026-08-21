@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { parseBackendError } from '../utils/errorHandler'
 
+/**
+ * Store Pinia pour le pilotage des campagnes, formations et cohortes.
+ */
 export const useCampagnesStore = defineStore('campagnes', {
   state: () => ({
     campagnes: [],

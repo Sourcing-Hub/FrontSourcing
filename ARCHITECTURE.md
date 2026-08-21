@@ -1,70 +1,176 @@
-# Architecture du Frontend SourcingHub
+# Architecture Technique Frontend — SourcingHub
 
-Ce document décrit l'architecture, les conventions et la stack technique du portail web SourcingHub.
+Ce document décrit l'architecture logicielle, les choix de conception, le flux de données et l'organisation des composants du projet frontend **SourcingHub** (`FrontSourcing`).
 
-## 1. Stack Technique Principale
-- **Framework Réactivité** : Vue.js 3 (Composition API avec la syntaxe `<script setup>`)
-- **Outil de Build** : Vite (Rapide et optimisé pour Vue 3)
-- **Gestionnaire d'état** : Pinia (Pour l'état global)
-- **Routage** : Vue Router
-- **Style et Design System** : Tailwind CSS (v3)
-- **Requêtes HTTP** : Axios
-- **Icônes** : Lucide Vue Next
+---
 
-## 2. Design System & UX
-- **Couleur Primaire** : `#CE0033` (Le rouge identitaire SourcingHub, configuré pour remplacer le violet dans l'ensemble des écrans, boutons et composants du Form Builder).
-- **Composants Premium** : Utilisation du style *Glassmorphism* (fonds semi-transparents, flous d'arrière-plan avec `backdrop-blur`), ombres douces et coins arrondis (`rounded-xl` et `rounded-2xl`).
-- **Animations** : Transitions fluides, animations de *Fade-in* et *Slide-up* pour un ressenti dynamique et réactif.
+## 1. Vue d'Ensemble de l'Architecture
 
-## 3. Structure du Projet
+Le frontend SourcingHub est une application monopage (Single Page Application — SPA) construite avec **Vue 3**, **Vite**, **Pinia** et **Tailwind CSS**. Elle communique de manière asynchrone avec le backend Django REST Framework via un client HTTP Axios centralisé.
 
-```text
-src/
-├── assets/          # Fichiers statiques (CSS globaux comme base.css et main.css)
-├── components/      # Composants réutilisables du projet
-│   ├── layouts/     # Mises en pages globales (DashboardLayout.vue, Sidebar.vue)
-│   ├── formulaires/ # Composants du générateur (FieldCard.vue pour l'édition de questions)
-│   └── ui/          # (Futur) Boutons, modales et inputs standards de base
-├── router/          # Configuration des routes (index.js) et Gardes de navigation
-├── services/        # Logique de communication avec l'API
-│   └── api.js       # Instance Axios configurée avec les intercepteurs JWT
-├── stores/          # Gestion de l'état global (Pinia)
-│   ├── auth.js          # Authentification, JWT, utilisateur connecté et profil
-│   ├── campagnes.js     # Formations, cohortes et campagnes de recrutement
-│   ├── formulaires.js   # État complet de l'éditeur de formulaire
-│   └── utilisateurs.js  # Liste et invitations du personnel
-└── views/           # Pages complètes rattachées au routeur
-    ├── LoginView.vue           # Écran de connexion (avec fond visuel premium)
-    ├── DashboardView.vue       # Tableau de bord principal (vue d'ensemble)
-    ├── CampagnesView.vue       # Gestion des campagnes de recrutement
-    ├── FormationsView.vue      # Gestion des formations et cohortes associées
-    ├── FormulairesView.vue     # Liste des formulaires
-    ├── FormBuilderView.vue     # Éditeur dynamique de formulaire (type Google Form)
-    ├── FormPreviewView.vue     # Aperçu en temps réel d'un formulaire
-    ├── UtilisateursView.vue    # Administration des membres de l'équipe (par l'Admin)
-    ├── ActivationView.vue      # Écran d'activation de compte et mot de passe
-    └── ProfilView.vue          # Page de gestion et de complétion de profil
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Navigateur Web (Client)                         │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                   ┌───────────────▼───────────────┐
+                   │    Vue Router 4 (Routage)     │
+                   │  - Gardes de navigation JWT   │
+                   │  - Check profilComplet       │
+                   └───────────────┬───────────────┘
+                                   │
+       ┌───────────────────────────┼───────────────────────────┐
+       │                           │                           │
+┌──────▼──────┐             ┌──────▼──────┐             ┌──────▼──────┐
+│  Composants │             │   Stores    │             │  Client API │
+│  & Vues Vue │◀───────────▶│    Pinia    │◀───────────▶│  (Axios)    │
+└─────────────┘             └─────────────┘             └──────┬──────┘
+                                                               │
+                                                 HTTP / REST (JWT)
+                                                               │
+                                                        ┌──────▼──────┐
+                                                        │ Backend DRF │
+                                                        └─────────────┘
 ```
 
-## 4. Communication Backend & Authentification
-L'application communique avec le backend Django via `http://localhost:8000/api/`.
+---
 
-### Le Flux d'Authentification :
-1. L'utilisateur se connecte via `auth.js`.
-2. Le token JWT retourné par le backend est stocké dans le `localStorage`.
-3. Le fichier `services/api.js` utilise un **intercepteur Axios** pour injecter le header `Authorization: Bearer <token>` sur chaque requête.
-4. Si le token expire (Erreur 401), l'utilisateur est automatiquement déconnecté et redirigé vers le login.
+## 2. Gestion de l'État Global (Pinia Stores)
 
-## 5. Flux d'Activation de Compte & Profil
-Pour assurer que chaque compte dispose d'informations à jour, un flux strict est mis en œuvre :
-1. **Invitation** : L'administrateur crée un compte d'équipe depuis `UtilisateursView`. Un email contenant un token d'activation unique (valide 48h) est envoyé par le backend.
-2. **Définition du mot de passe** : L'utilisateur clique sur le lien et est dirigé vers `/auth/activer/:token` (`ActivationView`) pour choisir son mot de passe.
-3. **Profil obligatoire** : Lors de sa première connexion, le garde de navigation (`router.beforeEach`) détecte que `profilComplet` est à `false` et le redirige de force vers la page `/profil` (`ProfilView.vue`). L'accès au reste de la plateforme lui est bloqué tant qu'il n'a pas renseigné son prénom, nom, et numéro de téléphone.
+L'état global de l'application est découpé de manière modulaire en 6 stores Pinia distincts situés dans `src/stores/` :
 
-## 6. Architecture Modulaire : La Sidebar
-Pour éviter d'alourdir le layout principal (`DashboardLayout.vue`), la barre de navigation latérale a été découpée dans un composant indépendant `Sidebar.vue`. Elle centralise :
-- L'affichage dynamique des infos de l'utilisateur connecté (ses initiales, son prénom/nom et son email, ou à défaut son rôle).
-- La liste des modules de navigation généraux.
-- La zone d'administration sécurisée (visible uniquement pour le rôle `Administrateur`).
-- Le lien vers la page de profil et l'action de déconnexion.
+### 1. `auth.js` — Authentification & Session
+- **State** : `user`, `token`, `error`, `loading`.
+- **Getters** :
+  - `isAuthenticated` : Vérifie la présence du token JWT et de l'utilisateur.
+  - `isAdmin` : `user.role === 'Administrateur'`.
+  - `isPedagogie` : `user.role === 'Équipe Pédagogique'`.
+  - `isGestion` : `user.role === 'Équipe Gestion de Projet'`.
+  - `isCandidat` : `user.role === 'Candidat'`.
+- **Actions** : `login()`, `logout()`, `activateAccount()`, `fetchProfile()`, `updateProfile()`.
 
+### 2. `utilisateurs.js` — Administration du Personnel
+- **State** : `utilisateurs`, `loading`, `error`.
+- **Getters** :
+  - `adminUsers` : Filtrage pour l'onglet Administrateurs.
+  - `pedagogieUsers` : Filtrage pour l'Équipe Pédagogique.
+  - `gestionUsers` : Filtrage pour l'Équipe Gestion de Projet.
+- **Actions** : `fetchUtilisateurs()`, `createPersonnel()`, `toggleBlockUser()`, `deleteUser()`.
+
+### 3. `campagnes.js` — Campagnes, Formations & Cohortes
+- **State** : `campagnes`, `formations`, `cohortes`, `loading`, `error`.
+- **Getters** : `getCampagneById`, `activeCampagnes`.
+- **Actions** : `fetchCampagnes()`, `fetchFormations()`, `fetchCohortes()`, `createCampagne()`, `updateCampagneStatus()`, `deleteCampagne()`.
+
+### 4. `candidatures.js` — Dossiers de Candidature
+- **State** : `candidatures`, `candidatureActuelle`, `loading`, `error`.
+- **Actions** : `fetchCandidatures()`, `fetchCandidatureById()`, `soumettreCandidature()`, `changerStatut()`.
+
+### 5. `formulaires.js` — Formulaires Dynamiques
+- **State** : `formulaires`, `formulaireActuel`, `loading`, `error`.
+- **Actions** : `fetchFormulaires()`, `fetchFormulaireById()`, `saveFormulaire()`, `publierFormulaire()`, `ajouterChamp()`, `supprimerChamp()`.
+
+### 6. `modal.js` — Service de Modales Globales
+- **State** : `isOpen`, `title`, `message`, `type`, `resolvePromise`.
+- **Actions** : `showAlert()`, `showConfirm()`, `closeModal()`.
+
+---
+
+## 3. Système de Routage & Sécurité (`src/router/index.js`)
+
+Le routeur gère les accès selon des méta-données de sécurité (`meta: { requiresAuth: true }`) et une garde globale (`beforeEach`) :
+
+```javascript
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    // Redirection vers le login si non authentifié
+    next({ name: 'login' })
+  } else if (authStore.isAuthenticated && to.meta.requiresAuth) {
+    // Redirection de sécurité : profil incomplet => /profil obligatoire
+    if (!authStore.user?.profilComplet && to.name !== 'profil') {
+      next({ name: 'profil' })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+```
+
+---
+
+## 4. Service HTTP & Intercepteurs Axios (`src/services/api.js`)
+
+Toutes les requêtes vers l'API backend passent par l'instance Axios centralisée dans `src/services/api.js` :
+
+- **Injection automatique du token Bearer** :
+  ```javascript
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('sourcing_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  })
+  ```
+- **Gestion globale de l'expiration du Token (401 Unauthorized)** :
+  En cas de retour `401`, la session locale est nettoyée et l'utilisateur est redirigé vers la page de connexion.
+
+---
+
+## 5. Modèle de Formulaires Dynamiques
+
+L'application intègre un moteur complet d'édition et de rendu de formulaires dynamiques :
+
+```text
+  [ FormBuilderView.vue ] (Création / Édition)
+            │
+            ▼
+┌─────────────────────────┐
+│ ChampFormulaire Model   │
+├─────────────────────────┤
+│ - libelle (string)      │
+│ - type (TEXTE, EMAIL...)│
+│ - ordre (integer)       │
+│ - obligatoire (bool)    │
+│ - regleValidation (json)│
+└───────────┬─────────────┘
+            │
+            ▼
+  [ PostulerView.vue ] (Rendu dynamique & Soumission)
+```
+
+### Types de champs pris en charge :
+- `TEXTE` : Champ texte court
+- `ZONE_TEXTE` : Zone de texte multiligne
+- `EMAIL` : Validation du format email
+- `TELEPHONE` : Validation du numéro de téléphone
+- `DATE` : Selecteur de date (format ISO `YYYY-MM-DD`)
+- `NOMBRE` : Validation des bornes min/max
+- `LISTE_DEROULANTE` & `CHOIX_MULTIPLES` : Options sélectionnables
+- `CASE_A_COCHER` : Cases à cocher uniques/multiples
+- `FICHIER` : Téléversement de pièces jointes avec contrôle de taille et d'extensions MIME
+
+---
+
+## 6. Charte Graphique & UI Design System
+
+L'interface utilisateur suit les standards de design moderne :
+- **Palette de couleurs principale** :
+  - Primaire : `#00313C` (Bleu nuit profond pour les en-têtes et le menu latéral)
+  - Accent / Marque : `#CE0033` (Rouge vibrant pour les boutons d'action principale et éléments mis en évidence)
+- **Typographie** : Polices Google Fonts `'Inter', sans-serif`.
+- **Iconographie** : Bibliothèque unifiée [Lucide Icons](https://lucide.dev/).
+- **Micro-animations** : Transitions CSS douces au survol (`transition-colors duration-200`) et retours visuels interactifs (`spinners` pour les chargements).
+
+---
+
+## 7. Bonnes Pratiques de Développement
+
+1. **Composition API** : Tous les composants Vue doivent utiliser la syntaxe `<script setup>`.
+2. **Gestion d'erreur unifiée** : Utiliser `parseBackendError(err)` depuis `src/utils/errorHandler.js` pour traiter les retours d'API.
+3. **Sécurisation des modales** : Utiliser `modalStore.showConfirm()` pour valider toute action destructive (suppression, blocage).
+4. **Pas d'appels direct au DOM** : Utiliser la réactivité Vue (`ref`, `computed`, `reactive`).
