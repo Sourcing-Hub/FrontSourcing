@@ -1,12 +1,14 @@
 <script setup>
 /**
- * Composant Racine (Root Component) englobant la vue active RouterView et la fenêtre modale globale.
+ * Composant Racine (Root Component) englobant la vue active RouterView,
+ * la fenêtre modale globale et le widget d'assistance IA SourcingChat.
  */
 import { RouterView } from 'vue-router'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import GlobalModal from './components/common/GlobalModal.vue'
 import DashboardLayout from './components/layouts/DashboardLayout.vue'
+import SourcingChatWidget from './components/chat/SourcingChatWidget.vue'
 
 const route = useRoute()
 
@@ -21,7 +23,7 @@ const isEvaluatorRoute = computed(() => {
 <template>
   <DashboardLayout v-if="isEvaluatorRoute">
     <template #header>
-      <h2 class="text-xl font-semibold text-gray-900">
+      <h2 class="text-xl font-semibold text-[#01313E]">
         Espace évaluateur
       </h2>
     </template>
@@ -32,10 +34,9 @@ const isEvaluatorRoute = computed(() => {
   <RouterView v-else />
 
   <GlobalModal />
+  <SourcingChatWidget />
 </template>
 
 <style>
 /* Les styles de base Tailwind sont dans main.css */
 </style>
-
-<!-- App optimized -->
