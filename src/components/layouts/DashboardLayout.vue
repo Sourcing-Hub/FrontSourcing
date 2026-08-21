@@ -19,6 +19,9 @@ import Sidebar from './Sidebar.vue'
           <slot name="header">
             <h2 class="text-lg font-semibold text-gray-900 truncate">Bienvenue</h2>
           </slot>
+          <div v-if="$slots['header-actions']" class="flex items-center gap-2 flex-shrink-0">
+            <slot name="header-actions"></slot>
+          </div>
         </div>
       </header>
 

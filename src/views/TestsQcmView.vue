@@ -274,22 +274,24 @@ const viewPassages = async (test) => {
 <template>
   <DashboardLayout>
     <template #header>
-      <div class="flex items-center gap-3">
-        <div class="w-7 h-7 rounded-lg bg-[#E30046] flex items-center justify-center flex-shrink-0">
-          <FileCheck2 class="w-4 h-4 text-white" />
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-[#E30046] flex items-center justify-center flex-shrink-0">
+            <FileCheck2 class="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h2 class="text-lg font-extrabold text-[#01313E] leading-tight">Tests QCM</h2>
+          </div>
         </div>
-        <div>
-          <h2 class="text-lg font-extrabold text-[#01313E] leading-tight">Tests QCM</h2>
+        <div class="flex items-center gap-2">
+          <button @click="fetchTests" class="btn-ghost p-2 rounded-xl" title="Rafraîchir">
+            <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
+          </button>
+          <button @click="openCreateModal" class="btn-primary px-4 py-2 text-xs gap-1.5 shadow-sm">
+            <Plus class="w-4 h-4" /> Créer un test QCM
+          </button>
         </div>
       </div>
-    </template>
-    <template #header-actions>
-      <button @click="fetchTests" class="btn-ghost p-2 rounded-xl" title="Rafraîchir">
-        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
-      </button>
-      <button @click="openCreateModal" class="btn-primary px-4 py-2 text-xs gap-1.5">
-        <Plus class="w-4 h-4" /> Nouveau QCM
-      </button>
     </template>
 
     <!-- ── PAGE BANNER ──────────────────────────────── -->
@@ -313,6 +315,31 @@ const viewPassages = async (test) => {
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ── FILTRES & ACTIONS ────────────────────────── -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div class="flex items-center gap-2">
+        <label class="text-xs font-bold text-[#01313E]/70">Filtrer par promotion :</label>
+        <select
+          v-model="selectedCohorte"
+          @change="fetchTests"
+          class="text-xs rounded-xl border border-gray-200 bg-white px-3 py-2 text-[#01313E] focus:outline-none focus:ring-2 focus:ring-[#01313E]/20"
+        >
+          <option value="">Toutes les promotions</option>
+          <option
+            v-for="opt in optionsCampagnesCohortes"
+            :key="opt.cohorteId"
+            :value="opt.cohorteId"
+          >
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <button @click="openCreateModal" class="btn-primary px-4 py-2 text-xs gap-1.5 shadow-sm">
+        <Plus class="w-4 h-4" /> Créer un test QCM
+      </button>
     </div>
 
     <!-- ── LOADING ──────────────────────────────────── -->
