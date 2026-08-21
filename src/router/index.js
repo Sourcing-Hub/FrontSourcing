@@ -121,6 +121,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/accueil',
+      name: 'accueil',
+      component: () => import('../views/PublicCampagnesView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
       path: '/postuler',
       name: 'postuler-campagnes',
       component: () => import('../views/PublicCampagnesView.vue'),
@@ -148,6 +154,18 @@ const router = createRouter({
       path: '/scan-candidat/:candidateId',
       name: 'scan-candidat',
       component: () => import('../views/ScanCandidatView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tests-qcm',
+      name: 'tests-qcm',
+      component: () => import('../views/TestsQcmView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/passer-test/:participationId',
+      name: 'passer-test',
+      component: () => import('../views/PasserTestView.vue'),
       meta: { requiresAuth: true },
     },
 
@@ -212,6 +230,9 @@ router.beforeEach((to) => {
 
   // Utilisateur non authentifié
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    if (to.name === 'dashboard') {
+      return { name: 'postuler-campagnes' }
+    }
     return { name: 'login' }
   }
 
