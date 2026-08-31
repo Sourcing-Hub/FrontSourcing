@@ -213,6 +213,13 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
 
+    {
+      path: '/mes-tests',
+      name: 'mes-tests',
+      component: () => import('../views/CandidateTestsView.vue'),
+      meta: { requiresAuth: true, candidateOnly: true },
+    },
+
     // ============================================================
     // SCAN QR CODE ÉMARGEMENT
     // ============================================================
@@ -259,6 +266,10 @@ router.beforeEach((to) => {
     isEvaluatorRoute &&
     authStore.user?.role !== 'Evaluateur'
   ) {
+    return { name: 'dashboard' }
+  }
+
+  if (to.meta.candidateOnly && authStore.user?.role !== 'Candidat') {
     return { name: 'dashboard' }
   }
 

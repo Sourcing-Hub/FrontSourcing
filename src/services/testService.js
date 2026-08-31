@@ -79,5 +79,13 @@ export default {
   // Action personnalisée pour publier
   publierTest(id, data) {
     return api.post(`tests/tests/${id}/publier/`, data)
+  },
+
+  obtenirCandidatsPresents(id) {
+    return api.get(`tests/tests/${id}/candidats-presents/`)
+  },
+
+  obtenirMesTests() {
+    return api.get('tests/tests/mes-tests/')
   }
 }

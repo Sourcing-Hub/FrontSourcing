@@ -69,6 +69,11 @@ const navigation = computed(() => {
         icon: 'clipboard',
         href: '/candidatures',
       },
+      {
+        label: 'Mes tests',
+        icon: 'file',
+        href: '/mes-tests',
+      },
     ]
   }
 
