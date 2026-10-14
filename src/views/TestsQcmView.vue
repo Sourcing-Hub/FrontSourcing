@@ -18,17 +18,20 @@ import {
   RefreshCw,
   BarChart2,
   UserCheck,
-  X
+  X,
+  Loader2
 } from 'lucide-vue-next'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
 import api from '../services/api'
 import { useModalStore } from '../stores/modal'
 import { useCampagnesStore } from '../stores/campagnes'
+import { parseBackendError } from '../utils/errorHandler'
 
 const modalStore = useModalStore()
 const campagnesStore = useCampagnesStore()
 
 const loading = ref(false)
+const saving = ref(false)
 const tests = ref([])
 const selectedCohorte = ref('')
 const showModalEdit = ref(false)
@@ -183,52 +186,76 @@ const selectCorrectOption = (qIdx, oIdx) => {
 }
 
 const saveTest = async () => {
-  if (!form.titre || !form.etape) {
-    modalStore.error('Veuillez remplir le titre et sélectionner l\'étape.')
+  if (!form.titre || !form.titre.trim()) {
+    await modalStore.error('Veuillez renseigner le titre du test.')
+    return
+  }
+  if (!form.etape) {
+    await modalStore.error('Veuillez sélectionner la campagne / cohorte (étape de test).')
+    return
+  }
+  if (!form.questions || form.questions.length === 0) {
+    await modalStore.error('Le test doit comporter au moins une question.')
     return
   }
   for (let i = 0; i < form.questions.length; i++) {
     const q = form.questions[i]
-    if (!q.intitule.trim()) {
-      modalStore.error(`L'intitulé de la question ${i + 1} est vide.`)
+    if (!q.intitule || !q.intitule.trim()) {
+      await modalStore.error(`L'intitulé de la question ${i + 1} est vide.`)
       return
     }
+    if (!q.options || q.options.length < 2) {
+      await modalStore.error(`La question ${i + 1} doit comporter au moins 2 propositions de réponse.`)
+      return
+    }
+    for (let j = 0; j < q.options.length; j++) {
+      if (!q.options[j].texte || !q.options[j].texte.trim()) {
+        await modalStore.error(`La proposition ${j + 1} de la question ${i + 1} ne peut pas être vide.`)
+        return
+      }
+    }
     if (!q.options.some((o) => o.estCorrecte)) {
-      modalStore.error(`La question ${i + 1} doit avoir au moins une bonne réponse.`)
+      await modalStore.error(`La question ${i + 1} doit comporter au moins une bonne réponse cochée.`)
       return
     }
   }
+
+  saving.value = true
   try {
     const payload = {
-      titre: form.titre,
-      description: form.description,
-      dureeMinutes: parseInt(form.dureeMinutes),
-      baremeTotal: parseFloat(form.baremeTotal),
-      notePassage: parseFloat(form.notePassage),
+      titre: form.titre.trim(),
+      description: form.description ? form.description.trim() : '',
+      dureeMinutes: parseInt(form.dureeMinutes) || 30,
+      baremeTotal: parseFloat(form.baremeTotal) || 20,
+      notePassage: parseFloat(form.notePassage) || 0,
       etape: form.etape,
-      questions: form.questions
+      questions: form.questions.map((q, qIdx) => ({
+        intitule: q.intitule.trim(),
+        explication: q.explication ? q.explication.trim() : '',
+        typeQuestion: q.typeQuestion || 'CHOIX_UNIQUE',
+        points: parseFloat(q.points) || 1,
+        ordre: qIdx + 1,
+        options: q.options.map((opt, oIdx) => ({
+          texte: opt.texte.trim(),
+          estCorrecte: Boolean(opt.estCorrecte),
+          ordre: oIdx + 1
+        }))
+      }))
     }
     if (form.id) {
       await api.put(`evaluations/tests/${form.id}/`, payload)
-      modalStore.success('Test QCM mis à jour.')
+      await modalStore.success('Test QCM mis à jour avec succès.')
     } else {
       await api.post('evaluations/tests/', payload)
-      modalStore.success('Test QCM créé.')
+      await modalStore.success('Test QCM créé avec succès.')
     }
     showModalEdit.value = false
     await fetchTests()
   } catch (err) {
-    let msg = 'Erreur lors de l\'enregistrement.'
-    if (err.response?.data) {
-      if (typeof err.response.data === 'string') msg = err.response.data
-      else if (err.response.data.detail) msg = err.response.data.detail
-      else {
-        msg = Object.entries(err.response.data)
-          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(',') : v}`)
-          .join('\n')
-      }
-    }
-    modalStore.error(msg)
+    const msg = parseBackendError(err)
+    await modalStore.error(msg)
+  } finally {
+    saving.value = false
   }
 }
 
@@ -537,11 +564,12 @@ const viewPassages = async (test) => {
           </div>
           <!-- Modal footer -->
           <div class="flex items-center justify-end gap-3 px-7 py-5 border-t border-[#01313E]/8 flex-shrink-0">
-            <button @click="showModalEdit = false" class="btn-secondary px-5 py-2.5 text-sm">
+            <button @click="showModalEdit = false" class="btn-secondary px-5 py-2.5 text-sm" :disabled="saving">
               Annuler
             </button>
-            <button @click="saveTest" class="btn-primary px-5 py-2.5 text-sm">
-              {{ form.id ? 'Enregistrer les modifications' : 'Créer le QCM' }}
+            <button @click="saveTest" class="btn-primary px-5 py-2.5 text-sm inline-flex items-center gap-2" :disabled="saving">
+              <Loader2 v-if="saving" class="w-4 h-4 animate-spin" />
+              <span>{{ form.id ? (saving ? 'Enregistrement…' : 'Enregistrer les modifications') : (saving ? 'Création en cours…' : 'Créer le QCM') }}</span>
             </button>
           </div>
         </div>
