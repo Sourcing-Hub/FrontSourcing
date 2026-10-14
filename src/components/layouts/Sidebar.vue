@@ -53,6 +53,11 @@ function goHome() {
     return
   }
 
+  if (normalizedRole === 'candidat') {
+    router.push('/candidatures')
+    return
+  }
+
   router.push('/dashboard')
 }
 
@@ -71,7 +76,7 @@ const navigation = computed(() => {
      CANDIDAT
      ───────────────────────────────────────────────────────── */
 
-  if (normalizedRole === 'Candidat') {
+  if (normalizedRole === 'candidat') {
     return [
       {
         label: 'Mes candidatures',
@@ -116,6 +121,16 @@ const navigation = computed(() => {
         label: 'Tests QCM',
         icon: 'testsQcm',
         href: '/tests-qcm',
+      },
+      {
+        label: 'Conduire mes entretiens',
+        icon: 'users',
+        href: '/evaluator/candidates',
+      },
+      {
+        label: 'Candidats en entretien',
+        icon: 'clipboard',
+        href: '/entretiens/candidats',
       },
       {
         label: 'planification',
@@ -177,8 +192,13 @@ const navigation = computed(() => {
         href: '/tests-qcm',
       },
       {
-        label: 'Candidats en entretien',
+        label: 'Conduire mes entretiens',
         icon: 'users',
+        href: '/evaluator/candidates',
+      },
+      {
+        label: 'Candidats en entretien',
+        icon: 'clipboard',
         href: '/entretiens/candidats',
       },
       {

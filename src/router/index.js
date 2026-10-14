@@ -5,7 +5,6 @@ import LoginView from '../views/LoginView.vue'
 import MyCandidatesView from '../views/evaluator/MyCandidatesView.vue'
 import CandidateDetailView from '../views/evaluator/CandidateDetailView.vue'
 import ConductInterviewView from '../views/evaluator/ConductInterviewView.vue'
-import EvaluationView from '../views/evaluator/EvaluationView.vue'
 import EvaluationValidationView from '../views/evaluator/EvaluationValidationView.vue'
 
 const router = createRouter({
@@ -255,7 +254,7 @@ router.beforeEach((to) => {
   if (
     authStore.isAuthenticated &&
     isEvaluatorRoute &&
-    normalizedRole !== 'evaluateur'
+    !['evaluateur', 'equipe pedagogique', 'administrateur'].includes(normalizedRole)
   ) {
     return { name: 'dashboard' }
   }
