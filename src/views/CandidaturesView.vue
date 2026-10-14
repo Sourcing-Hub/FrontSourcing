@@ -460,10 +460,18 @@ const handleSearch = () => {
               <h4 class="text-base font-bold text-gray-900 group-hover:text-[#CE0033] transition-colors mb-1">
                 {{ cand.campagne_nom }}
               </h4>
-              <p class="text-xs text-gray-500 mb-4 flex items-center gap-1.5">
+              <p class="text-xs text-gray-500 mb-2 flex items-center gap-1.5">
                 <GraduationCap class="w-4 h-4 text-gray-400" />
-                <span>Formation : <strong class="text-gray-700 font-medium">{{ cand.formation_nom }}</strong></span>
+                <span>Formation : <strong class="text-gray-700 font-medium">{{ cand.formation_nom }}</strong> ({{ cand.cohorte_nom }})</span>
               </p>
+
+              <!-- Étape actuelle -->
+              <div v-if="cand.etape_actuelle" class="mb-4">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700">
+                  <Layers class="w-3.5 h-3.5 text-slate-500" />
+                  <span>{{ cand.etape_actuelle.label }}</span>
+                </span>
+              </div>
 
               <div class="flex items-center justify-between pt-4 border-t border-gray-100 text-xs text-gray-500">
                 <span class="flex items-center gap-1">
@@ -474,7 +482,7 @@ const handleSearch = () => {
                   @click="router.push(`/candidatures/${cand.id}`)"
                   class="flex items-center font-bold text-[#CE0033] hover:text-[#a8002a] transition-colors gap-1"
                 >
-                  Consulter mon dossier
+                  Consulter mon dossier &amp; épreuves
                   <ArrowUpRight class="w-4 h-4" />
                 </button>
               </div>

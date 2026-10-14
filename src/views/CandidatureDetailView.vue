@@ -7,7 +7,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useCandidaturesStore } from '../stores/candidatures'
 import { useAuthStore } from '../stores/auth'
 import DashboardLayout from '../components/layouts/DashboardLayout.vue'
-import { ArrowLeft, Loader2, Calendar, FileText, Download, CheckCircle, Clock } from 'lucide-vue-next'
+import { ArrowLeft, Loader2, Calendar, FileText, Download, CheckCircle, Clock, Award, PlayCircle, CheckCircle2, XCircle, ArrowRight } from 'lucide-vue-next'
 import api from '../services/api'
 
 const route = useRoute()
@@ -22,7 +22,6 @@ onMounted(async () => {
 })
 
 const getDownloadUrl = (filePath) => {
-  // If the file path is a full url, return it. Otherwise prefix with backend URL
   if (filePath.startsWith('http')) return filePath
   const baseUrl = api.defaults.baseURL.replace('/api/', '')
   return `${baseUrl}${filePath}`
@@ -47,9 +46,77 @@ const getDownloadUrl = (filePath) => {
     </div>
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Section Gauche : Détails & Statut -->
+      <!-- Section Gauche : Détails, Parcours & Réponses -->
       <div class="lg:col-span-2 space-y-6">
         
+        <!-- Parcours de sélection & Épreuves (QCM, Entretiens...) -->
+        <div v-if="store.currentCandidature.participations?.length" class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 space-y-5 shadow-sm">
+          <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+            <h3 class="text-lg font-bold text-gray-900">Parcours de Sélection</h3>
+            <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+              {{ store.currentCandidature.participations.length }} étape(s)
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div 
+              v-for="part in store.currentCandidature.participations" 
+              :key="part.id"
+              class="rounded-xl border p-4 transition-all"
+              :class="{
+                'border-emerald-200 bg-emerald-50/40': part.statut === 'REUSSIE',
+                'border-blue-200 bg-blue-50/40': part.statut === 'EN_COURS',
+                'border-amber-200 bg-amber-50/40': part.statut === 'EN_ATTENTE',
+                'border-red-200 bg-red-50/40': ['ECHOUEE', 'ABSENT', 'ANNULEE'].includes(part.statut)
+              }"
+            >
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                  <div 
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                    :class="{
+                      'bg-emerald-600 text-white': part.statut === 'REUSSIE',
+                      'bg-blue-600 text-white': part.statut === 'EN_COURS',
+                      'bg-amber-500 text-white': part.statut === 'EN_ATTENTE',
+                      'bg-red-500 text-white': ['ECHOUEE', 'ABSENT', 'ANNULEE'].includes(part.statut)
+                    }"
+                  >
+                    {{ part.etape_ordre }}
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-gray-900">{{ part.etape_nom }}</h4>
+                    <p class="text-xs text-gray-500">{{ part.statut_display }}</p>
+                  </div>
+                </div>
+
+                <!-- Action ou Résultat selon l'étape -->
+                <div>
+                  <!-- Si c'est l'étape de Test QCM et qu'il a déjà été passé -->
+                  <div v-if="part.passage_score !== null" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-2xs text-xs font-bold text-gray-800">
+                    <Award class="w-4 h-4 text-emerald-600" />
+                    <span>Note QCM : <strong class="text-emerald-700">{{ part.passage_score }}</strong> / {{ part.test_bareme || 20 }} pts</span>
+                  </div>
+
+                  <!-- Si c'est l'étape de Test QCM et qu'il est disponible pour être passé -->
+                  <button 
+                    v-else-if="(part.test_disponible && (part.statut === 'EN_ATTENTE' || part.statut === 'EN_COURS'))"
+                    @click="router.push(`/passer-test/${part.id}`)"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                  >
+                    <PlayCircle class="w-4 h-4" />
+                    <span>Passer le test QCM</span>
+                    <ArrowRight class="w-3.5 h-3.5" />
+                  </button>
+
+                  <span v-else-if="part.statut === 'REUSSIE'" class="inline-flex items-center text-xs font-bold text-emerald-700 gap-1">
+                    <CheckCircle2 class="w-4 h-4" /> Validé
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Détails de la candidature -->
         <div class="bg-white rounded-xl border border-gray-100 p-8 space-y-6">
           <h3 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Informations de Candidature</h3>

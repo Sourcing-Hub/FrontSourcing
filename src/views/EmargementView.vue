@@ -208,14 +208,14 @@ const markPresence = async (assignment, statutPresence) => {
 const closeSession = async () => {
   const awaiting = selectedSession.value?.enAttente || 0
   const confirmed = await modalStore.showConfirm(
-    `${awaiting} candidat(s) non pointé(s) seront marqués absents et leur parcours sera clôturé. Les présents recevront un lien de confirmation.`,
+    `${awaiting} candidat(s) non pointé(s) seront marqués absents et leur parcours sera clôturé. Les candidats présents recevront un email pour leur demander s’ils souhaitent continuer la procédure de candidature.`,
     'Clôturer l’émargement', { confirmText: 'Clôturer la session', variant: 'danger' },
   )
   if (!confirmed) return
   closing.value = true
   try {
     const { data } = await api.post(`evaluations/emargement/sessions/${selectedSessionId.value}/cloturer/`)
-    await modalStore.showAlert(`${data.absents} absence(s) traitée(s) et ${data.confirmationsEnvoyees} confirmation(s) envoyée(s).`, 'Session clôturée', 'success')
+    await modalStore.showAlert(`${data.absents} absence(s) traitée(s) et ${data.confirmationsEnvoyees} email(s) de poursuite de candidature envoyé(s).`, 'Session clôturée', 'success')
     await loadSessions()
   } catch (err) { await modalStore.showAlert(parseBackendError(err), 'Erreur', 'danger') } finally { closing.value = false }
 }
