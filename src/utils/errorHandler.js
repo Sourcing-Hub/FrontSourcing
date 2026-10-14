@@ -1,7 +1,4 @@
 /**
- * Formate les erreurs du backend (Axios) pour les rendre lisibles et compréhensibles.
- */
-/**
  * Formate proprement les erreurs retournées par l'API backend Django (DRF)
  * pour un affichage clair dans les interfaces utilisateur Vue.
  */
@@ -54,30 +51,53 @@ export function parseBackendError(err) {
         password: 'Mot de passe',
         cohorte: 'Cohorte',
         formation: 'Formation',
-        titre: 'Titre',
+        titre: 'Titre du test',
         description: 'Description',
         libelle: 'Libellé',
         type: 'Type de champ',
+        etape: 'Étape / Cohorte',
+        questions: 'Questions',
+        options: 'Propositions de réponse',
+        intitule: 'Intitulé',
+        texte: 'Texte',
+      }
+
+      const formatErrorValue = (value, prefix = '') => {
+        if (typeof value === 'string') {
+          return [`${prefix}${value}`]
+        }
+        if (Array.isArray(value)) {
+          const list = []
+          value.forEach((item, idx) => {
+            if (typeof item === 'string') {
+              list.push(`${prefix}${item}`)
+            } else if (typeof item === 'object' && item !== null) {
+              const itemPrefix = prefix ? `${prefix} ` : `Élément ${idx + 1} : `
+              list.push(...formatErrorValue(item, itemPrefix))
+            }
+          })
+          return list
+        }
+        if (typeof value === 'object' && value !== null) {
+          const list = []
+          for (const k in value) {
+            const nestedName = fieldTranslations[k] || k
+            list.push(...formatErrorValue(value[k], `${prefix}${nestedName} : `))
+          }
+          return list
+        }
+        return [`${prefix}${String(value)}`]
       }
 
       const messages = []
       for (const key in data) {
-        // Ignorer les clés non pertinentes d'en-tête
         if (key === 'error' || key === 'status') continue
         
         const fieldName = fieldTranslations[key] || key
-        const fieldErrors = data[key]
-        
-        let errorText = ''
-        if (Array.isArray(fieldErrors)) {
-          errorText = fieldErrors.join(', ')
-        } else if (typeof fieldErrors === 'object' && fieldErrors !== null) {
-          errorText = JSON.stringify(fieldErrors)
-        } else {
-          errorText = String(fieldErrors)
-        }
-        
-        messages.push(`• ${fieldName} : ${errorText}`)
+        const formatted = formatErrorValue(data[key])
+        formatted.forEach((msg) => {
+          messages.push(`• ${fieldName} : ${msg}`)
+        })
       }
       
       if (messages.length > 0) {

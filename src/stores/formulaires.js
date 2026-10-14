@@ -73,6 +73,7 @@ export const useFormulairesStore = defineStore('formulaires', {
         this.formulaires = this.formulaires.filter((f) => f.id !== id)
         return true
       } catch (err) {
+        console.error('Erreur lors de la suppression du formulaire', err)
         return false
       }
     },

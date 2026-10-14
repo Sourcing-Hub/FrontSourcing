@@ -40,6 +40,26 @@ export const useModalStore = defineStore('modal', {
       })
     },
 
+    error(message, title = 'Erreur') {
+      return this.showAlert(message, title, 'danger')
+    },
+
+    success(message, title = 'Succès') {
+      return this.showAlert(message, title, 'success')
+    },
+
+    warning(message, title = 'Attention') {
+      return this.showAlert(message, title, 'warning')
+    },
+
+    info(message, title = 'Information') {
+      return this.showAlert(message, title, 'primary')
+    },
+
+    confirm(message, title = 'Confirmation', options = {}) {
+      return this.showConfirm(message, title, options)
+    },
+
     accept() {
       if (this.resolvePromise) {
         this.resolvePromise(true)
