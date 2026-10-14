@@ -16,7 +16,7 @@ defineProps({
 <template>
   <!--  Délimite une zone fonctionnelle de la page. -->
   <section
-    class="overflow-hidden rounded-[2rem] border border-[#00313C]/20 bg-white -[#00313C]/10"
+    class="overflow-hidden rounded-[2rem] border border-[#00313C]/20 bg-white"
   >
 
     <!-- =====================================================
@@ -24,7 +24,7 @@ defineProps({
          ===================================================== -->
     <!--  Structure un groupe d’éléments visuels. -->
     <div
-      class="relative overflow-hidden bg-linear- ] ] ] px-6 py-7 text-white sm:px-8"
+      class="relative overflow-hidden bg-[#00313C] px-6 py-7 text-white sm:px-8 shadow-xs"
     >
 
       <!-- Décorations -->

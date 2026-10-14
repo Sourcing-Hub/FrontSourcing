@@ -13,10 +13,10 @@ defineProps({
   >
     <!-- HEADER -->
     <div
-      class="relative overflow-hidden ] ] ] p-5 text-white"
+      class="relative overflow-hidden bg-[#00313C] p-5 text-white shadow-xs"
     >
       <div
-        class="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#00313C]/15"
+        class="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/10"
       />
 
       <div
@@ -27,7 +27,7 @@ defineProps({
         >
           <!-- AVATAR -->
           <div
-            class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#E40046] text-xl font-black text-white"
+            class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#E40046] text-xl font-black text-white shadow-xs"
           >
             {{
               candidate.firstName
@@ -39,14 +39,14 @@ defineProps({
           <!-- IDENTITÉ -->
           <div class="min-w-0">
             <h2
-              class="truncate text-lg font-black"
+              class="truncate text-lg font-black text-white"
             >
               {{ candidate.firstName }}
               {{ candidate.lastName }}
             </h2>
 
             <p
-              class="mt-1 truncate text-xs font-medium text-white/60"
+              class="mt-1 truncate text-xs font-medium text-white/80"
             >
               {{ candidate.email }}
             </p>
@@ -55,7 +55,7 @@ defineProps({
 
         <!-- BADGE -->
         <span
-          class="hidden shrink-0 rounded-full border border-[#00313C]/30 bg-[#00313C]/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-[#00313C] sm:inline-flex"
+          class="hidden shrink-0 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-white sm:inline-flex"
         >
           Candidat
         </span>

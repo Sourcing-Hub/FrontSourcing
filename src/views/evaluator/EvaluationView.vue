@@ -348,7 +348,7 @@ const loadData = async () => {
     ----------------------------------------------------- */
 
     answers.value = {
-      ...(evaluationData.answers || {}),
+      ...evaluationData.answers,
     }
 
     /* -----------------------------------------------------
@@ -356,7 +356,7 @@ const loadData = async () => {
     ----------------------------------------------------- */
 
     notes.value = {
-      ...(evaluationData.notes || {}),
+      ...evaluationData.notes,
     }
 
     /* -----------------------------------------------------
